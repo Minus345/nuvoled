@@ -51,17 +51,6 @@ public class Sender {
             message3[1] = 36;
             message3[2] = (byte) 155;
             message3[3] = 0;
-            /*
-
-
-
-            <-- 36 36 130 0
-            <-- 36 36 160 0 0 0 (server init)
-            --> 36 36 120 2 0 8 8 1 23 49 74 8 8 0 0
-            <-- 36 36 160 23 49 74 (aktiviert)                  1
-            <-- 36 36 120 2 32 8 8 1 23 49 74 8 8 0 0 (Hacken)  2
-            <-- 36 36 155 0 (save config)                       3
-             */
 
             // Get the internet address of the specified host
             InetAddress address = InetAddress.getByName(host);
