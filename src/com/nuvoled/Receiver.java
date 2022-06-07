@@ -5,18 +5,15 @@ import java.net.*;
 
 public class Receiver {
 
-    private static byte[] mac;
-    private static boolean runing;
-
     public void run(int port) {
         try {
             DatagramSocket serverSocket = new DatagramSocket(port);
             byte[] receiveData = new byte[15];
-            mac = new byte[4];
+            byte[] mac = new byte[4];
 
             System.out.printf("Listening on udp: %s:%d%n", InetAddress.getLocalHost().getHostAddress(), port);
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            runing = true;
+            boolean runing = true;
 
             while (runing) {
                 System.out.println("Searching...");
@@ -25,12 +22,11 @@ public class Receiver {
                 }catch (Exception ex){
                     System.out.println(ex);
                 }
-                //String sentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                //System.out.println("RECEIVED: " + sentence);
+
                 System.out.print("RECEIVED: ");
 
-                for (int i = 0; i < receiveData.length; i++) {
-                    System.out.print(receiveData[i] + " ");
+                for (byte receiveDatum : receiveData) {
+                    System.out.print(receiveDatum + " ");
                 }
                 System.out.println("ende");
 
