@@ -1,28 +1,31 @@
 package com.nuvoled;
 
+import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendColor;
 import com.nuvoled.sender.SendSync;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Objects;
 
 public class Main {
 
     private static String addr;
-    private static byte curantFrame;
+    private static byte courantFrame;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, AWTException {
         for (String arg : args) {
             System.out.println("Parameter: " + arg);
         }
 
         if (Objects.equals(args[0], "start")) {
             System.out.println("Start");
-            curantFrame = 1;
+            courantFrame = 1;
             addr = args[1];
             //new Receiver().run(2000);
             System.out.println("Ready");
@@ -40,32 +43,28 @@ public class Main {
                     SendSync.send();
                 }
                 if (Objects.equals(args[2], "picture")) {
-                    BufferedImage image = ImageIO.read(new File("C:\\Users\\Tina\\Documents\\green.jpg"));
+                    System.out.println("Picture Modus");
+                    System.out.println("Enter Path / == \\");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                    String Path = reader.readLine();
+                    System.out.println(Path);
+                    BufferedImage image = ImageIO.read(new File(Path));
                     System.out.println("Height: " + image.getHeight());
                     System.out.println("Width: " + image.getWidth());
-                    if (image.getHeight() < 128 || image.getWidth() < 128) {
-                        System.out.println("Falsches Format");
-                        System.out.println("Bitte Format von mindestens 128 * 128 Pixeln verwenden");
-                        System.exit(0);
+                    PictureSender.send(image);
+                    SendSync.send();
+                }
+                if (Objects.equals(args[2], "screen")){
+                    System.out.println("Screen Modus");
+                    Robot robot = new Robot();
+                    Rectangle rectangle = new Rectangle();
+                    rectangle.setSize(129,129);
+                    while (true){
+                        BufferedImage image =  robot.createScreenCapture(rectangle);
+                        PictureSender.send(image);
+                        SendSync.send();
                     }
 
-                    byte[] rgb  = new byte[49152];// 128*128*3
-                    int i = 0;
-                    for (int y = 0; y <= 128; y++) {
-                        for (int x = 0; x <= 128; x++) {
-                            int pixel = image.getRGB(x, y);
-                            int red = (pixel >> 16) & 0xff;
-                            int green = (pixel >> 8) & 0xff;
-                            int blue = (pixel) & 0xff;
-                            System.out.println("x: " + x + " " + "y: " + y + " | " + "red: " + red + ", green: " + green + ", blue: " + blue);
-                            rgb[i] = (byte) red;
-                            i++;
-                            rgb[i] = (byte) green;
-                            i++;
-                            rgb[i] = (byte) blue;
-                            i++;
-                        }
-                    }
                 }
             }
         }
@@ -75,11 +74,11 @@ public class Main {
         return addr;
     }
 
-    public static byte getCurantFrame() {
-        return curantFrame;
+    public static byte getCourantFrame() {
+        return courantFrame;
     }
 
-    public static void setCurantFrame(byte curantFrame) {
-        Main.curantFrame = curantFrame;
+    public static void setCourantFrame(byte courantFrame) {
+        Main.courantFrame = courantFrame;
     }
 }

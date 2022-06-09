@@ -16,7 +16,7 @@ public class SendColor {
                 message[0] = 36;
                 message[1] = 36;
                 message[2] = 20;
-                message[3] = Main.getCurantFrame();
+                message[3] = Main.getCourantFrame();
                 message[4] = 10; //RGB
                 message[5] = 0;
                 message[6] = (byte) counter; //counter

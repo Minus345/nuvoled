@@ -14,11 +14,11 @@ public class SendSync {
             FrameFinish[0] = 36;
             FrameFinish[1] = 36;
             FrameFinish[2] = 100;
-            FrameFinish[3] = Main.getCurantFrame(); //curframe
+            FrameFinish[3] = Main.getCourantFrame(); //curframe
 
-            for (int i = 0; i < FrameFinish.length; i++) {
-                System.out.print((FrameFinish[i] & 0xff) + " ");
-            }
+            //for (byte frameFinish : FrameFinish) {
+            //   System.out.print((frameFinish & 0xff) + " ");
+            //}
 
             InetAddress address = InetAddress.getByName(Main.getAddr());
 
@@ -29,5 +29,10 @@ public class SendSync {
         } catch (Exception e) {
             System.err.println(e);
         }
+        if (Main.getCourantFrame() == (byte) 255) {
+            Main.setCourantFrame((byte) 0);
+        }
+        Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
+        System.out.println("Frame " + Byte.toUnsignedInt(Main.getCourantFrame()) + " Finish");
     }
 }
