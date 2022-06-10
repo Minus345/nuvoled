@@ -30,8 +30,8 @@ public class SendColor {
                     message[9 + 2 + i] = blue;
                 }
 
-                for (int i = 0; i < message.length; i++) {
-                    System.out.print((message[i] & 0xff) + " ");
+                for (byte b : message) {
+                    System.out.print((b & 0xff) + " ");
                 }
                 System.out.println("Counter " + counter);
 

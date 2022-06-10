@@ -1,6 +1,7 @@
 package com.nuvoled;
 
 import com.nuvoled.sender.PictureSender;
+import com.nuvoled.sender.Reset;
 import com.nuvoled.sender.SendColor;
 import com.nuvoled.sender.SendSync;
 
@@ -18,7 +19,7 @@ public class Main {
     private static String addr;
     private static byte courantFrame;
 
-    public static void main(String[] args) throws IOException, AWTException {
+    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         for (String arg : args) {
             System.out.println("Parameter: " + arg);
         }
@@ -27,7 +28,10 @@ public class Main {
             System.out.println("Start");
             courantFrame = 1;
             addr = args[1];
-            //new Receiver().run(2000);
+            Reset.send(2000);
+            Thread.sleep(1000);
+            new Receiver().run(2000);
+            Thread.sleep(1000);
             System.out.println("Ready");
             if (args.length > 2) {
                 if (Objects.equals(args[2], "color")) {

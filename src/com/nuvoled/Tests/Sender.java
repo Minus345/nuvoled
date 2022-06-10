@@ -1,4 +1,4 @@
-package com.nuvoled.old;
+package com.nuvoled.Tests;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -57,7 +57,7 @@ public class Sender {
 
             DatagramSocket dsocket = new DatagramSocket();
             for (int i = 0; i <= 5; i++){
-                DatagramPacket packet = new DatagramPacket(message2, message2.length, address, port);
+                DatagramPacket packet = new DatagramPacket(message3, message3.length, address, port);
                 dsocket.send(packet);
             }
             dsocket.close();
