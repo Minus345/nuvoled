@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
-import java.util.TreeMap;
 
 public class Main {
 
@@ -67,7 +66,9 @@ public class Main {
                     System.out.println("Screen Modus");
                     Robot robot = new Robot();
                     Rectangle rectangle = new Rectangle();
-                    rectangle.setLocation(1000,300);
+                    int x = Integer.parseInt(args[3]);
+                    int y = Integer.parseInt(args[4]);
+                    rectangle.setLocation(x,y);
                     rectangle.setSize(129,129);
                     while (true){
                         BufferedImage image =  robot.createScreenCapture(rectangle);
