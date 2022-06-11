@@ -25,9 +25,9 @@ public class SendColor {
                 message[9] = 45;
 
                 for (int i = 1; i < 1440; i = i + 3) {
-                    message[9 + i] = red;
+                    message[9 + i] = blue;
                     message[9 + 1 + i] = green;
-                    message[9 + 2 + i] = blue;
+                    message[9 + 2 + i] = red;
                 }
 
                 for (byte b : message) {

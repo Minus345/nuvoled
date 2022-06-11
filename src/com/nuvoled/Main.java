@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class Main {
 
@@ -44,7 +45,9 @@ public class Main {
                     byte blueToByte = (byte) blue;
 
                     SendColor.send(redToByte, greenToByte, blueToByte);
-                    SendSync.send();
+                    SendSync.send((byte) (Main.getCourantFrame() - 1));
+                    Thread.sleep(10);
+                    SendSync.send(Main.getCourantFrame());
                 }
                 if (Objects.equals(args[2], "picture")) {
                     System.out.println("Picture Modus");
@@ -56,17 +59,24 @@ public class Main {
                     System.out.println("Height: " + image.getHeight());
                     System.out.println("Width: " + image.getWidth());
                     PictureSender.send(image);
-                    SendSync.send();
+                    SendSync.send((byte) (Main.getCourantFrame() - 1));
+                    Thread.sleep(10);
+                    SendSync.send(Main.getCourantFrame());
                 }
                 if (Objects.equals(args[2], "screen")){
                     System.out.println("Screen Modus");
                     Robot robot = new Robot();
                     Rectangle rectangle = new Rectangle();
+                    rectangle.setLocation(1000,300);
                     rectangle.setSize(129,129);
                     while (true){
                         BufferedImage image =  robot.createScreenCapture(rectangle);
                         PictureSender.send(image);
-                        SendSync.send();
+                        Thread.sleep(10);
+                        SendSync.send((byte) (Main.getCourantFrame() - 1));
+                        Thread.sleep(10);
+                        SendSync.send(Main.getCourantFrame());
+                        Thread.sleep(10);
                     }
 
                 }

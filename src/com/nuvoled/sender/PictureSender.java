@@ -16,20 +16,20 @@ public class PictureSender {
             System.exit(0);
         }
         int pannelGroese = 128;
-        pannelGroese++; //wegen 0
+        //pannelGroese++; //wegen 0
         byte[] rgb = new byte[pannelGroese * pannelGroese * 3];// 128*128*3
         int rgbCounterNumber = 0;
-        for (int y = 0; y <= 128; y++) {
-            for (int x = 0; x <= 128; x++) {
+        for (int y = 0; y <= 127; y++) {
+            for (int x = 0; x <= 127; x++) {
                 int pixel = image.getRGB(x, y);
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
-                rgb[rgbCounterNumber] = (byte) red;
+                rgb[rgbCounterNumber] = (byte) blue;
                 rgbCounterNumber++;
                 rgb[rgbCounterNumber] = (byte) green;
                 rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) blue;
+                rgb[rgbCounterNumber] = (byte) red;
                 rgbCounterNumber++;
                 //System.out.println("x: " + x + " " + "y: " + y + " | " + "red: " + red + ", green: " + green + ", blue: " + blue + " | " + rgbCounterNumber + " | " + rgbCounterNumber / 3);
             }
@@ -37,6 +37,7 @@ public class PictureSender {
 
         try {
             int port = 2000;
+            int pixel = 0;
             for (int counter = 0; counter <= 35; counter++) {
                 byte[] message = new byte[1450];
                 message[0] = 36;
@@ -51,9 +52,21 @@ public class PictureSender {
                 message[9] = 45;
 
                 for (int i = 1; i < 1440; i = i + 3) {
-                    message[9 + i] = rgb[i - 1];
-                    message[9 + 1 + i] = rgb[i];
-                    message[9 + 2 + i] = rgb[1 + i];
+                    if(pixel >= rgb.length){
+                        message[9 + i] = 0;
+                        pixel++;
+                        message[9 + 1 + i] = 0;
+                        pixel++;
+                        message[9 + 2 + i] = 0;
+                        pixel++;
+                    }else {
+                        message[9 + i] = rgb[pixel];
+                        pixel++;
+                        message[9 + 1 + i] = rgb[pixel];
+                        pixel++;
+                        message[9 + 2 + i] = rgb[pixel];
+                        pixel++;
+                    }
                 }
 
                 // for (byte b : message) {
