@@ -9,7 +9,6 @@ import java.net.InetAddress;
 public class SendColor {
     public static void send(byte red, byte green, byte blue) {
         try {
-            int port = 2000;
             //counter =  (128*128*3)/1440 == 34,133
             for (int counter = 0; counter <= 35 ; counter++) {
                 byte[] message = new byte[1450];
@@ -36,14 +35,11 @@ public class SendColor {
                 System.out.println("Counter " + counter);
 
                 InetAddress address = InetAddress.getByName(Main.getAddr());
-
                 DatagramSocket dsocket = new DatagramSocket();
-                DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
+                DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 dsocket.send(packet);
                 dsocket.close();
             }
-
-            // TODO: 07.06.2022 Farme Sync + restliche zeilen
 
         } catch (Exception e) {
             System.err.println(e);

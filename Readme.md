@@ -16,3 +16,4 @@ Nuvoled Application in Java
 `java -jar nuvoled.jar start [ip] screen [x] [y]`  
 [x] [y] = pixel 
 ***
+    

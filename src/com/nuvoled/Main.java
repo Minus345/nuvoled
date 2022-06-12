@@ -17,7 +17,10 @@ import java.util.Objects;
 public class Main {
 
     private static String addr;
+    private static int port;
     private static byte courantFrame;
+    private static int pannelGroessex;
+    private static int pannelGroessey;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         for (String arg : args) {
@@ -27,10 +30,13 @@ public class Main {
         if (Objects.equals(args[0], "start")) {
             System.out.println("Start");
             courantFrame = 1;
+            pannelGroessex = 256;
+            pannelGroessey = 128;
+            port = 2000;
             addr = args[1];
             Reset.send(2000);
             Thread.sleep(1000);
-            new Receiver().run(2000);
+            //Receiver.run();
             Thread.sleep(1000);
             System.out.println("Ready");
             if (args.length > 2) {
@@ -62,16 +68,17 @@ public class Main {
                     Thread.sleep(10);
                     SendSync.send(Main.getCourantFrame());
                 }
-                if (Objects.equals(args[2], "screen")){
+                if (Objects.equals(args[2], "screen")) {
                     System.out.println("Screen Modus");
-                    Robot robot = new Robot();
+                    GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();  //same screens[] with JRE7 and JRE8
+                    Robot robot = new Robot(screens[1]);
                     Rectangle rectangle = new Rectangle();
                     int x = Integer.parseInt(args[3]);
                     int y = Integer.parseInt(args[4]);
-                    rectangle.setLocation(x,y);
-                    rectangle.setSize(129,129);
-                    while (true){
-                        BufferedImage image =  robot.createScreenCapture(rectangle);
+                    rectangle.setLocation(x, y);
+                    rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
+                    while (true) {
+                        BufferedImage image = robot.createScreenCapture(rectangle);
                         PictureSender.send(image);
                         Thread.sleep(10);
                         SendSync.send((byte) (Main.getCourantFrame() - 1));
@@ -95,5 +102,29 @@ public class Main {
 
     public static void setCourantFrame(byte courantFrame) {
         Main.courantFrame = courantFrame;
+    }
+
+    public static int getPort() {
+        return port;
+    }
+
+    public static void setPort(int port) {
+        Main.port = port;
+    }
+
+    public static int getPannelGroessex() {
+        return pannelGroessex;
+    }
+
+    public static void setPannelGroessex(int pannelGroessex) {
+        Main.pannelGroessex = pannelGroessex;
+    }
+
+    public static int getPannelGroessey() {
+        return pannelGroessey;
+    }
+
+    public static void setPannelGroessey(int pannelGroessey) {
+        Main.pannelGroessey = pannelGroessey;
     }
 }

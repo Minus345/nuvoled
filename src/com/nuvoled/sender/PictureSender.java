@@ -8,19 +8,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class PictureSender {
-    public static void send(BufferedImage image){
-        //BufferedImage image = ImageIO.read(new File(Path)); // "C:\\Users\\Tina\\Documents\\green.jpg"
-        if (image.getHeight() < 128 || image.getWidth() < 128) {
+    public static void send(BufferedImage image) {
+        if (image.getHeight() < Main.getPannelGroessey() || image.getWidth() < Main.getPannelGroessex()) {
             System.out.println("Falsches Format");
             System.out.println("Bitte Format von mindestens 128 * 128 Pixeln verwenden");
             System.exit(0);
         }
-        int pannelGroese = 128;
-        //pannelGroese++; //wegen 0
-        byte[] rgb = new byte[pannelGroese * pannelGroese * 3];// 128*128*3
+        byte[] rgb = new byte[Main.getPannelGroessex() * Main.getPannelGroessey() * 3];// 128*128*3
         int rgbCounterNumber = 0;
-        for (int y = 0; y <= 127; y++) {
-            for (int x = 0; x <= 127; x++) {
+        for (int y = 0; y <= (Main.getPannelGroessey() - 1); y++) {
+            for (int x = 0; x <= (Main.getPannelGroessex() - 1); x++) {
                 int pixel = image.getRGB(x, y);
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
@@ -36,9 +33,8 @@ public class PictureSender {
         }
 
         try {
-            int port = 2000;
             int pixel = 0;
-            for (int counter = 0; counter <= 35; counter++) {
+            for (int counter = 0; counter <= ((Main.getPannelGroessex() * Main.getPannelGroessey() * 3)/ 1440) + 1; counter++) { //35 = (128 * 128 * 3)/1440
                 byte[] message = new byte[1450];
                 message[0] = 36;
                 message[1] = 36;
@@ -48,18 +44,18 @@ public class PictureSender {
                 message[5] = 0;
                 message[6] = (byte) counter; //counter
                 message[7] = 0;
-                message[8] = 35;
+                message[8] = (byte) ((byte) ((Main.getPannelGroessex() * Main.getPannelGroessey() * 3)/ 1440) + 1);
                 message[9] = 45;
 
                 for (int i = 1; i < 1440; i = i + 3) {
-                    if(pixel >= rgb.length){
+                    if (pixel >= rgb.length) {
                         message[9 + i] = 0;
                         pixel++;
                         message[9 + 1 + i] = 0;
                         pixel++;
                         message[9 + 2 + i] = 0;
                         pixel++;
-                    }else {
+                    } else {
                         message[9 + i] = rgb[pixel];
                         pixel++;
                         message[9 + 1 + i] = rgb[pixel];
@@ -69,13 +65,9 @@ public class PictureSender {
                     }
                 }
 
-                // for (byte b : message) {
-                //   System.out.print((b & 0xff) + " ");
-                //}
-
                 InetAddress address = InetAddress.getByName(Main.getAddr());
                 DatagramSocket datagramSocket = new DatagramSocket();
-                DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
+                DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 datagramSocket.send(packet);
                 //datagramSocket.close();
                 //Thread.sleep(10);
