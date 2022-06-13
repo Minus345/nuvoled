@@ -23,6 +23,7 @@ public class SendSync {
             InetAddress address = InetAddress.getByName(Main.getAddr());
 
             DatagramSocket dsocket = new DatagramSocket();
+            dsocket.setSendBufferSize(1048576);
             DatagramPacket packet = new DatagramPacket(FrameFinish, FrameFinish.length, address, port);
             dsocket.send(packet);
             dsocket.close();

@@ -12,6 +12,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.StandardSocketOptions;
+import java.nio.channels.DatagramChannel;
 import java.util.Objects;
 
 public class Main {
@@ -29,15 +31,15 @@ public class Main {
 
         if (Objects.equals(args[0], "start")) {
             System.out.println("Start");
-            courantFrame = 1;
+            courantFrame = 2;
             pannelGroessex = 256;
             pannelGroessey = 128;
             port = 2000;
             addr = args[1];
-            Reset.send(2000);
-            Thread.sleep(1000);
+            //Reset.send(2000);
+            //Thread.sleep(1000);
             //Receiver.run();
-            Thread.sleep(1000);
+            //Thread.sleep(1000);
             System.out.println("Ready");
             if (args.length > 2) {
                 if (Objects.equals(args[2], "color")) {
@@ -71,20 +73,20 @@ public class Main {
                 if (Objects.equals(args[2], "screen")) {
                     System.out.println("Screen Modus");
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();  //same screens[] with JRE7 and JRE8
-                    Robot robot = new Robot(screens[1]);
+                    Robot robot = new Robot(screens[0]);
                     Rectangle rectangle = new Rectangle();
                     int x = Integer.parseInt(args[3]);
                     int y = Integer.parseInt(args[4]);
                     rectangle.setLocation(x, y);
                     rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
+                    SendSync.send((byte) (Main.getCourantFrame() - 1));
                     while (true) {
                         BufferedImage image = robot.createScreenCapture(rectangle);
                         PictureSender.send(image);
                         Thread.sleep(10);
                         SendSync.send((byte) (Main.getCourantFrame() - 1));
-                        Thread.sleep(10);
+                        Thread.sleep(60);
                         SendSync.send(Main.getCourantFrame());
-                        Thread.sleep(10);
                     }
 
                 }

@@ -67,6 +67,7 @@ public class PictureSender {
 
                 InetAddress address = InetAddress.getByName(Main.getAddr());
                 DatagramSocket datagramSocket = new DatagramSocket();
+                datagramSocket.setSendBufferSize(1048576);
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 datagramSocket.send(packet);
                 //datagramSocket.close();
