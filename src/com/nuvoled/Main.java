@@ -72,21 +72,17 @@ public class Main {
                 }
                 if (Objects.equals(args[2], "screen")) {
                     System.out.println("Screen Modus");
-                    GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();  //same screens[] with JRE7 and JRE8
+                    GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                     Robot robot = new Robot(screens[0]);
                     Rectangle rectangle = new Rectangle();
                     int x = Integer.parseInt(args[3]);
                     int y = Integer.parseInt(args[4]);
                     rectangle.setLocation(x, y);
                     rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
-                    SendSync.send((byte) (Main.getCourantFrame() - 1));
                     while (true) {
                         BufferedImage image = robot.createScreenCapture(rectangle);
                         PictureSender.send(image);
-                        Thread.sleep(10);
-                        SendSync.send((byte) (Main.getCourantFrame() - 1));
-                        Thread.sleep(60);
-                        SendSync.send(Main.getCourantFrame());
+
                     }
 
                 }

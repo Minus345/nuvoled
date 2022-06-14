@@ -27,6 +27,7 @@ public class SendSync {
             DatagramPacket packet = new DatagramPacket(FrameFinish, FrameFinish.length, address, port);
             dsocket.send(packet);
             dsocket.close();
+            Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
         } catch (Exception e) {
             System.err.println(e);
         }
