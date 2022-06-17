@@ -71,9 +71,8 @@ public class ViedeoSender {
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 datagramSocket.send(packet);
             }
-            Thread.sleep(20);
             SendSync.send((byte) (Main.getCourantFrame() - 1));
-            System.out.println("Sending Frame: " + Main.getCourantFrame());
+            //System.out.println("Sending Frame: " + Main.getCourantFrame());
         } catch (Exception e) {
             System.err.println(e);
         }

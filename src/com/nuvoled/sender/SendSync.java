@@ -5,8 +5,13 @@ import com.nuvoled.Main;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class SendSync {
+
+    private static long date =  System.currentTimeMillis();;
+
     public static void send(byte Frame) {
         try {
             int port = 2000;
@@ -33,6 +38,11 @@ public class SendSync {
         }
         if (Main.getCourantFrame() == (byte) 255) {
             Main.setCourantFrame((byte) 0);
+            float difference = (System.currentTimeMillis() - date);
+            difference = difference / 1000;
+            float fps = (255 / difference);
+            System.out.println("dif: " + difference + " fps: " + fps);
+            date = System.currentTimeMillis();
         }
     }
 

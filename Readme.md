@@ -1,7 +1,7 @@
 # Nuvoled #
 Nuvoled Application in Java  
  - **Java 17.0.1 require**
- - 
+ - Teste on Windows / Mac / Linux (Jetson)
 ***
 ## Start Parameters ##
 ### Test Connection ###
