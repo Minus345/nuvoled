@@ -1,9 +1,6 @@
 package com.nuvoled;
 
-import com.nuvoled.sender.PictureSender;
-import com.nuvoled.sender.Reset;
-import com.nuvoled.sender.SendColor;
-import com.nuvoled.sender.SendSync;
+import com.nuvoled.sender.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -82,9 +79,21 @@ public class Main {
                     while (true) {
                         BufferedImage image = robot.createScreenCapture(rectangle);
                         PictureSender.send(image);
-
                     }
-
+                }
+                if(Objects.equals(args[2], "video")){
+                System.out.println("Video Modus");
+                    GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+                    Robot robot = new Robot(screens[0]);
+                    Rectangle rectangle = new Rectangle();
+                    int x = Integer.parseInt(args[3]);
+                    int y = Integer.parseInt(args[4]);
+                    rectangle.setLocation(x, y);
+                    rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
+                    while (true) {
+                        BufferedImage image = robot.createScreenCapture(rectangle);
+                        ViedeoSender.send(image);
+                    }
                 }
             }
         }

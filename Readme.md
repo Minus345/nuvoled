@@ -14,6 +14,11 @@ Nuvoled Application in Java
 `java -jar nuvoled.jar start [ip] picture`
 ### Show Screen ###
 `java -jar nuvoled.jar start [ip] screen [x] [y]`  
-[x] [y] = pixel 
+[x] [y] = pixel   
+_only sending if picture change_
+### Show Video ###
+`java -jar nuvoled.jar start [ip] video [x] [y]`  
+[x] [y] = pixel  
+_more fps_
 ***
     
