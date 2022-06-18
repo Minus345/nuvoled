@@ -13,12 +13,14 @@ Nuvoled Application in Java
 ### Send Picture ###
 `java -jar nuvoled.jar start [ip] picture`
 ### Show Screen ###
-`java -jar nuvoled.jar start [ip] screen [x] [y]`  
-[x] [y] = pixel   
+`java -jar nuvoled.jar start [ip] screen [true / false] [x] [y]`  
+[x] [y] = pixel
+[true / false] = rotation  
 _only sending if picture change_
 ### Show Video ###
-`java -jar nuvoled.jar start [ip] video [x] [y]`  
+`java -jar nuvoled.jar start [ip] video [true / false] [x] [y]`  
 [x] [y] = pixel  
+[true / false] = rotation  
 _more fps_
 ***
     

@@ -11,29 +11,43 @@ public class ViedeoSender {
     public static byte[] rgb = new byte[Main.getPannelGroessex() * Main.getPannelGroessey() * 3];// 128*128*3
 
     public static void send(BufferedImage image) {
-        if (image.getHeight() < Main.getPannelGroessey() || image.getWidth() < Main.getPannelGroessex()) {
-            System.out.println("Falsches Format");
-            System.out.println("Bitte Format von mindestens" + Main.getPannelGroessex() + " * " + Main.getPannelGroessey() + "Pixeln verwenden");
-            System.exit(0);
-        }
         int rgbCounterNumber = 0;
-        for (int y = 0; y <= (Main.getPannelGroessey() - 1); y++) {
-            for (int x = 0; x <= (Main.getPannelGroessex() - 1); x++) {
-                int pixel = image.getRGB(x, y);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = (pixel) & 0xff;
-                rgb[rgbCounterNumber] = (byte) blue;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) green;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) red;
-                rgbCounterNumber++;
-                //System.out.println("x: " + x + " " + "y: " + y + " | " + "red: " + red + ", green: " + green + ", blue: " + blue + " | " + rgbCounterNumber + " | " + rgbCounterNumber / 3);
+        if (!Main.isRotation()) {
+            for (int y = 1; y <= Main.getPannelGroessey(); y++) {
+                for (int x = 1; x <= Main.getPannelGroessex(); x++) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+        } else {
+            for (int y = Main.getPannelGroessey(); y >= 1; y--) {
+                for (int x = Main.getPannelGroessex(); x >= 1; x--) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
             }
         }
 
         try {
+            InetAddress address = InetAddress.getByName(Main.getAddr());
+            DatagramSocket datagramSocket = new DatagramSocket();
+            datagramSocket.setSendBufferSize(1048576);
             int pixel = 0;
             for (int counter = 0; counter <= ((Main.getPannelGroessex() * Main.getPannelGroessey() * 3) / 1440) + 1; counter++) { //35 = (128 * 128 * 3)/1440
                 byte[] message = new byte[1450];
@@ -64,14 +78,11 @@ public class ViedeoSender {
                         pixel++;
                     }
                 }
-
-                InetAddress address = InetAddress.getByName(Main.getAddr());
-                DatagramSocket datagramSocket = new DatagramSocket();
-                datagramSocket.setSendBufferSize(1048576);
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 datagramSocket.send(packet);
             }
             SendSync.send((byte) (Main.getCourantFrame() - 1));
+            //Thread.sleep(20);
             //System.out.println("Sending Frame: " + Main.getCourantFrame());
         } catch (Exception e) {
             System.err.println(e);

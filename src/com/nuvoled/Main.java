@@ -20,6 +20,7 @@ public class Main {
     private static byte courantFrame;
     private static int pannelGroessex;
     private static int pannelGroessey;
+    private static boolean rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         for (String arg : args) {
@@ -29,10 +30,11 @@ public class Main {
         if (Objects.equals(args[0], "start")) {
             System.out.println("Start");
             courantFrame = 2;
-            pannelGroessex = 256;
+            pannelGroessex = 128;
             pannelGroessey = 128;
             port = 2000;
             addr = args[1];
+            rotation = false;
             //Reset.send(2000);
             //Thread.sleep(1000);
             //Receiver.run();
@@ -72,8 +74,9 @@ public class Main {
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                     Robot robot = new Robot(screens[0]);
                     Rectangle rectangle = new Rectangle();
-                    int x = Integer.parseInt(args[3]);
-                    int y = Integer.parseInt(args[4]);
+                    rotation = Boolean.parseBoolean(args[3]);
+                    int x = Integer.parseInt(args[4]);
+                    int y = Integer.parseInt(args[5]);
                     rectangle.setLocation(x, y);
                     rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
                     while (true) {
@@ -86,8 +89,9 @@ public class Main {
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                     Robot robot = new Robot(screens[0]);
                     Rectangle rectangle = new Rectangle();
-                    int x = Integer.parseInt(args[3]);
-                    int y = Integer.parseInt(args[4]);
+                    rotation = Boolean.parseBoolean(args[3]);
+                    int x = Integer.parseInt(args[4]);
+                    int y = Integer.parseInt(args[5]);
                     rectangle.setLocation(x, y);
                     rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
                     while (true) {
@@ -133,5 +137,13 @@ public class Main {
 
     public static void setPannelGroessey(int pannelGroessey) {
         Main.pannelGroessey = pannelGroessey;
+    }
+
+    public static boolean isRotation() {
+        return rotation;
+    }
+
+    public static void setRotation(boolean rotation) {
+        Main.rotation = rotation;
     }
 }

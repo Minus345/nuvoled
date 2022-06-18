@@ -20,19 +20,35 @@ public class PictureSender {
             System.exit(0);
         }
         int rgbCounterNumber = 0;
-        for (int y = 0; y <= (Main.getPannelGroessey() - 1); y++) {
-            for (int x = 0; x <= (Main.getPannelGroessex() - 1); x++) {
-                int pixel = image.getRGB(x, y);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = (pixel) & 0xff;
-                rgb[rgbCounterNumber] = (byte) blue;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) green;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) red;
-                rgbCounterNumber++;
-                //System.out.println("x: " + x + " " + "y: " + y + " | " + "red: " + red + ", green: " + green + ", blue: " + blue + " | " + rgbCounterNumber + " | " + rgbCounterNumber / 3);
+        if (!Main.isRotation()) {
+            for (int y = 1; y <= Main.getPannelGroessey(); y++) {
+                for (int x = 1; x <= Main.getPannelGroessex(); x++) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+        } else {
+            for (int y = Main.getPannelGroessey(); y >= 1; y--) {
+                for (int x = Main.getPannelGroessex(); x >= 1; x--) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
             }
         }
         if (!Arrays.equals(rgb, rgbOld)) {
@@ -73,6 +89,7 @@ public class PictureSender {
                     datagramSocket.setSendBufferSize(1048576);
                     DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                     datagramSocket.send(packet);
+                    datagramSocket.close();
                 }
                 Thread.sleep(10);
                 SendSync.send((byte) (Main.getCourantFrame() - 1));
