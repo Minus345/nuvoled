@@ -14,9 +14,9 @@ public class PictureSender {
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     public static void send(BufferedImage image) {
-        if (image.getHeight() < Main.getPanelSizeX() || image.getWidth() < Main.getPanelSizeY()) {
+        if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {
             System.out.println("Falsches Format");
-            System.out.println("Bitte Format von mindestens" + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + "Pixeln verwenden");
+            System.out.println("Bitte Format von mindestens " + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + " Pixeln verwenden");
             System.exit(0);
         }
         int rgbCounterNumber = 0;
