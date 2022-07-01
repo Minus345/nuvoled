@@ -5,8 +5,6 @@ import com.nuvoled.Main;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 public class SendSync {
 
@@ -25,7 +23,7 @@ public class SendSync {
             //   System.out.print((frameFinish & 0xff) + " ");
             //}
 
-            InetAddress address = InetAddress.getByName(Main.getAddr());
+            InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
 
             DatagramSocket dsocket = new DatagramSocket();
             dsocket.setSendBufferSize(1048576);

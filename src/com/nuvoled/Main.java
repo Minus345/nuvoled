@@ -9,17 +9,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.StandardSocketOptions;
-import java.nio.channels.DatagramChannel;
 import java.util.Objects;
 
 public class Main {
 
-    private static String addr;
+    private static String broadcastIpAddress;
     private static int port;
     private static byte courantFrame;
-    private static int pannelGroessex;
-    private static int pannelGroessey;
+    private static int panelSizeX;
+    private static int panelSizeY;
     private static boolean rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
@@ -30,22 +28,26 @@ public class Main {
         if (Objects.equals(args[0], "start")) {
             System.out.println("Start");
             courantFrame = 2;
-            pannelGroessex = 128;
-            pannelGroessey = 128;
+            panelSizeX = 128 * 2;
+            panelSizeY = 128;
             port = 2000;
-            addr = args[1];
+            broadcastIpAddress = args[1];
+            int numberPanelX = Integer.parseInt(args[2]);
+            int numberPanelY = Integer.parseInt(args[3]);
+            panelSizeX = numberPanelX * 128;
+            panelSizeY = numberPanelY * 128;
             rotation = false;
             //Reset.send(2000);
             //Thread.sleep(1000);
             //Receiver.run();
             //Thread.sleep(1000);
             System.out.println("Ready");
-            if (args.length > 2) {
-                if (Objects.equals(args[2], "color")) {
-                    System.out.println("Color modus");
-                    int red = Integer.parseInt(args[3]);
-                    int green = Integer.parseInt(args[4]);
-                    int blue = Integer.parseInt(args[5]);
+            if (args.length > 4) {
+                if (Objects.equals(args[4], "color")) {
+                    System.out.println("Color mode");
+                    int red = Integer.parseInt(args[5]);
+                    int green = Integer.parseInt(args[6]);
+                    int blue = Integer.parseInt(args[7]);
                     byte redToByte = (byte) red;
                     byte greenToByte = (byte) green;
                     byte blueToByte = (byte) blue;
@@ -55,8 +57,8 @@ public class Main {
                     Thread.sleep(10);
                     SendSync.send(Main.getCourantFrame());
                 }
-                if (Objects.equals(args[2], "picture")) {
-                    System.out.println("Picture Modus");
+                if (Objects.equals(args[4], "picture")) {
+                    System.out.println("Picture mode");
                     System.out.println("Enter Path / == \\");
                     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                     String Path = reader.readLine();
@@ -69,31 +71,31 @@ public class Main {
                     Thread.sleep(10);
                     SendSync.send(Main.getCourantFrame());
                 }
-                if (Objects.equals(args[2], "screen")) {
-                    System.out.println("Screen Modus");
+                if (Objects.equals(args[4], "screen")) {
+                    System.out.println("Screen mode");
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                     Robot robot = new Robot(screens[0]);
                     Rectangle rectangle = new Rectangle();
-                    rotation = Boolean.parseBoolean(args[3]);
-                    int x = Integer.parseInt(args[4]);
-                    int y = Integer.parseInt(args[5]);
+                    rotation = Boolean.parseBoolean(args[5]);
+                    int x = Integer.parseInt(args[6]);
+                    int y = Integer.parseInt(args[7]);
                     rectangle.setLocation(x, y);
-                    rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
+                    rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
                     while (true) {
                         BufferedImage image = robot.createScreenCapture(rectangle);
                         PictureSender.send(image);
                     }
                 }
-                if(Objects.equals(args[2], "video")){
-                System.out.println("Video Modus");
+                if (Objects.equals(args[4], "video")) {
+                    System.out.println("Video mode");
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                     Robot robot = new Robot(screens[0]);
                     Rectangle rectangle = new Rectangle();
-                    rotation = Boolean.parseBoolean(args[3]);
-                    int x = Integer.parseInt(args[4]);
-                    int y = Integer.parseInt(args[5]);
+                    rotation = Boolean.parseBoolean(args[5]);
+                    int x = Integer.parseInt(args[6]);
+                    int y = Integer.parseInt(args[7]);
                     rectangle.setLocation(x, y);
-                    rectangle.setSize(pannelGroessex + 1, pannelGroessey + 1);
+                    rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
                     while (true) {
                         BufferedImage image = robot.createScreenCapture(rectangle);
                         ViedeoSender.send(image);
@@ -103,8 +105,8 @@ public class Main {
         }
     }
 
-    public static String getAddr() {
-        return addr;
+    public static String getBroadcastIpAddress() {
+        return broadcastIpAddress;
     }
 
     public static byte getCourantFrame() {
@@ -119,31 +121,15 @@ public class Main {
         return port;
     }
 
-    public static void setPort(int port) {
-        Main.port = port;
+    public static int getPanelSizeX() {
+        return panelSizeX;
     }
 
-    public static int getPannelGroessex() {
-        return pannelGroessex;
-    }
-
-    public static void setPannelGroessex(int pannelGroessex) {
-        Main.pannelGroessex = pannelGroessex;
-    }
-
-    public static int getPannelGroessey() {
-        return pannelGroessey;
-    }
-
-    public static void setPannelGroessey(int pannelGroessey) {
-        Main.pannelGroessey = pannelGroessey;
+    public static int getPanelSizeY() {
+        return panelSizeY;
     }
 
     public static boolean isRotation() {
         return rotation;
-    }
-
-    public static void setRotation(boolean rotation) {
-        Main.rotation = rotation;
     }
 }

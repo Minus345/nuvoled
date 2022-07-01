@@ -23,7 +23,7 @@ public class Reset {
             message2[2] = (byte) 130;
             message2[3] = 0;
 
-            InetAddress address = InetAddress.getByName(Main.getAddr());
+            InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
             DatagramSocket dsocket = new DatagramSocket();
             DatagramPacket packet = new DatagramPacket(message, message.length, address, port);
             dsocket.send(packet);

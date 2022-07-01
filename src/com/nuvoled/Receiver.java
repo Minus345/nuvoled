@@ -75,7 +75,7 @@ public class Receiver {
         configMessage[13] = 0;
         configMessage[14] = 0; // Offset
 
-        InetAddress address = InetAddress.getByName(Main.getAddr());
+        InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
 
         //DatagramSocket dsocket = new DatagramSocket();
         DatagramPacket aktiviertPacket = new DatagramPacket(aktiviert, aktiviert.length, address, Main.getPort());

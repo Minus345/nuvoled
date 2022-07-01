@@ -10,19 +10,19 @@ import java.util.Arrays;
 
 public class PictureSender {
 
-    public static byte[] rgb = new byte[Main.getPannelGroessex() * Main.getPannelGroessey() * 3];// 128*128*3
-    public static byte[] rgbOld = new byte[Main.getPannelGroessex() * Main.getPannelGroessey() * 3];
+    public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
+    public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     public static void send(BufferedImage image) {
-        if (image.getHeight() < Main.getPannelGroessey() || image.getWidth() < Main.getPannelGroessex()) {
+        if (image.getHeight() < Main.getPanelSizeX() || image.getWidth() < Main.getPanelSizeY()) {
             System.out.println("Falsches Format");
-            System.out.println("Bitte Format von mindestens" + Main.getPannelGroessex() + " * " + Main.getPannelGroessey() + "Pixeln verwenden");
+            System.out.println("Bitte Format von mindestens" + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + "Pixeln verwenden");
             System.exit(0);
         }
         int rgbCounterNumber = 0;
         if (!Main.isRotation()) {
-            for (int y = 1; y <= Main.getPannelGroessey(); y++) {
-                for (int x = 1; x <= Main.getPannelGroessex(); x++) {
+            for (int y = 1; y <= Main.getPanelSizeY(); y++) {
+                for (int x = 1; x <= Main.getPanelSizeX(); x++) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
@@ -36,8 +36,8 @@ public class PictureSender {
                 }
             }
         } else {
-            for (int y = Main.getPannelGroessey(); y >= 1; y--) {
-                for (int x = Main.getPannelGroessex(); x >= 1; x--) {
+            for (int y = Main.getPanelSizeY(); y >= 1; y--) {
+                for (int x = Main.getPanelSizeX(); x >= 1; x--) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
@@ -54,7 +54,7 @@ public class PictureSender {
         if (!Arrays.equals(rgb, rgbOld)) {
             try {
                 int pixel = 0;
-                for (int counter = 0; counter <= ((Main.getPannelGroessex() * Main.getPannelGroessey() * 3) / 1440) + 1; counter++) { //35 = (128 * 128 * 3)/1440
+                for (int counter = 0; counter <= ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; counter++) { //35 = (128 * 128 * 3)/1440
                     byte[] message = new byte[1450];
                     message[0] = 36;
                     message[1] = 36;
@@ -64,7 +64,7 @@ public class PictureSender {
                     message[5] = 0;
                     message[6] = (byte) counter; //counter
                     message[7] = 0;
-                    message[8] = (byte) ((byte) ((Main.getPannelGroessex() * Main.getPannelGroessey() * 3) / 1440) + 1);
+                    message[8] = (byte) ((byte) ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1);
                     message[9] = 45;
                     for (int i = 1; i < 1440; i = i + 3) {
                         if (pixel >= rgb.length) {
@@ -84,7 +84,7 @@ public class PictureSender {
                         }
                     }
 
-                    InetAddress address = InetAddress.getByName(Main.getAddr());
+                    InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
                     DatagramSocket datagramSocket = new DatagramSocket();
                     datagramSocket.setSendBufferSize(1048576);
                     DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());

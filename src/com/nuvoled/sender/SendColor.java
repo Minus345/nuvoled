@@ -34,7 +34,7 @@ public class SendColor {
                 }
                 System.out.println("Counter " + counter);
 
-                InetAddress address = InetAddress.getByName(Main.getAddr());
+                InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
                 DatagramSocket dsocket = new DatagramSocket();
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 dsocket.send(packet);
