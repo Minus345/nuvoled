@@ -71,34 +71,31 @@ public class Main {
                     Thread.sleep(10);
                     SendSync.send(Main.getCourantFrame());
                 }
-                if (Objects.equals(args[4], "screen")) {
-                    System.out.println("Screen mode");
+                if (Objects.equals(args[4], "screen") || Objects.equals(args[4], "video") ) {
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-                    Robot robot = new Robot(screens[0]);
+                    int screenNumber = Integer.parseInt(args[6]);
+                    Robot robot = new Robot(screens[screenNumber]);
                     Rectangle rectangle = new Rectangle();
                     rotation = Boolean.parseBoolean(args[5]);
-                    int x = Integer.parseInt(args[6]);
-                    int y = Integer.parseInt(args[7]);
+                    Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
+                    int x = Integer.parseInt(args[7]) + screenBounds.x;
+                    int y = Integer.parseInt(args[8]) + screenBounds.y;
                     rectangle.setLocation(x, y);
                     rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
-                    while (true) {
-                        BufferedImage image = robot.createScreenCapture(rectangle);
-                        PictureSender.send(image);
+
+                    if(Objects.equals(args[4], "screen")){
+                        System.out.println("Screen mode");
+                        while (true) {
+                            BufferedImage image = robot.createScreenCapture(rectangle);
+                            PictureSender.send(image);
+                        }
                     }
-                }
-                if (Objects.equals(args[4], "video")) {
-                    System.out.println("Video mode");
-                    GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-                    Robot robot = new Robot(screens[0]);
-                    Rectangle rectangle = new Rectangle();
-                    rotation = Boolean.parseBoolean(args[5]);
-                    int x = Integer.parseInt(args[6]);
-                    int y = Integer.parseInt(args[7]);
-                    rectangle.setLocation(x, y);
-                    rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
-                    while (true) {
-                        BufferedImage image = robot.createScreenCapture(rectangle);
-                        ViedeoSender.send(image);
+                    if(Objects.equals(args[4], "video")){
+                        System.out.println("Video mode");
+                        while (true) {
+                            BufferedImage image = robot.createScreenCapture(rectangle);
+                            VideoSender.send(image);
+                        }
                     }
                 }
             }
