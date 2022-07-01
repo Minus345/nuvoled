@@ -10,7 +10,7 @@ import java.net.InetAddress;
 public class VideoSender {
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
 
-    public static void send(BufferedImage image) {
+    public static void send(BufferedImage image,DatagramSocket datagramSocket) {
         int rgbCounterNumber = 0;
         if (!Main.isRotation()) {
             for (int y = 1; y <= Main.getPanelSizeY(); y++) {
@@ -45,9 +45,6 @@ public class VideoSender {
         }
 
         try {
-            InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
-            DatagramSocket datagramSocket = new DatagramSocket();
-            datagramSocket.setSendBufferSize(1048576);
             int pixel = 0;
             for (int counter = 0; counter <= ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; counter++) { //35 = (128 * 128 * 3)/1440
                 byte[] message = new byte[1450];
@@ -78,6 +75,16 @@ public class VideoSender {
                         pixel++;
                     }
                 }
+
+                InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
+
+                if(datagramSocket.isClosed()){
+                    System.out.println("Reconnect");
+                    datagramSocket.close();
+                    datagramSocket.connect(address,Main.getPort());
+                }
+
+                datagramSocket.setSendBufferSize(1048576);
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 datagramSocket.send(packet);
             }

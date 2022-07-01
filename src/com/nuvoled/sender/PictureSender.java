@@ -13,7 +13,7 @@ public class PictureSender {
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
-    public static void send(BufferedImage image) {
+    public static void send(BufferedImage image,DatagramSocket datagramSocket) {
         if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {
             System.out.println("Falsches Format");
             System.out.println("Bitte Format von mindestens " + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + " Pixeln verwenden");
@@ -85,11 +85,17 @@ public class PictureSender {
                     }
 
                     InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
-                    DatagramSocket datagramSocket = new DatagramSocket();
+
+                    if(datagramSocket.isClosed()){
+                        System.out.println("Reconnect");
+                        datagramSocket.close();
+                        datagramSocket.connect(address,Main.getPort());
+                    }
+
                     datagramSocket.setSendBufferSize(1048576);
                     DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                     datagramSocket.send(packet);
-                    datagramSocket.close();
+
                 }
                 Thread.sleep(10);
                 SendSync.send((byte) (Main.getCourantFrame() - 1));

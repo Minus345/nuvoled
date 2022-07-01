@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
 import java.util.Objects;
 
 public class Main {
@@ -66,12 +67,15 @@ public class Main {
                     BufferedImage image = ImageIO.read(new File(Path));
                     System.out.println("Height: " + image.getHeight());
                     System.out.println("Width: " + image.getWidth());
-                    PictureSender.send(image);
+
+                    DatagramSocket datagramSocket = new DatagramSocket();
+                    PictureSender.send(image, datagramSocket);
+
                     SendSync.send((byte) (Main.getCourantFrame() - 1));
                     Thread.sleep(10);
                     SendSync.send(Main.getCourantFrame());
                 }
-                if (Objects.equals(args[4], "screen") || Objects.equals(args[4], "video") ) {
+                if (Objects.equals(args[4], "screen") || Objects.equals(args[4], "video")) {
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                     int screenNumber = Integer.parseInt(args[6]);
                     Robot robot = new Robot(screens[screenNumber]);
@@ -83,18 +87,20 @@ public class Main {
                     rectangle.setLocation(x, y);
                     rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
 
-                    if(Objects.equals(args[4], "screen")){
+                    DatagramSocket datagramSocket = new DatagramSocket();
+
+                    if (Objects.equals(args[4], "screen")) {
                         System.out.println("Screen mode");
                         while (true) {
                             BufferedImage image = robot.createScreenCapture(rectangle);
-                            PictureSender.send(image);
+                            PictureSender.send(image, datagramSocket);
                         }
                     }
-                    if(Objects.equals(args[4], "video")){
+                    if (Objects.equals(args[4], "video")) {
                         System.out.println("Video mode");
                         while (true) {
                             BufferedImage image = robot.createScreenCapture(rectangle);
-                            VideoSender.send(image);
+                            VideoSender.send(image, datagramSocket);
                         }
                     }
                 }
