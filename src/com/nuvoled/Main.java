@@ -54,9 +54,9 @@ public class Main {
                     byte blueToByte = (byte) blue;
 
                     SendColor.send(redToByte, greenToByte, blueToByte);
-                    SendSync.send((byte) (Main.getCourantFrame() - 1));
+                    SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
                     Thread.sleep(10);
-                    SendSync.send(Main.getCourantFrame());
+                    SendSync.sendSyncro(Main.getCourantFrame());
                 }
                 if (Objects.equals(args[4], "picture")) {
                     System.out.println("Picture mode");
@@ -71,9 +71,9 @@ public class Main {
                     DatagramSocket datagramSocket = new DatagramSocket();
                     PictureSender.send(image, datagramSocket);
 
-                    SendSync.send((byte) (Main.getCourantFrame() - 1));
+                    SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
                     Thread.sleep(10);
-                    SendSync.send(Main.getCourantFrame());
+                    SendSync.sendSyncro(Main.getCourantFrame());
                 }
                 if (Objects.equals(args[4], "screen") || Objects.equals(args[4], "video")) {
                     GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();

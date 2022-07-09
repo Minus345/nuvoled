@@ -14,7 +14,7 @@ public class PictureSender {
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
-    public static void  send(BufferedImage image, DatagramSocket datagramSocket) {
+    public static void send(BufferedImage image, DatagramSocket datagramSocket) {
         if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {
             System.out.println("Falsches Format");
             System.out.println("Bitte Format von mindestens " + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + " Pixeln verwenden");
@@ -52,94 +52,75 @@ public class PictureSender {
                 }
             }
         }
-        if (!Arrays.equals(rgb, rgbOld)) {
+        //if (!Arrays.equals(rgb, rgbOld)) {
+        try {
+            InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
             try {
-                InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
-                try {
-                    int pixel = 0;
-                    int counterNr2 = 0;
-                    int counterNr1 = 0;
-                    int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) +1;
-                    //System.out.println("start new counter " + counterNr1 + " " + counterNr2);
-                    for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
-                        byte[] message = new byte[1450];
-                        message[0] = 36;
-                        message[1] = 36;
-                        message[2] = 20;
-                        message[3] = Main.getCourantFrame();
-                        message[4] = 10; //RGB
+                int pixel = 0;
+                int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
+                for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
+                    byte[] message = new byte[1450];
+                    message[0] = 36;
+                    message[1] = 36;
+                    message[2] = 20;
+                    message[3] = Main.getCourantFrame();
+                    message[4] = 10; //RGB
+                    message[5] = (byte) (counter >> 8);
+                    message[6] = (byte) (counter & 255);
+                    message[7] = (byte) (MaxPackets >> 8);
+                    message[8] = (byte) (MaxPackets & 255);
+                    message[9] = 45;
 
-                        message[5] = (byte) (counter >> 8);
-                        message[6] = (byte) (counter & 255);
-                        //   message[5] = (byte)counterNr2;
-                        //   if (counterNr1 > 255 ){
-                        //       counterNr2++;
-                        //       counterNr1 = 0 ;
-                        //      // System.out.println("set new counter " + counterNr1 + " " + counterNr2 + " " + counter);
-                        //   }
-                        //   message[6] = (byte) counterNr1; //c
-                        //   counterNr1++;// ounter
-                        message[7] = (byte) (MaxPackets >> 8);
-                        message[8] = (byte) (MaxPackets &  255) ;
-                        //System.out.println("set new counter " + message[5] + " " + message[6] + " " + message[7] + " " + message[8]);
-                        //message[8] =  (byte) counter2;
-                        //message[8] = (byte) ((byte) ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1);
-                        message[9] = 45;
-
-                        for (int i = 1; i < 1440; i = i + 3) {
-                            if (pixel >= rgb.length) {
-                                message[9 + i] = 0;
-                                pixel++;
-                                message[9 + 1 + i] = 0;
-                                pixel++;
-                                message[9 + 2 + i] = 0;
-                                pixel++;
-                            } else {
-                                message[9 + i] = rgb[pixel];
-                                pixel++;
-                                message[9 + 1 + i] = rgb[pixel];
-                                pixel++;
-                                message[9 + 2 + i] = rgb[pixel];
-                                pixel++;
-                            }
+                    for (int i = 1; i < 1440; i = i + 3) {
+                        if (pixel >= rgb.length) {
+                            message[9 + i] = 0;
+                            pixel++;
+                            message[9 + 1 + i] = 0;
+                            pixel++;
+                            message[9 + 2 + i] = 0;
+                            pixel++;
+                        } else {
+                            message[9 + i] = rgb[pixel];
+                            pixel++;
+                            message[9 + 1 + i] = rgb[pixel];
+                            pixel++;
+                            message[9 + 2 + i] = rgb[pixel];
+                            pixel++;
                         }
-
-                        //System.out.println( counter2 + " " + counter);
-
-                        if (datagramSocket.isClosed()) {
-                            System.out.println("Reconnect");
-                            datagramSocket.close();
-                            datagramSocket.connect(address, Main.getPort());
-                        }
-
-                        datagramSocket.setSendBufferSize(2048576);
-                        DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
-                        datagramSocket.send(packet);
-
                     }
 
-                    //Thread.sleep(5);
-                    SendSync.send((byte) (Main.getCourantFrame() - 1));
-                    Thread.sleep(30);
-                    SendSync.send(Main.getCourantFrame());
-                    // System.out.println("Sending Frame: " + Main.getCourantFrame());
-                } catch (NoRouteToHostException a) {
-                    a.printStackTrace();
-                    System.out.println("----------->  NoRouteToHostException");
-                    datagramSocket.close();
-                    datagramSocket.connect(address, Main.getPort());
+                    if (datagramSocket.isClosed()) {
+                        System.out.println("Reconnect");
+                        datagramSocket.close();
+                        datagramSocket.connect(address, Main.getPort());
+                    }
 
-                } catch (Exception e) {
-                    System.out.println("----------->  OTHER");
-                    //System.err.println(e);
-                    e.printStackTrace();
+                    datagramSocket.setSendBufferSize(2048576);
+                    DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
+                    datagramSocket.send(packet);
+
                 }
-
-            } catch (Exception we) {
-                System.out.println("----------->  get name");
-                we.printStackTrace();
+                //Thread.sleep(5);
+                SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
+                //Thread.sleep(30);
+                SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
+                //Thread.sleep(30);
+                //SendSync.sendSyncro(Main.getCourantFrame());
+                // System.out.println("Sending Frame: " + Main.getCourantFrame());
+            } catch (NoRouteToHostException a) {
+                a.printStackTrace();
+                System.out.println("----------->  NoRouteToHostException");
+                datagramSocket.close();
+                datagramSocket.connect(address, Main.getPort());
+            } catch (Exception e) {
+                System.out.println("----------->  OTHER");
+                e.printStackTrace();
             }
+        } catch (Exception we) {
+            System.out.println("----------->  get name");
+            we.printStackTrace();
         }
-        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+        //}
+        //System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 }
