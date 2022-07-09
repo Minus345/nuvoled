@@ -29,7 +29,7 @@ public class Main {
         if (Objects.equals(args[0], "start")) {
             System.out.println("Start");
             courantFrame = 2;
-            panelSizeX = 128 * 2;
+            panelSizeX = 128;
             panelSizeY = 128;
             port = 2000;
             broadcastIpAddress = args[1];
