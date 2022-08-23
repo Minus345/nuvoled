@@ -3,10 +3,8 @@ package com.nuvoled.sender;
 import com.nuvoled.Main;
 
 import java.awt.image.BufferedImage;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.NoRouteToHostException;
+import java.io.IOException;
+import java.net.*;
 import java.util.Arrays;
 
 public class PictureSender {
@@ -15,44 +13,13 @@ public class PictureSender {
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     public static void send(BufferedImage image, DatagramSocket datagramSocket) {
-        if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {
-            System.out.println("Falsches Format");
-            System.out.println("Bitte Format von mindestens " + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + " Pixeln verwenden");
-            System.exit(0);
+        checkPicture(image); // checks if the picture ist big enough
+        getRgbFromPicture(image); //gets rgb data from pictures
+
+        if (Arrays.equals(rgb, rgbOld)) {
+            return;
         }
-        int rgbCounterNumber = 0;
-        if (!Main.isRotation()) {
-            for (int y = 1; y <= Main.getPanelSizeY(); y++) {
-                for (int x = 1; x <= Main.getPanelSizeX(); x++) {
-                    int pixel = image.getRGB(x, y);
-                    int red = (pixel >> 16) & 0xff;
-                    int green = (pixel >> 8) & 0xff;
-                    int blue = (pixel) & 0xff;
-                    rgb[rgbCounterNumber] = (byte) blue;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) green;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) red;
-                    rgbCounterNumber++;
-                }
-            }
-        } else {
-            for (int y = Main.getPanelSizeY(); y >= 1; y--) {
-                for (int x = Main.getPanelSizeX(); x >= 1; x--) {
-                    int pixel = image.getRGB(x, y);
-                    int red = (pixel >> 16) & 0xff;
-                    int green = (pixel >> 8) & 0xff;
-                    int blue = (pixel) & 0xff;
-                    rgb[rgbCounterNumber] = (byte) blue;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) green;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) red;
-                    rgbCounterNumber++;
-                }
-            }
-        }
-        //if (!Arrays.equals(rgb, rgbOld)) {
+
         try {
             InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
             try {
@@ -73,6 +40,7 @@ public class PictureSender {
 
                     for (int i = 1; i < 1440; i = i + 3) {
                         if (pixel >= rgb.length) {
+                            //setzt die letzten bytes des Psackest auf 0
                             message[9 + i] = 0;
                             pixel++;
                             message[9 + 1 + i] = 0;
@@ -106,21 +74,56 @@ public class PictureSender {
                 SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
                 //Thread.sleep(30);
                 //SendSync.sendSyncro(Main.getCourantFrame());
-                // System.out.println("Sending Frame: " + Main.getCourantFrame());
-            } catch (NoRouteToHostException a) {
-                a.printStackTrace();
-                System.out.println("----------->  NoRouteToHostException");
-                datagramSocket.close();
-                datagramSocket.connect(address, Main.getPort());
-            } catch (Exception e) {
-                System.out.println("----------->  OTHER");
+                System.out.println("Sending Frame: " + Main.getCourantFrame());
+                System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (Exception we) {
-            System.out.println("----------->  get name");
-            we.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        //}
-        //System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+    }
+
+    private static void getRgbFromPicture(BufferedImage image){
+        int rgbCounterNumber = 0;
+        if (!Main.isRotation()) {
+            for (int y = 1; y <= Main.getPanelSizeY(); y++) {
+                for (int x = 1; x <= Main.getPanelSizeX(); x++) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+        } else {
+            for (int y = Main.getPanelSizeY(); y >= 1; y--) {
+                for (int x = Main.getPanelSizeX(); x >= 1; x--) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+        }
+    }
+
+    private static void checkPicture(BufferedImage image){
+        if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {
+            System.out.println("Falsches Format");
+            System.out.println("Bitte Format von mindestens " + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + " Pixeln verwenden");
+            System.exit(0);
+        }
     }
 }
