@@ -68,12 +68,8 @@ public class PictureSender {
                     datagramSocket.send(packet);
 
                 }
-                //Thread.sleep(5);
                 //SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
-                //Thread.sleep(30);
                 SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-                //Thread.sleep(30);
-                //SendSync.sendSyncro(Main.getCourantFrame());
                 System.out.println("Sending Frame: " + Main.getCourantFrame());
                 System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
             } catch (IOException e) {
