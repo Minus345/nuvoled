@@ -69,7 +69,7 @@ public class PictureSender {
 
                 }
                 //Thread.sleep(5);
-                SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
+                //SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
                 //Thread.sleep(30);
                 SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
                 //Thread.sleep(30);
