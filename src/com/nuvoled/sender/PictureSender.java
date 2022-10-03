@@ -19,11 +19,12 @@ public class PictureSender {
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
+    private static boolean debug = false;
+    private static boolean debugrgb = false;
     private static boolean image_identical = false;
 
     public static void send(BufferedImage image, DatagramSocket datagramSocket) {
 
-        System.out.println("process image");
         try {
             //File f1 = new File("//Users/MFU/Pictures/myimage.tiff");
             //ImageIO.write(image, "tiff", f1);
@@ -33,19 +34,22 @@ public class PictureSender {
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(image, "jpeg", os);
-            System.out.println(os.size());
+            if (debug) {
+                System.out.println(os.size());
+            }
             byte[] byteArray = os.toByteArray();
             int length = 0;
-            if (byteArray.length > 100) {
-                length = 100;
-            }
-            for (int i = 0; i < length; i++) {
-                System.out.print(byteArray[i]);
-                System.out.print(" ");
+            if (byteArray.length > 24) {
+                length = 24;
             }
 
-            System.out.println("");
-            System.out.println("Meta Data:");
+            if (debug) {
+                for (int i = 0; i < length; i++) {
+                    System.out.print(byteArray[i]);
+                    System.out.print(" ");
+                }
+                System.out.println("");
+            }
             java.util.Iterator<javax.imageio.ImageReader> readers = ImageIO.getImageReaders(os);
 
             if (readers.hasNext()) {
@@ -64,10 +68,12 @@ public class PictureSender {
                 }
             }
 
-            System.out.println("");
-            System.out.println("Image Buffer RGBdata:");
-            printRgbFromPicture(image);
-            System.out.println("");
+            if (debugrgb) {
+                System.out.println("");
+                System.out.println("Image Buffer RGBdata:");
+                printRgbFromPicture(image);
+                System.out.println("");
+            }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -75,9 +81,6 @@ public class PictureSender {
         ;
 
         send_rgb(image, datagramSocket);
-
-        System.exit(0);
-
     }
 
     private static void send_rgb(BufferedImage image, DatagramSocket datagramSocket) {
@@ -86,8 +89,10 @@ public class PictureSender {
 
         if (Arrays.equals(rgb, rgbOld)) {
             if (image_identical) {
+                System.out.print(".");
                 return;
             } else {
+                System.out.println(".");
                 image_identical = true;
             }
         } else {
@@ -129,7 +134,7 @@ public class PictureSender {
             }
             send_data(message, datagramSocket);
         }
-
+        send_end_frame(datagramSocket);
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
@@ -153,13 +158,14 @@ public class PictureSender {
             DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
             datagramSocket.send(packet);
             //SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
-            SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-            System.out.println("Sending Frame: " + Main.getCourantFrame());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
-
+    private static void send_end_frame( DatagramSocket datagramSocket) {
+        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1),datagramSocket );
+        System.out.println("Sending Frame: " + Main.getCourantFrame());
     }
 
     private static void printRgbFromPicture(BufferedImage image) {

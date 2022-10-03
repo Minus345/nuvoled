@@ -10,7 +10,7 @@ public class SendSync {
 
     private static long date =  System.currentTimeMillis();;
 
-    public static void sendSyncro(byte Frame) {
+    public static void sendSyncro(byte Frame,  DatagramSocket datagramSocket) {
         try {
             int port = 2000;
             byte[] FrameFinish = new byte[4];
@@ -25,11 +25,11 @@ public class SendSync {
 
             InetAddress address = InetAddress.getByName(Main.getBroadcastIpAddress());
 
-            DatagramSocket dsocket = new DatagramSocket();
-            dsocket.setSendBufferSize(1048576);
+            //DatagramSocket dsocket = new DatagramSocket();
+            datagramSocket.setSendBufferSize(1048576);
             DatagramPacket packet = new DatagramPacket(FrameFinish, FrameFinish.length, address, port);
-            dsocket.send(packet);
-            dsocket.close();
+            datagramSocket.send(packet);
+            //datagramSocket.close();
             Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
         } catch (Exception e) {
             System.err.println(e);
@@ -41,6 +41,7 @@ public class SendSync {
             float fps = (255 / difference);
             System.out.println("dif: " + difference + " fps: " + fps);
             date = System.currentTimeMillis();
+            System.exit(0);
         }
     }
 

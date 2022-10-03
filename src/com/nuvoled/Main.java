@@ -71,9 +71,16 @@ public class Main {
         byte blueToByte = (byte) blue;
 
         SendColor.send(redToByte, greenToByte, blueToByte);
-        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
+        DatagramSocket datagramSocket = null;
+        try {
+            datagramSocket = new DatagramSocket();
+
+        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1),datagramSocket);
         Thread.sleep(10);
-        SendSync.sendSyncro(Main.getCourantFrame());
+        SendSync.sendSyncro(Main.getCourantFrame(),datagramSocket);
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void pictureMode() throws IOException, InterruptedException {
@@ -89,9 +96,9 @@ public class Main {
         DatagramSocket datagramSocket = new DatagramSocket();
         PictureSender.send(image, datagramSocket);
 
-        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
+        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1), datagramSocket);
         Thread.sleep(10);
-        SendSync.sendSyncro(Main.getCourantFrame());
+        SendSync.sendSyncro(Main.getCourantFrame(),datagramSocket);
     }
 
     public static void screenAndVideo(String[] args) throws AWTException, SocketException {
