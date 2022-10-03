@@ -119,7 +119,7 @@ public class Main {
             System.out.println("Video mode");
             while (true) {
                 BufferedImage image = robot.createScreenCapture(rectangle);
-                VideoSender.send(image, datagramSocket);
+                PictureSender.send(image, datagramSocket);
             }
         }
     }

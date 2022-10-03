@@ -89,8 +89,7 @@ public class VideoSender {
                 datagramSocket.send(packet);
             }
             SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-            //Thread.sleep(20);
-            //System.out.println("Sending Frame: " + Main.getCourantFrame());
+            //Thread.sleep(20);            //System.out.println("Sending Frame: " + Main.getCourantFrame());
         } catch (Exception e) {
             System.err.println(e);
         }
