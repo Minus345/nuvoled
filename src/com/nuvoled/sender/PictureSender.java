@@ -92,7 +92,7 @@ public class PictureSender {
                 System.out.print(".");
                 return;
             } else {
-                System.out.println(".");
+                System.out.println("-");
                 image_identical = true;
             }
         } else {
