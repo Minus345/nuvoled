@@ -36,7 +36,7 @@ public class SendSync {
 
     public static void send_data(byte[] message) {
 
-        if (datagramSocket.isClosed()) {
+        if (datagramSocket.isClosed() || !datagramSocket.isBound()) {
             System.out.println("Reconnect");
             datagramSocket.close();
             try {
@@ -53,7 +53,8 @@ public class SendSync {
             datagramSocket.send(packet);
             //SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            System.out.println(e);
         }
     }
 
