@@ -88,7 +88,7 @@ public class VideoSender {
                 DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
                 datagramSocket.send(packet);
             }
-            SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1),datagramSocket);
+            SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
             //Thread.sleep(20);            //System.out.println("Sending Frame: " + Main.getCourantFrame());
         } catch (Exception e) {
             System.err.println(e);

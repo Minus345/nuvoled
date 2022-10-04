@@ -75,9 +75,9 @@ public class Main {
         try {
             datagramSocket = new DatagramSocket();
 
-        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1),datagramSocket);
+        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
         Thread.sleep(10);
-        SendSync.sendSyncro(Main.getCourantFrame(),datagramSocket);
+        SendSync.sendSyncro(Main.getCourantFrame());
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
@@ -93,12 +93,18 @@ public class Main {
         System.out.println("Height: " + image.getHeight());
         System.out.println("Width: " + image.getWidth());
 
-        DatagramSocket datagramSocket = new DatagramSocket();
-        PictureSender.send(image, datagramSocket);
+        if (SendSync.setDatagramSocket()) {
 
-        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1), datagramSocket);
-        Thread.sleep(10);
-        SendSync.sendSyncro(Main.getCourantFrame(),datagramSocket);
+            DatagramSocket datagramSocket = new DatagramSocket();
+            PictureSender.send(image);
+
+            SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
+            Thread.sleep(10);
+            SendSync.sendSyncro(Main.getCourantFrame());
+
+        }
+
+
     }
 
     public static void screenAndVideo(String[] args) throws AWTException, SocketException {
@@ -113,20 +119,22 @@ public class Main {
         rectangle.setLocation(x, y);
         rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
 
-        DatagramSocket datagramSocket = new DatagramSocket();
+        if (SendSync.setDatagramSocket()) {
+            //DatagramSocket datagramSocket = new DatagramSocket();
 
-        if (Objects.equals(args[4], "screen")) {
-            System.out.println("Screen mode");
-            while (true) {
-                BufferedImage image = robot.createScreenCapture(rectangle);
-                PictureSender.send(image, datagramSocket);
+            if (Objects.equals(args[4], "screen")) {
+                System.out.println("Screen mode");
+                while (true) {
+                    BufferedImage image = robot.createScreenCapture(rectangle);
+                    PictureSender.send(image);
+                }
             }
-        }
-        if (Objects.equals(args[4], "video")) {
-            System.out.println("Video mode");
-            while (true) {
-                BufferedImage image = robot.createScreenCapture(rectangle);
-                PictureSender.send(image, datagramSocket);
+            if (Objects.equals(args[4], "video")) {
+                System.out.println("Video mode");
+                while (true) {
+                    BufferedImage image = robot.createScreenCapture(rectangle);
+                    PictureSender.send(image);
+                }
             }
         }
     }

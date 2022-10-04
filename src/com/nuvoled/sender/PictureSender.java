@@ -23,7 +23,7 @@ public class PictureSender {
     private static boolean debugrgb = false;
     private static boolean image_identical = false;
 
-    public static void send(BufferedImage image, DatagramSocket datagramSocket) {
+    public static void send(BufferedImage image) {
 
         try {
             //File f1 = new File("//Users/MFU/Pictures/myimage.tiff");
@@ -80,10 +80,10 @@ public class PictureSender {
         }
         ;
 
-        send_rgb(image, datagramSocket);
+        send_rgb(image);
     }
 
-    private static void send_rgb(BufferedImage image, DatagramSocket datagramSocket) {
+    private static void send_rgb(BufferedImage image) {
         checkPicture(image); // checks if the picture ist big enough
         getRgbFromPicture(image); //gets rgb data from pictures
 
@@ -132,40 +132,10 @@ public class PictureSender {
                     pixel++;
                 }
             }
-            send_data(message, datagramSocket);
+            SendSync.send_data(message);
         }
-        send_end_frame(datagramSocket);
+        SendSync.send_end_frame();
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
-    }
-
-    private static void send_data(byte[] message, DatagramSocket datagramSocket) {
-
-        InetAddress address = null;
-        try {
-            address = InetAddress.getByName(Main.getBroadcastIpAddress());
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (datagramSocket.isClosed()) {
-            System.out.println("Reconnect");
-            datagramSocket.close();
-            datagramSocket.connect(address, Main.getPort());
-        }
-
-        try {
-            datagramSocket.setSendBufferSize(2048576);
-            DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
-            datagramSocket.send(packet);
-            //SendSync.sendFrameFinish(Main.getCourantFrame(), (byte) (MaxPackets >> 8), (byte) (MaxPackets & 255));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void send_end_frame( DatagramSocket datagramSocket) {
-        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1),datagramSocket );
-        System.out.println("Sending Frame: " + Main.getCourantFrame());
     }
 
     private static void printRgbFromPicture(BufferedImage image) {
