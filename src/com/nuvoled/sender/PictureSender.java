@@ -25,25 +25,14 @@ public class PictureSender {
         try {
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpeg", os);
+            ImageIO.write(image, "jpg", os);
             if (debug) {
                 System.out.println(os.size());
             }
-            byte[] byteArray = os.toByteArray();
-            int length = 0;
-            if (byteArray.length > 24) {
-                length = 24;
-            }
+            //File f = new File("c:/data/myimage.jpg");//set appropriate path
+            //ImageIO.write(image, "jpg", f)
 
-            if (debug) {
-                for (int i = 0; i < length; i++) {
-                    System.out.print(byteArray[i]);
-                    System.out.print(" ");
-                }
-                System.out.println(".");
-            }
-
-            send_jpg(byteArray);
+            //send_jpg(os);
 
             if (DEBUG_RGB) {
                 System.out.println(":");
@@ -55,7 +44,7 @@ public class PictureSender {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //send_rgb(image);
+        send_rgb(image);
     }
 
     private static void send_rgb(BufferedImage image){
@@ -76,6 +65,7 @@ public class PictureSender {
 
         int pixel = 0;
         int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
+
         for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
             byte[] message = new byte[1450];
             message[0] = 36;
@@ -112,10 +102,11 @@ public class PictureSender {
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
-    private static void send_jpg(byte[] image ) {
+    private static void send_jpg( ByteArrayOutputStream image ) {
 
         int pixel = 0;
-        int MaxPackets = image.length /1440 +1;
+        int MaxPackets = image.toByteArray().length/1440 +1;
+        System.out.println(("Packages " + MaxPackets ));
         for (int counter = 0; counter < MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
             byte[] message = new byte[1450];
             message[0] = 36;
@@ -130,11 +121,11 @@ public class PictureSender {
             message[9] = 45;
 
             for (int i = 1; i < 1440; i++) {
-                if (pixel >= image.length) {
+                if (pixel >= image.toByteArray().length) {
                     //setzt die letzten bytes des Psackest auf 0
                     message[9 + i] = 0;
                 } else {
-                    message[9 + i] = image[pixel];
+                    message[9 + i] = image.toByteArray()[pixel];
                 }
                 pixel++;
             }
