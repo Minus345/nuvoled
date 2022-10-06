@@ -15,12 +15,12 @@ public class PictureSender {
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     private static final boolean debug = false;
-
-    private static boolean image_identical = false;
     private static final boolean DEBUG_RGB = false;
 
-    public static void send(BufferedImage image) {
+    private static boolean image_identical = false;
 
+
+    public static void send(BufferedImage image) {
 
         try {
 
@@ -42,22 +42,8 @@ public class PictureSender {
                 }
                 System.out.println(".");
             }
-            java.util.Iterator<javax.imageio.ImageReader> readers = ImageIO.getImageReaders(os);
 
-            if (readers.hasNext()) {
-                System.out.println("---> ");
-                // pick the first available ImageReader
-                javax.imageio.ImageReader reader = readers.next();
-                // attach source to the reader
-                reader.setInput(os, true);
-                // read metadata of first image
-                IIOMetadata metadata = reader.getImageMetadata(0);
-
-                String[] names = metadata.getMetadataFormatNames();
-                for (String name : names) {
-                    System.out.println("Format name: " + name);
-                }
-            }
+            send_jpg(byteArray);
 
             if (DEBUG_RGB) {
                 System.out.println(":");
@@ -69,10 +55,10 @@ public class PictureSender {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        send_rgb(image);
+        //send_rgb(image);
     }
 
-    private static void send_rgb(BufferedImage image) {
+    private static void send_rgb(BufferedImage image){
         checkPicture(image); // checks if the picture ist big enough
         getRgbFromPicture(image); //gets rgb data from pictures
 
@@ -96,7 +82,7 @@ public class PictureSender {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = 10; //RGB
+            message[4] = 10; //RGB -> 10 JPG -> 20
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -124,6 +110,37 @@ public class PictureSender {
         }
         SendSync.send_end_frame();
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+    }
+
+    private static void send_jpg(byte[] image ) {
+
+        int pixel = 0;
+        int MaxPackets = image.length /1440 +1;
+        for (int counter = 0; counter < MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
+            byte[] message = new byte[1450];
+            message[0] = 36;
+            message[1] = 36;
+            message[2] = 20;
+            message[3] = Main.getCourantFrame();
+            message[4] = 20; //RGB -> 10 JPG -> 20
+            message[5] = (byte) (counter >> 8);
+            message[6] = (byte) (counter & 255);
+            message[7] = (byte) (MaxPackets >> 8);
+            message[8] = (byte) (MaxPackets & 255);
+            message[9] = 45;
+
+            for (int i = 1; i < 1440; i++) {
+                if (pixel >= image.length) {
+                    //setzt die letzten bytes des Psackest auf 0
+                    message[9 + i] = 0;
+                } else {
+                    message[9 + i] = image[pixel];
+                }
+                pixel++;
+            }
+            SendSync.send_data(message);
+        }
+        SendSync.send_end_frame();
     }
 
     private static void printRgbFromPicture(BufferedImage image) {
