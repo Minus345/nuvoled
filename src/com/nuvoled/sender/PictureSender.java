@@ -2,16 +2,11 @@ package com.nuvoled.sender;
 
 import com.nuvoled.Main;
 
-import javax.imageio.IIOImage;
+
 import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.*;
-import java.net.*;
 import java.util.Arrays;
 
 public class PictureSender {
@@ -19,18 +14,15 @@ public class PictureSender {
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
-    private static boolean debug = false;
-    private static boolean debugrgb = false;
+    private static final boolean debug = false;
+
     private static boolean image_identical = false;
+    private static final boolean DEBUG_RGB = false;
 
     public static void send(BufferedImage image) {
 
+
         try {
-            //File f1 = new File("//Users/MFU/Pictures/myimage.tiff");
-            //ImageIO.write(image, "tiff", f1);
-            //File f2 = new File("//Users/MFU/Pictures/myimage.jpg");
-            //ImageIO.write(image, "jpg", f2);
-            //System.out.println("image on disk");
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(image, "jpeg", os);
@@ -48,7 +40,7 @@ public class PictureSender {
                     System.out.print(byteArray[i]);
                     System.out.print(" ");
                 }
-                System.out.println("");
+                System.out.println(".");
             }
             java.util.Iterator<javax.imageio.ImageReader> readers = ImageIO.getImageReaders(os);
 
@@ -62,24 +54,21 @@ public class PictureSender {
                 IIOMetadata metadata = reader.getImageMetadata(0);
 
                 String[] names = metadata.getMetadataFormatNames();
-                int length2 = names.length;
-                for (int i = 0; i < length2; i++) {
-                    System.out.println("Format name: " + names[i]);
+                for (String name : names) {
+                    System.out.println("Format name: " + name);
                 }
             }
 
-            if (debugrgb) {
-                System.out.println("");
+            if (DEBUG_RGB) {
+                System.out.println(":");
                 System.out.println("Image Buffer RGBdata:");
                 printRgbFromPicture(image);
-                System.out.println("");
+                System.out.println(":");
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        ;
-
         send_rgb(image);
     }
 
@@ -122,15 +111,14 @@ public class PictureSender {
                     message[9 + 1 + i] = 0;
                     pixel++;
                     message[9 + 2 + i] = 0;
-                    pixel++;
                 } else {
                     message[9 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 1 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 2 + i] = rgb[pixel];
-                    pixel++;
                 }
+                pixel++;
             }
             SendSync.send_data(message);
         }
