@@ -5,7 +5,9 @@ import com.nuvoled.Main;
 
 import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadata;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.*;
 import java.util.Arrays;
 
@@ -29,8 +31,10 @@ public class PictureSender {
             if (debug) {
                 System.out.println(os.size());
             }
-            //File f = new File("c:/data/myimage.jpg");//set appropriate path
-            //ImageIO.write(image, "jpg", f)
+
+            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+            ColorConvertOp op = new ColorConvertOp(cs, null);
+            BufferedImage bufferedImage = op.filter(image, null);
 
             //send_jpg(os);
 
@@ -47,7 +51,7 @@ public class PictureSender {
         send_rgb(image);
     }
 
-    private static void send_rgb(BufferedImage image){
+    private static void send_rgb(BufferedImage image) {
         checkPicture(image); // checks if the picture ist big enough
         getRgbFromPicture(image); //gets rgb data from pictures
 
@@ -102,11 +106,11 @@ public class PictureSender {
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
-    private static void send_jpg( ByteArrayOutputStream image ) {
+    private static void send_jpg(ByteArrayOutputStream image) {
 
         int pixel = 0;
-        int MaxPackets = image.toByteArray().length/1440 +1;
-        System.out.println(("Packages " + MaxPackets ));
+        int MaxPackets = image.toByteArray().length / 1440 + 1;
+        System.out.println(("Packages " + MaxPackets));
         for (int counter = 0; counter < MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
             byte[] message = new byte[1450];
             message[0] = 36;
