@@ -24,31 +24,29 @@ public class PictureSender {
 
     public static void send(BufferedImage image) {
 
-        try {
-
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", os);
-            if (debug) {
-                System.out.println(os.size());
-            }
-
-            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-            ColorConvertOp op = new ColorConvertOp(cs, null);
-            BufferedImage bufferedImage = op.filter(image, null);
-
-            //send_jpg(os);
-
-            if (DEBUG_RGB) {
-                System.out.println(":");
-                System.out.println("Image Buffer RGBdata:");
-                printRgbFromPicture(image);
-                System.out.println(":");
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        /*
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", os);
+        if (debug) {
+            System.out.println(os.size());
         }
-        send_rgb(image);
+        */
+        ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        ColorConvertOp op = new ColorConvertOp(cs, null);
+        BufferedImage bufferedImage = op.filter(image, null);
+
+        //send_jpg(os);
+
+        if (DEBUG_RGB) {
+            System.out.println(":");
+            System.out.println("Image Buffer RGBdata:");
+            printRgbFromPicture(image);
+            System.out.println(":");
+        }
+
+        send_rgb(bufferedImage);
+        //send_jpg(bufferedImage);
     }
 
     private static void send_rgb(BufferedImage image) {
@@ -76,7 +74,7 @@ public class PictureSender {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = 10; //RGB -> 10 JPG -> 20
+            message[4] = 20; //RGB -> 10 JPG -> 20
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -92,11 +90,14 @@ public class PictureSender {
                     pixel++;
                     message[9 + 2 + i] = 0;
                 } else {
+                    //https://en.wikipedia.org/wiki/YCbCr
+
                     message[9 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 1 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 2 + i] = rgb[pixel];
+
                 }
                 pixel++;
             }
@@ -106,12 +107,27 @@ public class PictureSender {
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
-    private static void send_jpg(ByteArrayOutputStream image) {
+    private static void send_jpg(BufferedImage image) {
+
+        checkPicture(image); // checks if the picture ist big enough
+        getRgbFromPicture(image); //gets rgb data from pictures
+
+        if (Arrays.equals(rgb, rgbOld)) {
+            if (image_identical) {
+                System.out.print(".");
+                return;
+            } else {
+                System.out.println("-");
+                image_identical = true;
+            }
+        } else {
+            image_identical = false;
+        }
 
         int pixel = 0;
-        int MaxPackets = image.toByteArray().length / 1440 + 1;
-        System.out.println(("Packages " + MaxPackets));
-        for (int counter = 0; counter < MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
+        int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
+
+        for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
             byte[] message = new byte[1450];
             message[0] = 36;
             message[1] = 36;
@@ -124,18 +140,41 @@ public class PictureSender {
             message[8] = (byte) (MaxPackets & 255);
             message[9] = 45;
 
-            for (int i = 1; i < 1440; i++) {
-                if (pixel >= image.toByteArray().length) {
+            for (int i = 1; i < 1440; i = i + 3) {
+                if (pixel >= rgb.length) {
                     //setzt die letzten bytes des Psackest auf 0
                     message[9 + i] = 0;
+                    pixel++;
+                    message[9 + 1 + i] = 0;
+                    pixel++;
+                    message[9 + 2 + i] = 0;
                 } else {
-                    message[9 + i] = image.toByteArray()[pixel];
+                    //https://en.wikipedia.org/wiki/YCbCr
+                    //message[9 + i] = rgb[pixel];
+                    int r = rgb[pixel];
+                    pixel++;
+                    //message[9 + 1 + i] = rgb[pixel];
+                    int g =  rgb[pixel];
+                    pixel++;
+                    //message[9 + 2 + i] = rgb[pixel];
+                    int b =  rgb[pixel];
+
+                    int y  = (int)(0+ (0.299   * r) + (0.587   * g) + (0.114   * b));
+                    int cb = (int)(128-(0.168736 * r) - (0.331264 * g) + (0.50000 * b));
+                    int cr = (int)(128+ (0.50000 * r) - (0.418688 * g) - (0.081312 * b));
+
+                    message[9 + i] = (byte)y;
+                    message[9 + 1 + i] = (byte) cb;
+                    message[9 + 2 + i] = (byte) cr;
+
+
                 }
                 pixel++;
             }
             SendSync.send_data(message);
         }
         SendSync.send_end_frame();
+        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
     private static void printRgbFromPicture(BufferedImage image) {
