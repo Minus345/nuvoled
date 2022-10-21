@@ -35,7 +35,6 @@ public class PictureSender {
         //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         ColorConvertOp op = new ColorConvertOp(cs, null);
         BufferedImage bufferedImage = op.filter(image, null);
-
         //send_jpg(os);
 
         if (DEBUG_RGB) {
@@ -53,16 +52,18 @@ public class PictureSender {
         checkPicture(image); // checks if the picture ist big enough
         getRgbFromPicture(image); //gets rgb data from pictures
 
-        if (Arrays.equals(rgb, rgbOld)) {
-            if (image_identical) {
-                System.out.print(".");
-                return;
+        if (debug) {
+            if (Arrays.equals(rgb, rgbOld)) {
+                if (image_identical) {
+                    System.out.print(".");
+                    return;
+                } else {
+                    System.out.println("-");
+                    image_identical = true;
+                }
             } else {
-                System.out.println("-");
-                image_identical = true;
+                image_identical = false;
             }
-        } else {
-            image_identical = false;
         }
 
         int pixel = 0;
@@ -114,10 +115,14 @@ public class PictureSender {
 
         if (Arrays.equals(rgb, rgbOld)) {
             if (image_identical) {
-                System.out.print(".");
+                if (debug) {
+                    System.out.print(".");
+                }
                 return;
             } else {
-                System.out.println("-");
+                if (debug) {
+                    System.out.println("-");
+                }
                 image_identical = true;
             }
         } else {
@@ -166,8 +171,6 @@ public class PictureSender {
                     message[9 + i] = (byte)y;
                     message[9 + 1 + i] = (byte) cb;
                     message[9 + 2 + i] = (byte) cr;
-
-
                 }
                 pixel++;
             }
@@ -185,12 +188,14 @@ public class PictureSender {
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
-                System.out.print((byte) blue);
-                System.out.print(" ");
-                System.out.print((byte) green);
-                System.out.print(" ");
-                System.out.print((byte) red);
-                System.out.print(" ");
+                if (debug) {
+                    System.out.print((byte) blue);
+                    System.out.print(" ");
+                    System.out.print((byte) green);
+                    System.out.print(" ");
+                    System.out.print((byte) red);
+                    System.out.print(" ");
+                }
                 rgb[rgbCounterNumber] = (byte) blue;
                 rgbCounterNumber++;
                 rgb[rgbCounterNumber] = (byte) green;

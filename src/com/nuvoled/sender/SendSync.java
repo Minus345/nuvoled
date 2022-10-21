@@ -9,6 +9,8 @@ public class SendSync {
 
     private static long date = System.currentTimeMillis();
 
+    private static final boolean debug = false;
+
     private static DatagramSocket datagramSocket;
     private static InetAddress address ;
 
@@ -19,11 +21,15 @@ public class SendSync {
         try {
             datagramSocket = new DatagramSocket();
             address = InetAddress.getByName(Main.getBroadcastIpAddress());
-            System.out.println("Connect Datagram " + Main.getPort() + " Adr " + Main.getBroadcastIpAddress());
+            if (debug) {
+                System.out.println("Connect Datagram " + Main.getPort() + " Adr " + Main.getBroadcastIpAddress());
+            }
             datagramSocket.connect(address, Main.getPort());
             datagramSocket.setSendBufferSize(2048576);
             if (datagramSocket.isConnected()) {
-                System.out.println("Connected");
+                if (debug) {
+                    System.out.println("Connected");
+                }
                 return true;
             }
             return false;
@@ -60,7 +66,9 @@ public class SendSync {
 
     public static void send_end_frame() {
         SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-        System.out.println("Sending Frame: " + Main.getCourantFrame());
+        if (debug) {
+            System.out.println("Sending Frame: " + Main.getCourantFrame());
+        }
     }
     public static void sendSyncro(byte Frame) {
         try {
@@ -83,9 +91,11 @@ public class SendSync {
             float difference = (System.currentTimeMillis() - date);
             difference = difference / 1000;
             float fps = (255 / difference);
-            System.out.println("dif: " + difference + " fps: " + fps);
+            if(debug) {
+                System.out.println("dif: " + difference + " fps: " + fps);
+            }
             date = System.currentTimeMillis();
-            System.exit(0);
+            //System.exit(0);
         }
     }
 
@@ -117,7 +127,9 @@ public class SendSync {
             float difference = (System.currentTimeMillis() - date);
             difference = difference / 1000;
             float fps = (255 / difference);
-            System.out.println("dif: " + difference + " fps: " + fps);
+            if (debug) {
+                System.out.println("dif: " + difference + " fps: " + fps);
+            }
             date = System.currentTimeMillis();
         }
     }
