@@ -11,6 +11,41 @@ import java.awt.image.ColorConvertOp;
 import java.io.*;
 import java.util.Arrays;
 
+/*
+https://libjpeg-turbo.org/
+private unsafe void jpegdecode(byte* imagedata, byte** @out, uint* outS, uint imageheight, uint imagewidth, uint quality)
+{
+	System.Runtime.CompilerServices.Unsafe.SkipInit(out jpeg_compress_struct cinfo);
+	System.Runtime.CompilerServices.Unsafe.SkipInit(out jpeg_error_mgr jerr);
+	*(int*)(&cinfo) = (int)<Module>.jpeg_std_error(&jerr);
+	<Module>.jpeg_CreateCompress(&cinfo, 62, 360u);
+	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, uint>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 28)) = imagewidth;
+	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, uint>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 32)) = imageheight;
+	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 36)) = 3;
+	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 40)) = 2;
+	uint outsize = 600000u;
+	<Module>.jpeg_mem_dest(&cinfo, @out, &outsize);
+	<Module>.jpeg_set_defaults(&cinfo);
+	<Module>.jpeg_set_quality(&cinfo, (int)quality, 1);
+	<Module>.jpeg_start_compress(&cinfo, 1);
+	int row_stride = System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 28)) * 3;
+	if ((uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 208)) < (uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 32)))
+	{
+		do
+		{
+			byte* row_pointer = System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 208)) * row_stride + imagedata;
+			<Module>.jpeg_write_scanlines(&cinfo, &row_pointer, 1u);
+		}
+		while ((uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 208)) < (uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 32)));
+	}
+	<Module>.jpeg_finish_compress(&cinfo);
+	<Module>.jpeg_destroy_compress(&cinfo);
+	*outS = outsize;
+}
+ */
+
+
+
 public class PictureSender {
 
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
