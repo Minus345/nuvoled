@@ -72,15 +72,13 @@ public class Main {
 
         SendColor.send(redToByte, greenToByte, blueToByte);
         DatagramSocket datagramSocket = null;
-        try {
-            datagramSocket = new DatagramSocket();
+
+        //datagramSocket = new DatagramSocket();
 
         SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
         Thread.sleep(10);
         SendSync.sendSyncro(Main.getCourantFrame());
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     public static void pictureMode() throws IOException, InterruptedException {
@@ -107,7 +105,7 @@ public class Main {
 
     }
 
-    public static void screenAndVideo(String[] args) throws AWTException, SocketException {
+    public static void screenAndVideo(String[] args) throws AWTException {
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         int screenNumber = Integer.parseInt(args[6]);
         Robot robot = new Robot(screens[screenNumber]);
@@ -119,24 +117,25 @@ public class Main {
         rectangle.setLocation(x, y);
         rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
 
-        if (SendSync.setDatagramSocket()) {
-            //DatagramSocket datagramSocket = new DatagramSocket();
-
-            if (Objects.equals(args[4], "screen")) {
-                System.out.println("Screen mode");
-                while (true) {
-                    BufferedImage image = robot.createScreenCapture(rectangle);
-                    PictureSender.send(image);
-                }
-            }
-            if (Objects.equals(args[4], "video")) {
-                System.out.println("Video mode");
-                while (true) {
-                    BufferedImage image = robot.createScreenCapture(rectangle);
-                    PictureSender.send(image);
-                }
-            }
+        if (!SendSync.setDatagramSocket()) {
+            return;
         }
+
+        if (Objects.equals(args[4], "screen")) {
+            System.out.println("Screen mode");
+            PictureSender.setScreenMode(true);
+
+        }
+        if (Objects.equals(args[4], "video")) {
+            System.out.println("Video mode");
+            PictureSender.setScreenMode(false);
+        }
+
+        while (true) {
+            BufferedImage image = robot.createScreenCapture(rectangle);
+            PictureSender.send(image);
+        }
+
     }
 
     public static String getBroadcastIpAddress() {

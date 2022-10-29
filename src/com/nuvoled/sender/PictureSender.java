@@ -51,11 +51,15 @@ public class PictureSender {
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
+    private static boolean only_changed_pictures = false;
     private static final boolean debug = false;
     private static final boolean DEBUG_RGB = false;
 
     private static boolean image_identical = false;
 
+    public static void setScreenMode(boolean screenMode_b) {
+        only_changed_pictures = screenMode_b;
+    }
 
     public static void send(BufferedImage image) {
 
@@ -87,13 +91,17 @@ public class PictureSender {
         checkPicture(image); // checks if the picture ist big enough
         getRgbFromPicture(image); //gets rgb data from pictures
 
-        if (debug) {
+        if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
                 if (image_identical) {
-                    System.out.print(".");
+                    if (debug){
+                        System.out.print(".");
+                    }
                     return;
                 } else {
-                    System.out.println("-");
+                    if (debug) {
+                        System.out.println("-");
+                    }
                     image_identical = true;
                 }
             } else {
@@ -127,85 +135,11 @@ public class PictureSender {
                     message[9 + 2 + i] = 0;
                 } else {
                     //https://en.wikipedia.org/wiki/YCbCr
-
                     message[9 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 1 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 2 + i] = rgb[pixel];
-
-                }
-                pixel++;
-            }
-            SendSync.send_data(message);
-        }
-        SendSync.send_end_frame();
-        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
-    }
-
-    private static void send_jpg(BufferedImage image) {
-
-        checkPicture(image); // checks if the picture ist big enough
-        getRgbFromPicture(image); //gets rgb data from pictures
-
-        if (Arrays.equals(rgb, rgbOld)) {
-            if (image_identical) {
-                if (debug) {
-                    System.out.print(".");
-                }
-                return;
-            } else {
-                if (debug) {
-                    System.out.println("-");
-                }
-                image_identical = true;
-            }
-        } else {
-            image_identical = false;
-        }
-
-        int pixel = 0;
-        int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
-
-        for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
-            byte[] message = new byte[1450];
-            message[0] = 36;
-            message[1] = 36;
-            message[2] = 20;
-            message[3] = Main.getCourantFrame();
-            message[4] = 20; //RGB -> 10 JPG -> 20
-            message[5] = (byte) (counter >> 8);
-            message[6] = (byte) (counter & 255);
-            message[7] = (byte) (MaxPackets >> 8);
-            message[8] = (byte) (MaxPackets & 255);
-            message[9] = 45;
-
-            for (int i = 1; i < 1440; i = i + 3) {
-                if (pixel >= rgb.length) {
-                    //setzt die letzten bytes des Psackest auf 0
-                    message[9 + i] = 0;
-                    pixel++;
-                    message[9 + 1 + i] = 0;
-                    pixel++;
-                    message[9 + 2 + i] = 0;
-                } else {
-                    //https://en.wikipedia.org/wiki/YCbCr
-                    //message[9 + i] = rgb[pixel];
-                    int r = rgb[pixel];
-                    pixel++;
-                    //message[9 + 1 + i] = rgb[pixel];
-                    int g =  rgb[pixel];
-                    pixel++;
-                    //message[9 + 2 + i] = rgb[pixel];
-                    int b =  rgb[pixel];
-
-                    int y  = (int)(0+ (0.299   * r) + (0.587   * g) + (0.114   * b));
-                    int cb = (int)(128-(0.168736 * r) - (0.331264 * g) + (0.50000 * b));
-                    int cr = (int)(128+ (0.50000 * r) - (0.418688 * g) - (0.081312 * b));
-
-                    message[9 + i] = (byte)y;
-                    message[9 + 1 + i] = (byte) cb;
-                    message[9 + 2 + i] = (byte) cr;
                 }
                 pixel++;
             }
