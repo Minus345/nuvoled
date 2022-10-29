@@ -123,12 +123,12 @@ public class Main {
 
         if (Objects.equals(args[4], "screen")) {
             System.out.println("Screen mode");
-            PictureSender.setScreenMode(true);
+            PictureSender.setScreenMode(true, 10);
 
         }
         if (Objects.equals(args[4], "video")) {
             System.out.println("Video mode");
-            PictureSender.setScreenMode(false);
+            PictureSender.setScreenMode(false, 20);
         }
 
         while (true) {

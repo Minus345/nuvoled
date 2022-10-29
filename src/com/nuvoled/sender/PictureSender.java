@@ -45,13 +45,13 @@ private unsafe void jpegdecode(byte* imagedata, byte** @out, uint* outS, uint im
  */
 
 
-
 public class PictureSender {
 
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     private static boolean only_changed_pictures = false;
+    private static int color_mode = 10;
 
     private static final boolean use_filter = false;
     private static final boolean debug = false;
@@ -59,8 +59,9 @@ public class PictureSender {
 
     private static boolean image_identical = false;
 
-    public static void setScreenMode(boolean screenMode_b) {
+    public static void setScreenMode(boolean screenMode_b, int colormode) {
         only_changed_pictures = screenMode_b;
+        color_mode = colormode;
     }
 
     public static void send(BufferedImage image) {
@@ -73,7 +74,7 @@ public class PictureSender {
         }
         */
 
-        if (use_filter){
+        if (use_filter) {
             ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             ColorConvertOp op = new ColorConvertOp(cs, null);
@@ -94,12 +95,12 @@ public class PictureSender {
 
     private static void send_rgb(BufferedImage image) {
         //checkPicture(image); // checks if the picture ist big enough
-        getRgbFromPicture(image); //gets rgb data from pictures
+        getRgbFromPicture(image, color_mode); //gets rgb data from pictures
 
         if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
                 if (image_identical) {
-                    if (debug){
+                    if (debug) {
                         System.out.print(".");
                     }
                     return;
@@ -123,7 +124,7 @@ public class PictureSender {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = 20; //RGB -> 10 JPG -> 20
+            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -181,14 +182,28 @@ public class PictureSender {
 
     }
 
-    private static void getRgbFromPicture(BufferedImage image) {
+    private static void getRgbFromPicture(BufferedImage image, int colormode) {
+
+        if (colormode == 10) {
+            getLedRgbData(image);
+            return;
+        }
+
+        if (colormode == 20) {
+            getLedJpgData(image);
+            return;
+        }
+    }
+
+    private static void getLedRgbData(BufferedImage image) {
+
         int rgbCounterNumber = 0;
 
         if (!Main.isRotation()) {
             //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
             for (int y = 1; y <= Main.getPanelSizeY(); y++) {
                 for (int x = 1; x <= Main.getPanelSizeX(); x++) {
-                    int pixel = image.getRGB(x,y);
+                    int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
                     int blue = (pixel) & 0xff;
@@ -203,6 +218,30 @@ public class PictureSender {
         } else {
             for (int y = Main.getPanelSizeY(); y >= 1; y--) {
                 for (int x = Main.getPanelSizeX(); x >= 1; x--) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+        }
+    }
+
+    private static void getLedJpgData(BufferedImage image) {
+
+        int rgbCounterNumber = 0;
+        //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
+
+        int rows = Main.getPanelSizeX()/128;
+        for (int z = 0; z < rows; z++) {
+            for (int y = 1; y <= Main.getPanelSizeY(); y++) {
+                for (int x = (z * 128 + 1); x <= (z * 128 + 128); x++) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
