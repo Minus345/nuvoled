@@ -52,6 +52,8 @@ public class PictureSender {
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     private static boolean only_changed_pictures = false;
+
+    private static final boolean use_filter = false;
     private static final boolean debug = false;
     private static final boolean DEBUG_RGB = false;
 
@@ -70,11 +72,16 @@ public class PictureSender {
             System.out.println(os.size());
         }
         */
-        ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        ColorConvertOp op = new ColorConvertOp(cs, null);
-        BufferedImage bufferedImage = op.filter(image, null);
-        //send_jpg(os);
+
+        if (use_filter){
+            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            ColorConvertOp op = new ColorConvertOp(cs, null);
+            BufferedImage bufferedImage = op.filter(image, null);
+            send_rgb(bufferedImage);
+        } else {
+            send_rgb(image);
+        }
 
         if (DEBUG_RGB) {
             System.out.println(":");
@@ -83,12 +90,10 @@ public class PictureSender {
             System.out.println(":");
         }
 
-        send_rgb(bufferedImage);
-        //send_jpg(bufferedImage);
     }
 
     private static void send_rgb(BufferedImage image) {
-        checkPicture(image); // checks if the picture ist big enough
+        //checkPicture(image); // checks if the picture ist big enough
         getRgbFromPicture(image); //gets rgb data from pictures
 
         if (only_changed_pictures) {
@@ -178,10 +183,12 @@ public class PictureSender {
 
     private static void getRgbFromPicture(BufferedImage image) {
         int rgbCounterNumber = 0;
+
         if (!Main.isRotation()) {
+            //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
             for (int y = 1; y <= Main.getPanelSizeY(); y++) {
                 for (int x = 1; x <= Main.getPanelSizeX(); x++) {
-                    int pixel = image.getRGB(x, y);
+                    int pixel = image.getRGB(x,y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
                     int blue = (pixel) & 0xff;

@@ -51,9 +51,9 @@ public class Main {
         //Thread.sleep(1000);
         //Receiver.run();
         //Thread.sleep(1000);
-
+        System.out.println("x/y " + panelSizeX + "/" + panelSizeY);
+        System.out.println("rotation " + isRotation());
         System.out.println("Ready");
-
         switch (args[4]) {
             case "color" -> colorMode(args);
             case "picture" -> pictureMode();
