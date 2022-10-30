@@ -1,14 +1,8 @@
 package com.nuvoled.sender;
-
 import com.nuvoled.Main;
-
-
-import javax.imageio.ImageIO;
-import javax.imageio.metadata.IIOMetadata;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.io.*;
 import java.util.Arrays;
 
 /*
@@ -191,7 +185,6 @@ public class PictureSender {
 
         if (colormode == 20) {
             getLedJpgData(image);
-            return;
         }
     }
 
@@ -235,27 +228,38 @@ public class PictureSender {
 
     private static void getLedJpgData(BufferedImage image) {
 
-        int rgbCounterNumber = 0;
+        int rgbCounternumber = 0;
+        int panelSize = 128;
         //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
-
-        int rows = Main.getPanelSizeX()/128;
-        for (int z = 0; z < rows; z++) {
-            for (int y = 1; y <= Main.getPanelSizeY(); y++) {
-                for (int x = (z * 128 + 1); x <= (z * 128 + 128); x++) {
-                    int pixel = image.getRGB(x, y);
-                    int red = (pixel >> 16) & 0xff;
-                    int green = (pixel >> 8) & 0xff;
-                    int blue = (pixel) & 0xff;
-                    rgb[rgbCounterNumber] = (byte) blue;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) green;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) red;
-                    rgbCounterNumber++;
-                }
+        int rowsX = Main.getPanelSizeX() / panelSize;
+        int rowsY = Main.getPanelSizeY() / panelSize;
+        for (int y = 0; y < rowsY; y++) {
+            for (int x = 0; x < rowsX; x++) {
+                rgbCounternumber = getPixelPerPanel(image, rgbCounternumber, x, y, panelSize);
             }
         }
     }
+
+    private static int getPixelPerPanel(BufferedImage image, int rgbCounternumber, int rowX, int colY, int panelSize) {
+        int startX = rowX * panelSize;
+        int startY = colY * panelSize;
+        for (int y = 0; y < panelSize; y++) {
+            for (int x = 0; x < panelSize; x++) {
+                int pixel = image.getRGB(startX + x, startY + y);
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                //int blue = (pixel) & 0xff;
+                rgb[rgbCounternumber] = (byte) ((pixel) & 0xff); //blue
+                rgbCounternumber++;
+                rgb[rgbCounternumber] = (byte) green;
+                rgbCounternumber++;
+                rgb[rgbCounternumber] = (byte) red;
+                rgbCounternumber++;
+            }
+        }
+        return rgbCounternumber;
+    }
+
 
     private static void checkPicture(BufferedImage image) {
         if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.Objects;
 
 public class Main {
@@ -31,7 +30,7 @@ public class Main {
             System.out.println("Falsches Argumt");
             return;
         }
-        if (!(args.length > 4)) {
+        if (!(args.length > 5)) {
             System.out.println("Falsches Argumt");
             return;
         }
@@ -47,18 +46,17 @@ public class Main {
         panelSizeX = Integer.parseInt(args[2]) * panelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = Integer.parseInt(args[3]) * panelSizeY; //Anzahl Panel Y * 128 pixel
 
-        //Reset.send(2000);
-        //Thread.sleep(1000);
-        //Receiver.run();
-        //Thread.sleep(1000);
         System.out.println("x/y " + panelSizeX + "/" + panelSizeY);
         System.out.println("rotation " + isRotation());
-        System.out.println("Ready");
+
         switch (args[4]) {
             case "color" -> colorMode(args);
             case "picture" -> pictureMode();
             case "screen", "video" -> screenAndVideo(args);
         }
+
+
+
     }
 
     public static void colorMode(String[] args) throws InterruptedException {
@@ -71,10 +69,8 @@ public class Main {
         byte blueToByte = (byte) blue;
 
         SendColor.send(redToByte, greenToByte, blueToByte);
-        DatagramSocket datagramSocket = null;
-
+        //DatagramSocket datagramSocket = null;
         //datagramSocket = new DatagramSocket();
-
         SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
         Thread.sleep(10);
         SendSync.sendSyncro(Main.getCourantFrame());
@@ -93,7 +89,7 @@ public class Main {
 
         if (SendSync.setDatagramSocket()) {
 
-            DatagramSocket datagramSocket = new DatagramSocket();
+            //DatagramSocket datagramSocket = new DatagramSocket();
             PictureSender.send(image);
 
             SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
@@ -114,6 +110,8 @@ public class Main {
         Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
         int x = Integer.parseInt(args[7]) + screenBounds.x;
         int y = Integer.parseInt(args[8]) + screenBounds.y;
+        int colorMode = Integer.parseInt(args[9]);
+        System.out.println("color (10/rgb 20/jpg): " + colorMode);
         rectangle.setLocation(x, y);
         rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
 
@@ -123,12 +121,12 @@ public class Main {
 
         if (Objects.equals(args[4], "screen")) {
             System.out.println("Screen mode");
-            PictureSender.setScreenMode(true, 10);
+            PictureSender.setScreenMode(true, colorMode);
 
         }
         if (Objects.equals(args[4], "video")) {
             System.out.println("Video mode");
-            PictureSender.setScreenMode(false, 20);
+            PictureSender.setScreenMode(false, colorMode);
         }
 
         while (true) {
