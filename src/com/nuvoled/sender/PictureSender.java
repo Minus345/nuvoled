@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.util.Arrays;
 
+import static com.nuvoled.sender.PictureCompress.compress;
+
 /*
 https://libjpeg-turbo.org/
 private unsafe void jpegdecode(byte* imagedata, byte** @out, uint* outS, uint imageheight, uint imagewidth, uint quality)
@@ -48,6 +50,7 @@ public class PictureSender {
     private static int color_mode = 10;
 
     private static final boolean use_filter = false;
+    private static final boolean test_jpg = true;
     private static final boolean debug = false;
     private static final boolean DEBUG_RGB = false;
 
@@ -67,6 +70,12 @@ public class PictureSender {
             System.out.println(os.size());
         }
         */
+
+        if (test_jpg) {
+            byte[] testme = compress(image);
+            System.out.println(testme);
+            System.exit(0);
+        }
 
         if (use_filter) {
             ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
