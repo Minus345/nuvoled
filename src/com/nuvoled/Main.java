@@ -113,7 +113,8 @@ public class Main {
         int colorMode = Integer.parseInt(args[9]);
         System.out.println("color (10/rgb 20/jpg): " + colorMode);
         rectangle.setLocation(x, y);
-        rectangle.setSize(panelSizeX + 1, panelSizeY + 1);
+        //+1 -> Fehler Zähler
+        rectangle.setSize(panelSizeX , panelSizeY );
 
         if (!SendSync.setDatagramSocket()) {
             return;

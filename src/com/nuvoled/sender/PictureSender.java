@@ -71,12 +71,6 @@ public class PictureSender {
         }
         */
 
-        if (test_jpg) {
-            byte[] testme = compress(image);
-            System.out.println(testme);
-            System.exit(0);
-        }
-
         if (use_filter) {
             ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
@@ -84,7 +78,13 @@ public class PictureSender {
             BufferedImage bufferedImage = op.filter(image, null);
             send_rgb(bufferedImage);
         } else {
-            send_rgb(image);
+            if (test_jpg) {
+                byte[] testme = compress(image);
+                System.out.println("send " + testme);
+                send_jpg(testme);
+            } else {
+                send_rgb(image);
+            }
         }
 
         if (DEBUG_RGB) {
@@ -158,6 +158,39 @@ public class PictureSender {
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
+
+    private static void send_jpg(byte[] image) {
+        //checkPicture(image); // checks if the picture ist big enough
+        int pixel = 0;
+        int MaxPackets = (image.length / 1440) + 1;
+
+        for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
+            byte[] message = new byte[1450];
+            message[0] = 36;
+            message[1] = 36;
+            message[2] = 20;
+            message[3] = Main.getCourantFrame();
+            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20
+            message[5] = (byte) (counter >> 8);
+            message[6] = (byte) (counter & 255);
+            message[7] = (byte) (MaxPackets >> 8);
+            message[8] = (byte) (MaxPackets & 255);
+            message[9] = 45;
+
+            for (int i = 1; i < 1440; i++) {
+                if (pixel >= rgb.length) {
+                    message[9 + i] = 0;
+                } else {
+                    //https://en.wikipedia.org/wiki/YCbCr
+                    message[9 + i] = rgb[pixel];
+                }
+                pixel++;
+            }
+            SendSync.send_data(message);
+        }
+        SendSync.send_end_frame();
+        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+    }
     private static void printRgbFromPicture(BufferedImage image) {
         int rgbCounterNumber = 0;
         for (int y = 1; y <= 1; y++) {
