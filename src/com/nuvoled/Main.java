@@ -54,9 +54,6 @@ public class Main {
             case "picture" -> pictureMode();
             case "screen", "video" -> screenAndVideo(args);
         }
-
-
-
     }
 
     public static void colorMode(String[] args) throws InterruptedException {

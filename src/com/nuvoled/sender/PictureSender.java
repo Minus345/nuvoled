@@ -78,9 +78,8 @@ public class PictureSender {
             BufferedImage bufferedImage = op.filter(image, null);
             send_rgb(bufferedImage);
         } else {
-            if (test_jpg) {
+            if (color_mode != 10 && color_mode != 20) {
                 byte[] testme = compress(image);
-                System.out.println("send " + testme);
                 send_jpg(testme);
             } else {
                 send_rgb(image);
@@ -164,6 +163,8 @@ public class PictureSender {
         int pixel = 0;
         int MaxPackets = (image.length / 1440) + 1;
 
+        System.out.println("image " + image.length + " frames " + MaxPackets );
+
         for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
             byte[] message = new byte[1450];
             message[0] = 36;
@@ -178,11 +179,11 @@ public class PictureSender {
             message[9] = 45;
 
             for (int i = 1; i < 1440; i++) {
-                if (pixel >= rgb.length) {
+                if (pixel >= image.length) {
                     message[9 + i] = 0;
                 } else {
                     //https://en.wikipedia.org/wiki/YCbCr
-                    message[9 + i] = rgb[pixel];
+                    message[9 + i] = image[pixel];
                 }
                 pixel++;
             }
@@ -236,8 +237,8 @@ public class PictureSender {
 
         if (!Main.isRotation()) {
             //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
-            for (int y = 1; y <= Main.getPanelSizeY(); y++) {
-                for (int x = 1; x <= Main.getPanelSizeX(); x++) {
+            for (int y = 0; y < Main.getPanelSizeY(); y++) {
+                for (int x = 0; x < Main.getPanelSizeX(); x++) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
@@ -251,8 +252,8 @@ public class PictureSender {
                 }
             }
         } else {
-            for (int y = Main.getPanelSizeY(); y >= 1; y--) {
-                for (int x = Main.getPanelSizeX(); x >= 1; x--) {
+            for (int y = Main.getPanelSizeY() - 1 ; y >= 0; y--) {
+                for (int x = Main.getPanelSizeX() -1 ; x >= 0; x--) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;

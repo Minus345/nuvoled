@@ -29,14 +29,18 @@ public class PictureCompress {
 
     public static byte[] compress(BufferedImage img) {
         int width, height, itype;
-        int outQual = 95; //1-100 - 95 default
+        int outQual = 100; //1-100 - 95 default
         int outSubsamp = TJ.SAMP_444;
 
         byte[] jpegBuf;
 
+
+        String filename = "c:/data/myfile.jpg";
+        String filename2 = "c:/data/myfile2.bmp";
+        /*
         String filename = "/Users/MFU/tmp/myfile.jpg";
         String filename2 = "/Users/MFU/tmp/myfile2.bmp";
-
+*/
         try {
             if (img == null)
                 throw new Exception("Input image type not supported.");
@@ -53,11 +57,13 @@ public class PictureCompress {
             TJCompressor tjc = new TJCompressor();
             tjc.setSubsamp(outSubsamp);
             tjc.setJPEGQuality(outQual);
-            tjc.setSourceImage(img, 0, 0, 0, 0);
+            tjc.setSourceImage(img, 0, 0, 0,0);
             //tjc.setSourceImage(imgBuf, 0, 0, width, 0, height, TJ.PF_BGR);
             jpegBuf = tjc.compress(flags);
             int jpegSize = tjc.getCompressedSize();
             tjc.close();
+
+            System.out.println("neu " + jpegBuf.length );
 
             /* Write the JPEG image to disk. */
 
@@ -68,7 +74,7 @@ public class PictureCompress {
                 fos.close();
 
                 File outputfile = new File(filename2);
-                ImageIO.write(img,"bmp", outputfile);
+                ImageIO.write(img, "bmp", outputfile);
 
                 System.out.println(filename + " " + jpegSize + " byte");
             }
