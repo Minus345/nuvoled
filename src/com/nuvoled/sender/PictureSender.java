@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.util.Arrays;
 
-import static com.nuvoled.sender.PictureCompress.compress;
+//import static com.nuvoled.sender.PictureCompress.compress;
 
 /*
 https://libjpeg-turbo.org/
@@ -50,7 +50,7 @@ public class PictureSender {
     private static int color_mode = 10;
 
     private static final boolean use_filter = false;
-    private static final boolean test_jpg = true;
+    //private static final boolean test_jpg = true;
     private static final boolean debug = false;
     private static final boolean DEBUG_RGB = false;
 
@@ -78,12 +78,12 @@ public class PictureSender {
             BufferedImage bufferedImage = op.filter(image, null);
             send_rgb(bufferedImage);
         } else {
-            if (color_mode != 10 && color_mode != 20) {
-                byte[] testme = compress(image);
-                send_jpg(testme);
-            } else {
+            //if (color_mode != 10 && color_mode != 20) {
+            //    byte[] testme = compress(image);
+             //   send_jpg(testme);
+            //} else {
                 send_rgb(image);
-            }
+            //}
         }
 
         if (DEBUG_RGB) {

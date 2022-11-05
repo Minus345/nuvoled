@@ -1,3 +1,4 @@
+/*
 package com.nuvoled.sender;
 
 import org.libjpegturbo.turbojpeg.TJ;
@@ -17,7 +18,7 @@ public class PictureCompress {
     TJTransform xform = new TJTransform();
     boolean display = false;
     static int flags = 0;
-    static final boolean debug = false;
+    static final boolean debug = true;
     int width, height;
     String inFormat = "jpg", outFormat = "jpg";
     BufferedImage img = null;
@@ -30,17 +31,16 @@ public class PictureCompress {
     public static byte[] compress(BufferedImage img) {
         int width, height, itype;
         int outQual = 100; //1-100 - 95 default
-        int outSubsamp = TJ.SAMP_444;
+        int outSubsamp = TJ.CS_RGB;
 
         byte[] jpegBuf;
 
-
         String filename = "c:/data/myfile.jpg";
         String filename2 = "c:/data/myfile2.bmp";
-        /*
-        String filename = "/Users/MFU/tmp/myfile.jpg";
-        String filename2 = "/Users/MFU/tmp/myfile2.bmp";
-*/
+
+        //String filename = "/Users/MFU/tmp/myfile.jpg";
+        //String filename2 = "/Users/MFU/tmp/myfile2.bmp";
+
         try {
             if (img == null)
                 throw new Exception("Input image type not supported.");
@@ -57,15 +57,13 @@ public class PictureCompress {
             TJCompressor tjc = new TJCompressor();
             tjc.setSubsamp(outSubsamp);
             tjc.setJPEGQuality(outQual);
-            tjc.setSourceImage(img, 0, 0, 0,0);
-            //tjc.setSourceImage(imgBuf, 0, 0, width, 0, height, TJ.PF_BGR);
+            tjc.setSourceImage(img, 0, 0, width,height);
+            //tjc.setSourceImage(img, 0, 0, width, 0, height, TJ.PF_BGR);
             jpegBuf = tjc.compress(flags);
             int jpegSize = tjc.getCompressedSize();
             tjc.close();
 
             System.out.println("neu " + jpegBuf.length );
-
-            /* Write the JPEG image to disk. */
 
             if (debug) {
                 File outFile = new File(filename);
@@ -86,3 +84,4 @@ public class PictureCompress {
         return jpegBuf;
     }
 }
+*/
