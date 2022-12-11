@@ -61,43 +61,12 @@ public class PictureSender {
         color_mode = colormode;
     }
 
-    public static void send(BufferedImage image) {
-
-        /*
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", os);
-        if (debug) {
-            System.out.println(os.size());
-        }
-        */
-
-        if (use_filter) {
-            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            ColorConvertOp op = new ColorConvertOp(cs, null);
-            BufferedImage bufferedImage = op.filter(image, null);
-            send_rgb(bufferedImage);
-        } else {
-            //if (color_mode != 10 && color_mode != 20) {
-            //    byte[] testme = compress(image);
-             //   send_jpg(testme);
-            //} else {
-                send_rgb(image);
-            //}
-        }
-
-        if (DEBUG_RGB) {
-            System.out.println(":");
-            System.out.println("Image Buffer RGBdata:");
-            printRgbFromPicture(image);
-            System.out.println(":");
-        }
-
+    public static void send() {
+        send_rgb();
     }
 
-    private static void send_rgb(BufferedImage image) {
-        //checkPicture(image); // checks if the picture ist big enough
-        getRgbFromPicture(image, color_mode); //gets rgb data from pictures
+    private static void send_rgb() {
+        rgb = getRGBFromArtNet();
 
         if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
@@ -156,6 +125,26 @@ public class PictureSender {
         SendSync.send_end_frame();
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
+
+    private static byte[] getRGBFromArtNet(){
+        byte[] rgbData = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
+        System.out.println(rgbData.length);
+        int destination = 0;
+        for (int i = 0; i < 11; i++){
+            byte[] data = new byte[512];
+            for (int j = 0; j < 15; j++){
+                data = Main.getArtnet().readDmxData(i,j);
+            }
+            System.arraycopy(data,0,rgbData,destination,data.length);
+            destination = destination + 512;
+        }
+
+        return rgbData;
+    }
+
+
+
+
 
 
     private static void send_jpg(byte[] image) {
