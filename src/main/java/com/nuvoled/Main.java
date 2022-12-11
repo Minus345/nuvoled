@@ -49,20 +49,15 @@ public class Main {
         System.out.println("rotation " + isRotation());
 
         artnet = new ArtNetClient();
-        artnet.start("192.168.178.131");
-
+        artnet.start("192.168.178.178");
+        SendSync.setDatagramSocket();
         screenAndVideo();
     }
 
     public static void screenAndVideo(){
-        if (!SendSync.setDatagramSocket()) {
-            return;
-        }
-
         while (true) {
             PictureSender.send();
         }
-
     }
 
     public static String getBroadcastIpAddress() {

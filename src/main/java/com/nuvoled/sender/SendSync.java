@@ -9,7 +9,7 @@ public class SendSync {
 
     private static long date = System.currentTimeMillis();
 
-    private static final boolean debug = false;
+    private static final boolean debug = true;
 
     private static DatagramSocket datagramSocket;
     private static InetAddress address ;
