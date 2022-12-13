@@ -54,9 +54,11 @@ public class Main {
         screenAndVideo();
     }
 
-    public static void screenAndVideo(){
+    public static void screenAndVideo() throws InterruptedException {
         while (true) {
+            Thread.sleep(1000);
             PictureSender.send();
+
         }
     }
 

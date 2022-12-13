@@ -67,6 +67,7 @@ public class PictureSender {
 
     private static void send_rgb() {
         rgb = getRGBFromArtNet();
+        Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
 
         if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
@@ -90,12 +91,13 @@ public class PictureSender {
         int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
 
         for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
+            System.out.println( Main.getCourantFrame());
             byte[] message = new byte[1450];
             message[0] = 36;
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20
+            message[4] = (byte) 10; //RGB -> 10 JPG -> 20
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -141,10 +143,6 @@ public class PictureSender {
 
         return rgbData;
     }
-
-
-
-
 
 
     private static void send_jpg(byte[] image) {
