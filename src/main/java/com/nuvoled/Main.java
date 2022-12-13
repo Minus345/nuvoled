@@ -56,7 +56,7 @@ public class Main {
 
     public static void screenAndVideo() throws InterruptedException {
         while (true) {
-            Thread.sleep(1000);
+           // Thread.sleep(1000);
             PictureSender.send();
 
         }

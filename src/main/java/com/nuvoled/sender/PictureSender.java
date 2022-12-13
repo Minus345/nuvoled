@@ -61,13 +61,13 @@ public class PictureSender {
         color_mode = colormode;
     }
 
-    public static void send() {
+    public static void send() throws InterruptedException {
         send_rgb();
     }
 
-    private static void send_rgb() {
+    private static void send_rgb() throws InterruptedException {
         rgb = getRGBFromArtNet();
-        Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
+       // Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
 
         if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
@@ -91,7 +91,6 @@ public class PictureSender {
         int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
 
         for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
-            System.out.println( Main.getCourantFrame());
             byte[] message = new byte[1450];
             message[0] = 36;
             message[1] = 36;
@@ -116,13 +115,14 @@ public class PictureSender {
                     //https://en.wikipedia.org/wiki/YCbCr
                     message[9 + i] = rgb[pixel];
                     pixel++;
-                    message[9 + 1 + i] = rgb[pixel];
+                    message[9 + 1 + i] =  rgb[pixel];
                     pixel++;
                     message[9 + 2 + i] = rgb[pixel];
                 }
                 pixel++;
             }
             SendSync.send_data(message);
+            Thread.sleep(10);
         }
         SendSync.send_end_frame();
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
@@ -132,13 +132,15 @@ public class PictureSender {
         byte[] rgbData = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
         System.out.println(rgbData.length);
         int destination = 0;
-        for (int i = 0; i < 11; i++){
+        for (int i = 0; i < 12; i++){
             byte[] data = new byte[512];
-            for (int j = 0; j < 15; j++){
+            for (int j = 0; j < 16; j++){
                 data = Main.getArtnet().readDmxData(i,j);
+                System.arraycopy(data,0,rgbData,destination,510);
+                destination = destination + 510;
             }
-            System.arraycopy(data,0,rgbData,destination,data.length);
-            destination = destination + 512;
+
+
         }
 
         return rgbData;
