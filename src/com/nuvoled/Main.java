@@ -18,6 +18,7 @@ public class Main {
     private static byte courantFrame;
     private static int panelSizeX;
     private static int panelSizeY;
+    private static boolean bindToInterface;
     private static String[] pictureConfiguration;
     private static int rotation;
 
@@ -32,7 +33,7 @@ public class Main {
         }
         if (args.length < 10) {
             System.out.println("Fehlende argumente");
-            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode]");
+            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false]");
             return;
         }
 
@@ -43,6 +44,10 @@ public class Main {
         port = 2000;
         broadcastIpAddress = args[1];
 
+        bindToInterface = false;
+
+        bindToInterface = Boolean.parseBoolean(args[10]);
+
         rotation = Integer.parseInt(args[5]);
 
         pictureConfiguration = new String[]{args[5],args[6], args[7],args[8],args[9]};
@@ -52,6 +57,8 @@ public class Main {
 
         System.out.println("x/y " + panelSizeX + "/" + panelSizeY);
         System.out.println("rotation " + rotationDegree());
+
+        System.out.println("bind " + bindToInterface);
 
         switch (args[4]) {
             case "color" -> colorMode(args);
@@ -164,5 +171,9 @@ public class Main {
 
     public static int rotationDegree() {
         return rotation;
+    }
+
+    public static boolean getBindToInterface() {
+        return bindToInterface;
     }
 }

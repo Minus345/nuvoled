@@ -20,8 +20,9 @@ Nuvoled Application in Java
 [colorMode] = 0 RGB 20 JPG
 _only sending if picture change_
 ### Show Video ###
-`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] video [true / false] [screen] [x] [y] [colorMode]`  
+`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] video [true / false] [screen] [x] [y] [colorMode] [bind to interfac true/false]`  
 [x] [y] = pixel  
+bind to interface -> mac true, others false
 [true / false] = rotation  
 [screen] = monitor starting from 0
 [colorMode] = 0 RGB 20 JPG

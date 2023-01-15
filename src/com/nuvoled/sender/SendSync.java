@@ -50,12 +50,20 @@ public class SendSync {
     public static boolean setDatagramSocket() {
 
         InetAddress address = null;
-        NetworkInterface nif = findNetworkInterface();
-        Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();
-        InetSocketAddress inetAddr = new InetSocketAddress(nifAddresses.nextElement(), 0);
+        InetSocketAddress inetAddr = null;
+        if (Main.getBindToInterface()) {
+            NetworkInterface nif = findNetworkInterface();
+            Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();
+            inetAddr = new InetSocketAddress(nifAddresses.nextElement(), 0);
+        }
 
         try {
-            datagramSocket = new DatagramSocket(inetAddr);
+
+            if (Main.getBindToInterface()) {
+                datagramSocket = new DatagramSocket(inetAddr);
+            } else {
+                datagramSocket = new DatagramSocket();
+            }
             address = InetAddress.getByName(Main.getBroadcastIpAddress());
             if (debug) {
                 System.out.println("Connect Datagram " + Main.getPort() + " Adr " + Main.getBroadcastIpAddress());
