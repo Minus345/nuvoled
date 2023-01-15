@@ -5,6 +5,7 @@ import com.nuvoled.Main;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.awt.image.RescaleOp;
 import java.util.Arrays;
 
 //import static com.nuvoled.sender.PictureCompress.compress;
@@ -71,22 +72,14 @@ public class PictureSender {
         if (debug) {
             System.out.println(os.size());
         }
+
+        RescaleOp rescaleOp = new RescaleOp(1.2f, 15, null);
+rescaleOp.filter(image, image);  // Source and destination are the same.
+
         */
 
-        if (use_filter) {
-            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            ColorConvertOp op = new ColorConvertOp(cs, null);
-            BufferedImage bufferedImage = op.filter(image, null);
-            send_rgb(bufferedImage);
-        } else {
-            //if (color_mode != 10 && color_mode != 20) {
-            //    byte[] testme = compress(image);
-            //   send_jpg(testme);
-            //} else {
-            send_rgb(image);
-            //}
-        }
+        //applyColorspace(image)
+        send_rgb(applyFilter(image));
 
         if (DEBUG_RGB) {
             System.out.println(":");
@@ -155,10 +148,33 @@ public class PictureSender {
             }
             SendSync.send_data(message);
         }
+        try {
+            Thread.sleep(15);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         SendSync.send_end_frame();
+
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
+    public static BufferedImage applyColorspace (BufferedImage image){
+
+        //if (use_filter) {
+         //   ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+
+         //   ColorConvertOp op = new ColorConvertOp(cs, null);
+         //   BufferedImage bufferedImage = op.filter(image, null);
+         //   send_rgb(bufferedImage);
+
+        return image;
+    }
+    public static BufferedImage applyFilter (BufferedImage image){
+
+                RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
+        rescaleOp.filter(image, image);  // Source and destination are the same.
+        return image;
+    }
 
     private static void send_jpg(byte[] image) {
         //checkPicture(image); // checks if the picture ist big enough

@@ -19,10 +19,17 @@ public class Main {
     private static int panelSizeX;
     private static int panelSizeY;
     private static boolean bindToInterface;
+
+    private static Float scaleFactor ;
+    private static Float offSet ;
     private static String[] pictureConfiguration;
     private static int rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+
+        scaleFactor = Float.parseFloat("1.0");
+        offSet = Float.parseFloat("0");
+
         for (String arg : args) {
             System.out.println("Parameter: " + arg);
         }
@@ -31,11 +38,21 @@ public class Main {
             System.out.println("Falsches Argumt");
             return;
         }
+
         if (args.length < 10) {
             System.out.println("Fehlende argumente");
             System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false]");
             return;
         }
+
+        if (args.length > 11) {
+            scaleFactor = Float.parseFloat(args[11]);
+        }
+
+        if (args.length > 12) {
+            offSet = Float.parseFloat(args[12]);
+        }
+
 
         System.out.println("Start");
         courantFrame = 2; //set default values
@@ -59,6 +76,9 @@ public class Main {
         System.out.println("rotation " + rotationDegree());
 
         System.out.println("bind " + bindToInterface);
+
+        System.out.println("scaleFactor (Brightness) " + scaleFactor.toString());
+        System.out.println("offset (Brightness) " + offSet.toString());
 
         switch (args[4]) {
             case "color" -> colorMode(args);
@@ -175,5 +195,13 @@ public class Main {
 
     public static boolean getBindToInterface() {
         return bindToInterface;
+    }
+
+    public static Float getScaleFactor(){
+        return scaleFactor;
+    }
+
+    public static Float getOffset(){
+        return offSet;
     }
 }

@@ -13,14 +13,14 @@ Nuvoled Application in Java
 ### Send Picture ###
 `java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] picture`
 ### Show Screen ###
-`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [true / false] [screen] [x] [y] [colorMode]`  
+`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [0/90/180/270] [screen] [x] [y] [colorMode] [bind to interfac true/false]`  
 [x] [y] = pixel
 [true / false] = rotation  
 [screen] = monitor starting from 0  
 [colorMode] = 0 RGB 20 JPG
 _only sending if picture change_
 ### Show Video ###
-`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] video [true / false] [screen] [x] [y] [colorMode] [bind to interfac true/false]`  
+`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] video [0/90/180/270] [screen] [x] [y] [colorMode] [bind to interfac true/false]`  
 [x] [y] = pixel  
 bind to interface -> mac true, others false
 [true / false] = rotation  
