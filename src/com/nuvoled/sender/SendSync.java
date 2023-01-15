@@ -4,6 +4,7 @@ import com.nuvoled.Main;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Enumeration;
 
 public class SendSync {
 
@@ -12,14 +13,49 @@ public class SendSync {
     private static final boolean debug = false;
 
     private static DatagramSocket datagramSocket;
-    private static InetAddress address ;
+    private static InetAddress address;
+
+    public static NetworkInterface findNetworkInterface() {
+
+        System.out.println("");
+
+        NetworkInterface iFace = null;
+
+        try {
+            System.out.println("Full list of Network Interfaces:" + "\n");
+            for (Enumeration<NetworkInterface> en =
+                 NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                //System.out.println("    " + intf.getName() + " " +
+                //      intf.getDisplayName() + "\n");
+
+                for (Enumeration<InetAddress> enumIpAddr =
+                     intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    String ipAddr = enumIpAddr.nextElement().toString();
+                    //System.out.println("        " + ipAddr + "\n");
+                    if (ipAddr.startsWith("/169.254")) {
+                        iFace = intf;
+                        System.out.println("==>> Binding to this adapter..." + ipAddr + "\n");
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            System.out.println(" (error retrieving network interface list)" + "\n");
+        }
+
+        return (iFace);
+
+    }
 
     public static boolean setDatagramSocket() {
 
         InetAddress address = null;
+        NetworkInterface nif = findNetworkInterface();
+        Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();
+        InetSocketAddress inetAddr = new InetSocketAddress(nifAddresses.nextElement(), 0);
 
         try {
-            datagramSocket = new DatagramSocket();
+            datagramSocket = new DatagramSocket(inetAddr);
             address = InetAddress.getByName(Main.getBroadcastIpAddress());
             if (debug) {
                 System.out.println("Connect Datagram " + Main.getPort() + " Adr " + Main.getBroadcastIpAddress());
@@ -49,7 +85,7 @@ public class SendSync {
                 address = InetAddress.getByName(Main.getBroadcastIpAddress());
                 datagramSocket.connect(address, Main.getPort());
                 datagramSocket.setSendBufferSize(2048576);
-            } catch (UnknownHostException | SocketException e)  {
+            } catch (UnknownHostException | SocketException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -70,6 +106,7 @@ public class SendSync {
             System.out.println("Sending Frame: " + Main.getCourantFrame());
         }
     }
+
     public static void sendSyncro(byte Frame) {
         try {
             int port = 2000;
@@ -91,7 +128,7 @@ public class SendSync {
             float difference = (System.currentTimeMillis() - date);
             difference = difference / 1000;
             float fps = (255 / difference);
-            if(debug) {
+            if (debug) {
                 System.out.println("dif: " + difference + " fps: " + fps);
             }
             date = System.currentTimeMillis();
