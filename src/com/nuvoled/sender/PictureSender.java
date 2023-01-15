@@ -1,5 +1,7 @@
 package com.nuvoled.sender;
+
 import com.nuvoled.Main;
+
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
@@ -80,9 +82,9 @@ public class PictureSender {
         } else {
             //if (color_mode != 10 && color_mode != 20) {
             //    byte[] testme = compress(image);
-             //   send_jpg(testme);
+            //   send_jpg(testme);
             //} else {
-                send_rgb(image);
+            send_rgb(image);
             //}
         }
 
@@ -163,7 +165,7 @@ public class PictureSender {
         int pixel = 0;
         int MaxPackets = (image.length / 1440) + 1;
 
-        System.out.println("image " + image.length + " frames " + MaxPackets );
+        System.out.println("image " + image.length + " frames " + MaxPackets);
 
         for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
             byte[] message = new byte[1450];
@@ -192,6 +194,7 @@ public class PictureSender {
         SendSync.send_end_frame();
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
+
     private static void printRgbFromPicture(BufferedImage image) {
         int rgbCounterNumber = 0;
         for (int y = 1; y <= 1; y++) {
@@ -235,10 +238,43 @@ public class PictureSender {
 
         int rgbCounterNumber = 0;
 
-        if (!Main.isRotation()) {
+        if (Main.rotationDegree() == 180) {
             //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
-            for (int y = 0; y < Main.getPanelSizeY(); y++) {
-                for (int x = 0; x < Main.getPanelSizeX(); x++) {
+            for (int y = Main.getPanelSizeY() - 1; y >= 0; y--) {
+                for (int x = Main.getPanelSizeX() - 1; x >= 0; x--) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+
+        } else if (Main.rotationDegree() == 90) {
+            //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
+            for (int x = Main.getPanelSizeX() - 1; x >= 0; x--) {
+                for (int y = 0; y < Main.getPanelSizeY(); y++) {
+                    int pixel = image.getRGB(x, y);
+                    int red = (pixel >> 16) & 0xff;
+                    int green = (pixel >> 8) & 0xff;
+                    int blue = (pixel) & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+            }
+        } else if (Main.rotationDegree() == 270) {
+            //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
+            for (int x = 0; x < Main.getPanelSizeX(); x++) {
+                for (int y = Main.getPanelSizeY() - 1; y >= 0; y--) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;
@@ -252,8 +288,8 @@ public class PictureSender {
                 }
             }
         } else {
-            for (int y = Main.getPanelSizeY() - 1 ; y >= 0; y--) {
-                for (int x = Main.getPanelSizeX() -1 ; x >= 0; x--) {
+            for (int y = 0; y < Main.getPanelSizeY(); y++) {
+                for (int x = 0; x < Main.getPanelSizeX(); x++) {
                     int pixel = image.getRGB(x, y);
                     int red = (pixel >> 16) & 0xff;
                     int green = (pixel >> 8) & 0xff;

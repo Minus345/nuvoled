@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramSocket;
 import java.util.Objects;
 
 public class Main {
@@ -19,7 +18,8 @@ public class Main {
     private static byte courantFrame;
     private static int panelSizeX;
     private static int panelSizeY;
-    private static boolean rotation;
+    private static String[] pictureConfiguration;
+    private static int rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         for (String arg : args) {
@@ -30,8 +30,9 @@ public class Main {
             System.out.println("Falsches Argumt");
             return;
         }
-        if (!(args.length > 5)) {
-            System.out.println("Falsches Argumt");
+        if (args.length < 10) {
+            System.out.println("Fehlende argumente");
+            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode]");
             return;
         }
 
@@ -41,18 +42,21 @@ public class Main {
         panelSizeY = 128;
         port = 2000;
         broadcastIpAddress = args[1];
-        rotation = false;
+
+        rotation = Integer.parseInt(args[5]);
+
+        pictureConfiguration = new String[]{args[5],args[6], args[7],args[8],args[9]};
 
         panelSizeX = Integer.parseInt(args[2]) * panelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = Integer.parseInt(args[3]) * panelSizeY; //Anzahl Panel Y * 128 pixel
 
         System.out.println("x/y " + panelSizeX + "/" + panelSizeY);
-        System.out.println("rotation " + isRotation());
+        System.out.println("rotation " + rotationDegree());
 
         switch (args[4]) {
             case "color" -> colorMode(args);
             case "picture" -> pictureMode();
-            case "screen", "video" -> screenAndVideo(args);
+            case "screen", "video" -> screenAndVideo(pictureConfiguration);
         }
     }
 
@@ -98,16 +102,16 @@ public class Main {
 
     }
 
-    public static void screenAndVideo(String[] args) throws AWTException {
+    public static void screenAndVideo(String[] pictureConfiguration) throws AWTException {
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        int screenNumber = Integer.parseInt(args[6]);
+        int screenNumber = Integer.parseInt(pictureConfiguration[1]);
         Robot robot = new Robot(screens[screenNumber]);
         Rectangle rectangle = new Rectangle();
-        rotation = Boolean.parseBoolean(args[5]);
+        rotation = Integer.parseInt(pictureConfiguration[0]);
         Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
-        int x = Integer.parseInt(args[7]) + screenBounds.x;
-        int y = Integer.parseInt(args[8]) + screenBounds.y;
-        int colorMode = Integer.parseInt(args[9]);
+        int x = Integer.parseInt(pictureConfiguration[2]) + screenBounds.x;
+        int y = Integer.parseInt(pictureConfiguration[3]) + screenBounds.y;
+        int colorMode = Integer.parseInt(pictureConfiguration[4]);
         System.out.println("color (10/rgb 20/jpg): " + colorMode);
         rectangle.setLocation(x, y);
         //+1 -> Fehler Zähler
@@ -117,12 +121,12 @@ public class Main {
             return;
         }
 
-        if (Objects.equals(args[4], "screen")) {
+        if (Objects.equals(pictureConfiguration[4], "screen")) {
             System.out.println("Screen mode");
             PictureSender.setScreenMode(true, colorMode);
 
         }
-        if (Objects.equals(args[4], "video")) {
+        if (Objects.equals(pictureConfiguration[4], "video")) {
             System.out.println("Video mode");
             PictureSender.setScreenMode(false, colorMode);
         }
@@ -158,7 +162,7 @@ public class Main {
         return panelSizeY;
     }
 
-    public static boolean isRotation() {
+    public static int rotationDegree() {
         return rotation;
     }
 }
