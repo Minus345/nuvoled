@@ -13,22 +13,21 @@ import java.util.Objects;
 
 public class Main {
 
-    private static String broadcastIpAddress;
+
     private static int port;
     private static byte courantFrame;
+    //Args
+    private static String broadcastIpAddress;
     private static int panelSizeX;
     private static int panelSizeY;
+    private static String mode;
     private static boolean bindToInterface;
-
     private static Float scaleFactor ;
     private static Float offSet ;
     private static String[] pictureConfiguration;
     private static int rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
-
-        scaleFactor = Float.parseFloat("1.0");
-        offSet = Float.parseFloat("0");
 
         for (String arg : args) {
             System.out.println("Parameter: " + arg);
@@ -41,9 +40,12 @@ public class Main {
 
         if (args.length < 10) {
             System.out.println("Fehlende argumente");
-            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false]");
+            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false] [brightness] [offset]");
             return;
         }
+
+        scaleFactor = Float.parseFloat("1.0");
+        offSet = Float.parseFloat("0");
 
         if (args.length > 11) {
             scaleFactor = Float.parseFloat(args[11]);
@@ -53,24 +55,22 @@ public class Main {
             offSet = Float.parseFloat(args[12]);
         }
 
-
+        //set default values
         System.out.println("Start");
-        courantFrame = 2; //set default values
+        courantFrame = 2;
         panelSizeX = 128;
         panelSizeY = 128;
         port = 2000;
-        broadcastIpAddress = args[1];
-
         bindToInterface = false;
 
-        bindToInterface = Boolean.parseBoolean(args[10]);
-
-        rotation = Integer.parseInt(args[5]);
-
-        pictureConfiguration = new String[]{args[5],args[6], args[7],args[8],args[9]};
-
+        //args
+        broadcastIpAddress = args[1];
         panelSizeX = Integer.parseInt(args[2]) * panelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = Integer.parseInt(args[3]) * panelSizeY; //Anzahl Panel Y * 128 pixel
+        mode = args[4];
+        rotation = Integer.parseInt(args[5]);
+        pictureConfiguration = new String[]{args[5],args[6], args[7],args[8],args[9]};
+        bindToInterface = Boolean.parseBoolean(args[10]);
 
         System.out.println("x/y " + panelSizeX + "/" + panelSizeY);
         System.out.println("rotation " + rotationDegree());
@@ -80,29 +80,10 @@ public class Main {
         System.out.println("scaleFactor (Brightness) " + scaleFactor.toString());
         System.out.println("offset (Brightness) " + offSet.toString());
 
-        switch (args[4]) {
-            case "color" -> colorMode(args);
+        switch (mode) {
             case "picture" -> pictureMode();
             case "screen", "video" -> screenAndVideo(pictureConfiguration);
         }
-    }
-
-    public static void colorMode(String[] args) throws InterruptedException {
-        System.out.println("Color mode");
-        int red = Integer.parseInt(args[5]);
-        int green = Integer.parseInt(args[6]);
-        int blue = Integer.parseInt(args[7]);
-        byte redToByte = (byte) red;
-        byte greenToByte = (byte) green;
-        byte blueToByte = (byte) blue;
-
-        SendColor.send(redToByte, greenToByte, blueToByte);
-        //DatagramSocket datagramSocket = null;
-        //datagramSocket = new DatagramSocket();
-        SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-        Thread.sleep(10);
-        SendSync.sendSyncro(Main.getCourantFrame());
-
     }
 
     public static void pictureMode() throws IOException, InterruptedException {
