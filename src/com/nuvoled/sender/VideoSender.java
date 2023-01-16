@@ -12,7 +12,7 @@ public class VideoSender {
 
     public static void send(BufferedImage image,DatagramSocket datagramSocket) {
         int rgbCounterNumber = 0;
-        if (!Main.isRotation()) {
+        if (Main.rotationDegree() == 0) {
             for (int y = 1; y <= Main.getPanelSizeY(); y++) {
                 for (int x = 1; x <= Main.getPanelSizeX(); x++) {
                     int pixel = image.getRGB(x, y);
@@ -89,8 +89,7 @@ public class VideoSender {
                 datagramSocket.send(packet);
             }
             SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-            //Thread.sleep(20);
-            //System.out.println("Sending Frame: " + Main.getCourantFrame());
+            //Thread.sleep(20);            //System.out.println("Sending Frame: " + Main.getCourantFrame());
         } catch (Exception e) {
             System.err.println(e);
         }
