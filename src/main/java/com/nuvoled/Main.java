@@ -1,8 +1,10 @@
 package com.nuvoled;
 
 import com.nuvoled.sender.*;
+import org.apache.commons.cli.Options;
 
 import javax.imageio.ImageIO;
+import javax.swing.text.html.Option;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -28,6 +30,10 @@ public class Main {
     private static int rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+
+        Options option = new Options();
+
+        System.out.println(option.toString());
 
         for (String arg : args) {
             System.out.println("Parameter: " + arg);
