@@ -1,10 +1,10 @@
 package com.nuvoled;
 
 import com.nuvoled.sender.*;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import javax.imageio.ImageIO;
-import javax.swing.text.html.Option;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -31,9 +31,14 @@ public class Main {
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
 
-        Options option = new Options();
-
-        System.out.println(option.toString());
+        var options = new Options()
+                .addOption("v", "verbose", false, "Verbose")
+                .addOption(Option.builder("d")
+                        .longOpt("delimiter")
+                        .hasArg(true)
+                        .desc("The delimiter to use")
+                        .argName("delimiter")
+                        .build());
 
         for (String arg : args) {
             System.out.println("Parameter: " + arg);
