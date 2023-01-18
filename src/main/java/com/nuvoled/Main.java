@@ -24,15 +24,38 @@ public class Main {
     private static int panelSizeY;
     private static String mode;
     private static boolean bindToInterface;
-    private static Float scaleFactor ;
-    private static Float offSet ;
-    private static String[] pictureConfiguration;
+    private static Float scaleFactor;
+    private static Float offSet;
+    private static Integer[] pictureConfiguration;
     private static int rotation;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
 
+        System.out.println("Nuvoled Presenter");
+        scaleFactor = Float.parseFloat("1.0");
+        offSet = Float.parseFloat("0");
+        //set default values
+
+        courantFrame = 2;
+        int onepanelSizeX = 128;
+        int onepanelSizeY = 128;
+        port = 2000;
+        bindToInterface = false;
+
+        int xPanelCount = 1;
+        int yPanelCount = 1;
+
+        broadcastIpAddress = "169.254.255.255";
+        mode = "video";
+        rotation = 0;
+        int screenNumber = 0;
+        int xPosition = 0;
+        int yPosition = 0;
+        int colorMode = 10;
+
         var options = new Options()
                 .addOption("v", "verbose", false, "Verbose")
+                .addOption("b", "bind", false, "bind to interface 169.254")
                 .addOption(Option.builder("d")
                         .longOpt("delimiter")
                         .hasArg(true)
@@ -40,14 +63,9 @@ public class Main {
                         .argName("delimiter")
                         .build());
 
-        for (String arg : args) {
-            System.out.println("Parameter: " + arg);
-        }
-
-        if (!Objects.equals(args[0], "start")) {
-            System.out.println("Falsches Argumt");
-            return;
-        }
+        System.out.println(options.getOption("b").toString());
+        System.out.println(options.hasOption("b"));
+        /*
 
         if (args.length < 10) {
             System.out.println("Fehlende argumente");
@@ -55,41 +73,25 @@ public class Main {
             return;
         }
 
-        scaleFactor = Float.parseFloat("1.0");
-        offSet = Float.parseFloat("0");
+         */
 
-        if (args.length > 11) {
-            scaleFactor = Float.parseFloat(args[11]);
-        }
+        pictureConfiguration = new Integer[]{rotation, screenNumber,
+                xPosition, yPosition, colorMode};
 
-        if (args.length > 12) {
-            offSet = Float.parseFloat(args[12]);
-        }
+        panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
+        panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
 
-        //set default values
-        System.out.println("Start");
-        courantFrame = 2;
-        panelSizeX = 128;
-        panelSizeY = 128;
-        port = 2000;
-        bindToInterface = false;
-
-        //args
-        broadcastIpAddress = args[1];
-        panelSizeX = Integer.parseInt(args[2]) * panelSizeX; //Anzahl Panel X * 128 pixel
-        panelSizeY = Integer.parseInt(args[3]) * panelSizeY; //Anzahl Panel Y * 128 pixel
-        mode = args[4];
-        rotation = Integer.parseInt(args[5]);
-        pictureConfiguration = new String[]{args[5],args[6], args[7],args[8],args[9]};
-        bindToInterface = Boolean.parseBoolean(args[10]);
-
-        System.out.println("x/y " + panelSizeX + "/" + panelSizeY);
-        System.out.println("rotation " + rotationDegree());
-
-        System.out.println("bind " + bindToInterface);
-
-        System.out.println("scaleFactor (Brightness) " + scaleFactor.toString());
-        System.out.println("offset (Brightness) " + offSet.toString());
+        System.out.println("x/y Panel Count          : " + xPanelCount + "/" + yPanelCount);
+        System.out.println("x/y Panle Size           : " + onepanelSizeX + "/" + onepanelSizeY);
+        System.out.println("x/y Pixels               : " + panelSizeX + "/" + panelSizeY);
+        System.out.println("rotation Degree          : " + rotationDegree());
+        System.out.println("Screen Number            : " + screenNumber);
+        System.out.println("x/y Start Position       : " + xPosition + "/" + yPosition);
+        System.out.println("broadcastIpAddress       : " + broadcastIpAddress);
+        System.out.println("bind to interface        : " + bindToInterface);
+        System.out.println("scaleFactor (Brightness) : " + scaleFactor.toString());
+        System.out.println("offset (Contrast)        : " + offSet.toString());
+        System.out.println("color (10/rgb 20/jpg)    : " + colorMode);
 
         switch (mode) {
             case "picture" -> pictureMode();
@@ -121,20 +123,19 @@ public class Main {
 
     }
 
-    public static void screenAndVideo(String[] pictureConfiguration) throws AWTException {
+    public static void screenAndVideo(Integer[] pictureConfiguration) throws AWTException {
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        int screenNumber = Integer.parseInt(pictureConfiguration[1]);
+        int screenNumber = pictureConfiguration[1];
         Robot robot = new Robot(screens[screenNumber]);
         Rectangle rectangle = new Rectangle();
-        rotation = Integer.parseInt(pictureConfiguration[0]);
+        rotation = pictureConfiguration[0];
         Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
-        int x = Integer.parseInt(pictureConfiguration[2]) + screenBounds.x;
-        int y = Integer.parseInt(pictureConfiguration[3]) + screenBounds.y;
-        int colorMode = Integer.parseInt(pictureConfiguration[4]);
-        System.out.println("color (10/rgb 20/jpg): " + colorMode);
+        int x = pictureConfiguration[2] + screenBounds.x;
+        int y = pictureConfiguration[3] + screenBounds.y;
+        int colorMode = pictureConfiguration[4];
         rectangle.setLocation(x, y);
         //+1 -> Fehler Zähler
-        rectangle.setSize(panelSizeX , panelSizeY );
+        rectangle.setSize(panelSizeX, panelSizeY);
 
         if (!SendSync.setDatagramSocket()) {
             return;
@@ -189,11 +190,11 @@ public class Main {
         return bindToInterface;
     }
 
-    public static Float getScaleFactor(){
+    public static Float getScaleFactor() {
         return scaleFactor;
     }
 
-    public static Float getOffset(){
+    public static Float getOffset() {
         return offSet;
     }
 }
