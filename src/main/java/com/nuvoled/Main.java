@@ -1,8 +1,7 @@
 package com.nuvoled;
 
 import com.nuvoled.sender.*;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -32,10 +31,8 @@ public class Main {
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
 
         System.out.println("Nuvoled Presenter");
-        scaleFactor = Float.parseFloat("1.0");
+        scaleFactor = Float.parseFloat("0.6");
         offSet = Float.parseFloat("0");
-        //set default values
-
         courantFrame = 2;
         int onepanelSizeX = 128;
         int onepanelSizeY = 128;
@@ -54,17 +51,92 @@ public class Main {
         int colorMode = 10;
 
         var options = new Options()
-                .addOption("v", "verbose", false, "Verbose")
+                .addOption("h", "help", false, "Help Message")
                 .addOption("b", "bind", false, "bind to interface 169.254")
-                .addOption(Option.builder("d")
-                        .longOpt("delimiter")
+                .addOption(Option.builder("px")
+                        .longOpt("panelsx")
                         .hasArg(true)
-                        .desc("The delimiter to use")
-                        .argName("delimiter")
+                        .desc("Number of Panels horizontal ")
+                        .argName("1")
+                        .build())
+                .addOption(Option.builder("py")
+                        .longOpt("panelsy")
+                        .hasArg(true)
+                        .desc("Number of Panels vertical ")
+                        .argName("1")
+                        .build())
+                .addOption(Option.builder("sx")
+                        .longOpt("startx")
+                        .hasArg(true)
+                        .desc("Pixel start horizontal ")
+                        .argName("0")
+                        .build())
+                .addOption(Option.builder("sy")
+                        .longOpt("starty")
+                        .hasArg(true)
+                        .desc("Pixal start vertical ")
+                        .argName("0")
+                        .build())
+                .addOption(Option.builder("r")
+                        .longOpt("rotation")
+                        .hasArg(true)
+                        .desc("rotation degree 0/90/180/270 ")
+                        .argName("0")
+                        .build())
+                .addOption(Option.builder("br")
+                        .longOpt("brightness")
+                        .hasArg(true)
+                        .desc("brightness value with 0.x -1.x")
+                        .argName("0.6")
+                        .build())
+                .addOption(Option.builder("sn")
+                        .longOpt("screennr")
+                        .hasArg(true)
+                        .desc("number of screen")
+                        .argName("0")
                         .build());
 
-        System.out.println(options.getOption("b").toString());
-        System.out.println(options.hasOption("b"));
+        CommandLineParser parser = new DefaultParser();
+        CommandLine line;
+        try {
+            // parse the command line arguments
+            line = parser.parse(options, args);
+            if (line.hasOption("b")) {
+                bindToInterface = true;
+            }
+            if (line.hasOption("h")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("java -jar nuvoled.jar ", options);
+                bindToInterface = true;
+                System.exit(0);
+            }
+            if (line.hasOption("px")) {
+                xPanelCount = Integer.parseInt(line.getOptionValue("px"));
+            }
+            if (line.hasOption("py")) {
+                yPanelCount = Integer.parseInt(line.getOptionValue("py"));
+            }
+            if (line.hasOption("sx")) {
+                xPosition = Integer.parseInt(line.getOptionValue("sx"));
+            }
+            if (line.hasOption("sy")) {
+                yPosition = Integer.parseInt(line.getOptionValue("sy"));
+            }
+            if (line.hasOption("r")) {
+                rotation = Integer.parseInt(line.getOptionValue("r"));
+            }
+            if (line.hasOption("br")) {
+                scaleFactor = Float.parseFloat(line.getOptionValue("br"));
+            }
+            if (line.hasOption("sn")) {
+                screenNumber = Integer.parseInt(line.getOptionValue("sn"));
+            }
+        } catch (ParseException exp) {
+            // oops, something went wrong
+            System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+        }
+
+
         /*
 
         if (args.length < 10) {
@@ -81,8 +153,9 @@ public class Main {
         panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
 
+
         System.out.println("x/y Panel Count          : " + xPanelCount + "/" + yPanelCount);
-        System.out.println("x/y Panle Size           : " + onepanelSizeX + "/" + onepanelSizeY);
+        System.out.println("x/y Panel Size           : " + onepanelSizeX + "/" + onepanelSizeY);
         System.out.println("x/y Pixels               : " + panelSizeX + "/" + panelSizeY);
         System.out.println("rotation Degree          : " + rotationDegree());
         System.out.println("Screen Number            : " + screenNumber);
