@@ -19,7 +19,7 @@ Nuvoled Application in Java
  `-sx,--startx <0>` Pixel start horizontal  
  `-sy,--starty <0>` Pixal start vertical  
 ### Mac ###  
-use `-b` to binde the interface
+use `-b` to binde the interface -s 60
 
 ### Linux ###  
 you need the sleep

@@ -40,7 +40,7 @@ public class Main {
         int onepanelSizeY = 128;
         port = 2000;
         bindToInterface = false;
-        sleep = 15;
+        sleep = 0;
 
         int xPanelCount = 1;
         int yPanelCount = 1;
@@ -102,7 +102,7 @@ public class Main {
                         .longOpt("sleep")
                         .hasArg(true)
                         .desc("sleep ime in ms")
-                        .argName("15")
+                        .argName("0")
                         .build());
 
         CommandLineParser parser = new DefaultParser();
