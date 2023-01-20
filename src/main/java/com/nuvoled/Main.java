@@ -1,6 +1,7 @@
 package com.nuvoled;
 
-import com.nuvoled.sender.*;
+import com.nuvoled.sender.PictureSender;
+import com.nuvoled.sender.SendSync;
 import org.apache.commons.cli.*;
 
 import javax.imageio.ImageIO;
