@@ -1,34 +1,34 @@
 # Nuvoled #
 Nuvoled Application in Java  
- - **Java 190.1 require**
+ - **Java 19.0.1 required**
  - Tested on Windows / Mac / Linux (Jetson)
 ***
 ## Start Parameters ##
-### Show Video ###   
+### New Version (from 1.6) ###
+`java -jar nuvoled.jar -h` for help
 
-### Command Line Options
+### Other Parameters ###
+ `-b,--bind` bind to interface 169.254  
+ `-br,--brightness <0.6>` brightness value with 0.x -1.x  
+ `-h,--help` Help Message  
+ `-px,--panelsx <1>` Number of Panels horizontal  
+ `-py,--panelsy <1>` Number of Panels vertical  
+ `-r,--rotation <0>` rotation degree 0/90/180/270  
+ `-s,--sleep <15>` sleep ime in ms  
+ `-sn,--screennr <0>` number of screen  
+ `-sx,--startx <0>` Pixel start horizontal  
+ `-sy,--starty <0>` Pixal start vertical  
+### Mac ###  
+use `-b` to binde the interface
 
-Nuvoled Presenter
-usage: java -jar nuvoled.jar
--b,--bind                bind to interface 169.254
--br,--brightness <0.6>   brightness value with 0.x -1.x
--h,--help                Help Message
--px,--panelsx <1>        Number of Panels horizontal
--py,--panelsy <1>        Number of Panels vertical
--r,--rotation <0>        rotation degree 0/90/180/270
--s,--sleep <15>          sleep ime in ms
--sn,--screennr <0>       number of screen
--sx,--startx <0>         Pixel start horizontal
--sy,--starty <0>         Pixal start vertical
+### Linux ###  
+you need the sleep
 
-## Example
+### Windows ###
+you can set the sleep to 0
 
-### Windows/Linux
-
-2*1   
-java -jar -s 0 -px 2 -py 1   
-
-## MAC
-
-2*1
-java -jar -b -px2 -py 1
+### Old Version (up to 1.5) ###   
+Start:
+`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false] [brightness] [offset]`
+***
+    
