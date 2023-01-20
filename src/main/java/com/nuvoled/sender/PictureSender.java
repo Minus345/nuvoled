@@ -149,7 +149,7 @@ rescaleOp.filter(image, image);  // Source and destination are the same.
             SendSync.send_data(message);
         }
         try {
-            Thread.sleep(15);
+            Thread.sleep(Main.getSleep());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -158,20 +158,21 @@ rescaleOp.filter(image, image);  // Source and destination are the same.
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
-    public static BufferedImage applyColorspace (BufferedImage image){
+    public static BufferedImage applyColorspace(BufferedImage image) {
 
         //if (use_filter) {
-         //   ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        //   ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
-         //   ColorConvertOp op = new ColorConvertOp(cs, null);
-         //   BufferedImage bufferedImage = op.filter(image, null);
-         //   send_rgb(bufferedImage);
+        //   ColorConvertOp op = new ColorConvertOp(cs, null);
+        //   BufferedImage bufferedImage = op.filter(image, null);
+        //   send_rgb(bufferedImage);
 
         return image;
     }
-    public static BufferedImage applyFilter (BufferedImage image){
 
-                RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
+    public static BufferedImage applyFilter(BufferedImage image) {
+
+        RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
         return image;
     }

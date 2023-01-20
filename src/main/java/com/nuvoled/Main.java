@@ -27,6 +27,7 @@ public class Main {
     private static Float offSet;
     private static Integer[] pictureConfiguration;
     private static int rotation;
+    private static int sleep;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
 
@@ -38,6 +39,7 @@ public class Main {
         int onepanelSizeY = 128;
         port = 2000;
         bindToInterface = false;
+        sleep = 15;
 
         int xPanelCount = 1;
         int yPanelCount = 1;
@@ -94,6 +96,12 @@ public class Main {
                         .hasArg(true)
                         .desc("number of screen")
                         .argName("0")
+                        .build())
+                .addOption(Option.builder("s")
+                        .longOpt("sleep")
+                        .hasArg(true)
+                        .desc("sleep ime in ms")
+                        .argName("15")
                         .build());
 
         CommandLineParser parser = new DefaultParser();
@@ -131,6 +139,9 @@ public class Main {
             if (line.hasOption("sn")) {
                 screenNumber = Integer.parseInt(line.getOptionValue("sn"));
             }
+            if (line.hasOption("s")) {
+                sleep = Integer.parseInt(line.getOptionValue("s"));
+            }
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
@@ -165,6 +176,7 @@ public class Main {
         System.out.println("scaleFactor (Brightness) : " + scaleFactor.toString());
         System.out.println("offset (Contrast)        : " + offSet.toString());
         System.out.println("color (10/rgb 20/jpg)    : " + colorMode);
+        System.out.println("sleep time               : " + sleep);
 
         switch (mode) {
             case "picture" -> pictureMode();
@@ -269,5 +281,9 @@ public class Main {
 
     public static Float getOffset() {
         return offSet;
+    }
+
+    public static int getSleep() {
+        return sleep;
     }
 }
