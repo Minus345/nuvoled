@@ -11,6 +11,7 @@ Nuvoled Application in Java
  `-b,--bind` bind to interface 169.254  
  `-br,--brightness <0.6>` brightness value with 0.x -1.x  
  `-h,--help` Help Message  
+ `-o,--offset <0>` offset (Contrast)  _//new in version 1.7_  
  `-px,--panelsx <1>` Number of Panels horizontal  
  `-py,--panelsy <1>` Number of Panels vertical  
  `-r,--rotation <0>` rotation degree 0/90/180/270  
@@ -19,13 +20,16 @@ Nuvoled Application in Java
  `-sx,--startx <0>` Pixel start horizontal  
  `-sy,--starty <0>` Pixal start vertical  
 ### Mac ###  
-use `-b` to binde the interface -s 60
+use  
+`-b` to binde the interface  
+`-s 60` to set the delay between two frames
 
 ### Linux ###  
-you need the sleep
+you need to set the sleep  
+`-s 60` to set the delay between two frames
 
 ### Windows ###
-you can set the sleep to 0
+should work out of the box
 
 ### Old Version (up to 1.5) ###   
 Start:

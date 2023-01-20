@@ -103,6 +103,12 @@ public class Main {
                         .hasArg(true)
                         .desc("sleep ime in ms")
                         .argName("0")
+                        .build())
+                .addOption(Option.builder("o")
+                        .longOpt("offset")
+                        .hasArg(true)
+                        .desc("offset (Contrast) ")
+                        .argName("0")
                         .build());
 
         CommandLineParser parser = new DefaultParser();
@@ -142,6 +148,9 @@ public class Main {
             }
             if (line.hasOption("s")) {
                 sleep = Integer.parseInt(line.getOptionValue("s"));
+            }
+            if (line.hasOption("o")) {
+                offSet = Float.valueOf(line.getOptionValue("s"));
             }
         } catch (ParseException exp) {
             // oops, something went wrong
