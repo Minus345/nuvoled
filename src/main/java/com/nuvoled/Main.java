@@ -1,5 +1,6 @@
 package com.nuvoled;
 
+import com.github.sarxos.webcam.Webcam;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
 import org.apache.commons.cli.*;
@@ -30,9 +31,26 @@ public class Main {
     private static int rotation;
     private static int sleep;
 
-    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+    private static Webcam webcam;
 
+    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("Nuvoled Presenter");
+
+        for (Webcam webcam : Webcam.getWebcams()) {
+            System.out.println("Webcam detected: " + webcam.getName());
+        }
+
+        Webcam webcam = Webcam.getWebcamByName("Logitech StreamCam 1");
+        if (webcam != null) {
+            System.out.println("Webcam selected: " + webcam.getName());
+        } else {
+            System.out.println("No webcam detected");
+        }
+
+        webcam.open();
+        //ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
+        Main.webcam = webcam;
+
         scaleFactor = Float.parseFloat("0.6");
         offSet = Float.parseFloat("0");
         courantFrame = 2;
@@ -248,7 +266,7 @@ public class Main {
 
         while (true) {
             BufferedImage image = robot.createScreenCapture(rectangle);
-            PictureSender.send(image);
+            PictureSender.send(webcam.getImage());
         }
 
     }
