@@ -36,21 +36,6 @@ public class Main {
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("Nuvoled Presenter");
 
-        for (Webcam webcam : Webcam.getWebcams()) {
-            System.out.println("Webcam detected: " + webcam.getName());
-        }
-
-        Webcam webcam = Webcam.getWebcamByName("Logitech StreamCam 1");
-        if (webcam != null) {
-            System.out.println("Webcam selected: " + webcam.getName());
-        } else {
-            System.out.println("No webcam detected");
-        }
-
-        webcam.open();
-        //ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
-        Main.webcam = webcam;
-
         scaleFactor = Float.parseFloat("0.6");
         offSet = Float.parseFloat("0");
         courantFrame = 2;
@@ -74,6 +59,7 @@ public class Main {
         var options = new Options()
                 .addOption("h", "help", false, "Help Message")
                 .addOption("b", "bind", false, "bind to interface 169.254")
+                .addOption("l", "list", false, "list available webcams")
                 .addOption(Option.builder("px")
                         .longOpt("panelsx")
                         .hasArg(true)
@@ -137,6 +123,11 @@ public class Main {
             if (line.hasOption("b")) {
                 bindToInterface = true;
             }
+            if (line.hasOption("l")) {
+                //only list webcams
+                listWebcams();
+                System.exit(0);
+            }
             if (line.hasOption("h")) {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("java -jar nuvoled.jar ", options);
@@ -175,6 +166,17 @@ public class Main {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
 
+
+        Webcam webcam = Webcam.getWebcamByName("Logitech StreamCam 1");
+        if (webcam != null) {
+            System.out.println("Webcam selected: " + webcam.getName());
+        } else {
+            System.out.println("No webcam detected");
+        }
+
+        webcam.open();
+        //ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
+        Main.webcam = webcam;
 
         /*
 
@@ -234,6 +236,18 @@ public class Main {
         }
 
 
+    }
+
+    public static void listWebcams(){
+        try {
+
+            for (Webcam webcam : Webcam.getWebcams()) {
+                System.out.println("Webcam detected: " + webcam.getName());
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("on MAC can't list Webcams ...");
+        }
     }
 
     public static void screenAndVideo(Integer[] pictureConfiguration) throws AWTException {
