@@ -1,6 +1,7 @@
 package com.nuvoled;
 
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
 import org.apache.commons.cli.*;
@@ -30,8 +31,8 @@ public class Main {
     private static Integer[] pictureConfiguration;
     private static int rotation;
     private static int sleep;
-
     private static Webcam webcam;
+    private static String activeWebcam;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("Nuvoled Presenter");
@@ -113,6 +114,12 @@ public class Main {
                         .hasArg(true)
                         .desc("offset (Contrast) ")
                         .argName("0")
+                        .build())
+                .addOption(Option.builder("w")
+                        .longOpt("webcam")
+                        .hasArg(true)
+                        .desc("use webcam as input")
+                        .argName("<webcam name>")
                         .build());
 
         CommandLineParser parser = new DefaultParser();
@@ -161,23 +168,48 @@ public class Main {
             if (line.hasOption("o")) {
                 offSet = Float.valueOf(line.getOptionValue("s"));
             }
+            if (line.hasOption("w")) {
+                String read = String.valueOf(line.getOptionValue("w"));
+                read = read.replaceAll("-", " ");
+                activeWebcam = read;
+                mode = "webcam";
+            }
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
 
+        if (Objects.equals(mode, "webcam")) {
+            System.out.println(activeWebcam);
+            Webcam webcam = Webcam.getWebcamByName(activeWebcam);
+            if (webcam != null) {
+                System.out.println("Webcam selected: " + webcam.getName());
+            } else {
+                System.out.println("No webcam detected");
+                System.exit(1);
+            }
 
-        Webcam webcam = Webcam.getWebcamByName("Logitech StreamCam 1");
-        if (webcam != null) {
-            System.out.println("Webcam selected: " + webcam.getName());
-        } else {
-            System.out.println("No webcam detected");
+            //@formatter:off
+            Dimension[] nonStandardResolutions = new Dimension[]{
+                    WebcamResolution.PAL.getSize(),
+                    WebcamResolution.FHD.getSize(),
+                    new Dimension(2000, 1000),
+                    new Dimension(1000, 500),
+            };
+            //@formatter:on
+
+            webcam.setCustomViewSizes(nonStandardResolutions);
+            webcam.setViewSize(WebcamResolution.FHD.getSize());
+            System.out.println(webcam.getViewSize());
+            webcam.open();
+            Main.webcam = webcam;
         }
 
-        webcam.open();
-        //ImageIO.write(webcam.getImage(), "PNG", new File("hello-world.png"));
-        Main.webcam = webcam;
-
+        /*
+        BufferedImage image = webcam.getImage();
+        BufferedImage croped = image.getSubimage(0, 0, 128, 128);
+        ImageIO.write(croped, "PNG", new File("croped.png"));
+        ImageIO.write(image, "PNG", new File("image.png"));
         /*
 
         if (args.length < 10) {
@@ -185,15 +217,12 @@ public class Main {
             System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false] [brightness] [offset]");
             return;
         }
-
          */
 
-        pictureConfiguration = new Integer[]{rotation, screenNumber,
-                xPosition, yPosition, colorMode};
+        pictureConfiguration = new Integer[]{rotation, screenNumber, xPosition, yPosition, colorMode};
 
         panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
-
 
         System.out.println("x/y Panel Count          : " + xPanelCount + "/" + yPanelCount);
         System.out.println("x/y Panel Size           : " + onepanelSizeX + "/" + onepanelSizeY);
@@ -211,43 +240,29 @@ public class Main {
         switch (mode) {
             case "picture" -> pictureMode();
             case "screen", "video" -> screenAndVideo(pictureConfiguration);
+            case "webcam" -> useWebcam();
         }
     }
 
-    public static void pictureMode() throws IOException, InterruptedException {
-        System.out.println("Picture mode");
-        System.out.println("Enter Path / == \\");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String Path = reader.readLine();
-        System.out.println(Path);
-        BufferedImage image = ImageIO.read(new File(Path));
-        System.out.println("Height: " + image.getHeight());
-        System.out.println("Width: " + image.getWidth());
-
-        if (SendSync.setDatagramSocket()) {
-
-            //DatagramSocket datagramSocket = new DatagramSocket();
-            PictureSender.send(image);
-
-            SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
-            Thread.sleep(10);
-            SendSync.sendSyncro(Main.getCourantFrame());
-
-        }
-
-
-    }
-
-    public static void listWebcams(){
+    public static void listWebcams() {
         try {
-
             for (Webcam webcam : Webcam.getWebcams()) {
-                System.out.println("Webcam detected: " + webcam.getName());
+                System.out.println("Webcam detected: " + webcam.getName().replaceAll(" ", "-"));
             }
         } catch (Exception e) {
             System.out.println(e);
             System.out.println("on MAC can't list Webcams ...");
         }
+    }
+
+    public static void useWebcam() {
+        System.out.println("Webcam mode");
+        int x = pictureConfiguration[2];
+        int y = pictureConfiguration[3];
+        System.out.println(x + " : " + y);
+        BufferedImage image = webcam.getImage();
+        BufferedImage croped = image.getSubimage(0, 0, panelSizeX, panelSizeY);
+        PictureSender.send(croped);
     }
 
     public static void screenAndVideo(Integer[] pictureConfiguration) throws AWTException {
@@ -261,7 +276,6 @@ public class Main {
         int y = pictureConfiguration[3] + screenBounds.y;
         int colorMode = pictureConfiguration[4];
         rectangle.setLocation(x, y);
-        //+1 -> Fehler Zähler
         rectangle.setSize(panelSizeX, panelSizeY);
 
         if (!SendSync.setDatagramSocket()) {
@@ -280,9 +294,30 @@ public class Main {
 
         while (true) {
             BufferedImage image = robot.createScreenCapture(rectangle);
-            PictureSender.send(webcam.getImage());
+            PictureSender.send(image);
         }
 
+    }
+
+    public static void pictureMode() throws IOException, InterruptedException {
+        System.out.println("Picture mode");
+        System.out.println("Enter Path / == \\");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String Path = reader.readLine();
+        System.out.println(Path);
+        BufferedImage image = ImageIO.read(new File(Path));
+        System.out.println("Height: " + image.getHeight());
+        System.out.println("Width: " + image.getWidth());
+
+        if (SendSync.setDatagramSocket()) {
+            //DatagramSocket datagramSocket = new DatagramSocket();
+            PictureSender.send(image);
+
+            SendSync.sendSyncro((byte) (Main.getCourantFrame() - 1));
+            Thread.sleep(10);
+            SendSync.sendSyncro(Main.getCourantFrame());
+
+        }
     }
 
     public static String getBroadcastIpAddress() {
