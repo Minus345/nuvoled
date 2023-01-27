@@ -16,5 +16,20 @@
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="sonatype" />
+      <option name="name" value="Sonatype OSS Snapshots Repository" />
+      <option name="url" value="https://oss.sonatype.org/content/groups/public" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Sonatype OSS Snapshot Repository" />
+      <option name="name" value="Sonatype OSS Snapshot Repository" />
+      <option name="url" value="http://oss.sonatype.org/content/repositories/snapshots" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="nativelibs4java-repo" />
+      <option name="name" value="nativelibs4java-repo" />
+      <option name="url" value="https://nativelibs4java.sourceforge.net/maven" />
+    </remote-repository>
   </component>
 </project>
