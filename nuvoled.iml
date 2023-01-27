@@ -14,8 +14,17 @@
     <orderEntry type="library" name="turbojpeg" level="project" />
     <orderEntry type="library" name="commons.cli" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.5.0" level="project" />
-    <orderEntry type="library" name="Maven: com.github.sarxos:webcam-capture:0.3.12" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.7.0" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.sample:sample:1.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/src/main/resources/webcam-capture-0.3.13.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.2" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
   </component>
 </module>

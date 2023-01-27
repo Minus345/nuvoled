@@ -261,7 +261,7 @@ public class Main {
         int y = pictureConfiguration[3];
         System.out.println(x + " : " + y);
         BufferedImage image = webcam.getImage();
-        BufferedImage croped = image.getSubimage(0, 0, panelSizeX, panelSizeY);
+        BufferedImage croped = image.getSubimage(x, y, panelSizeX, panelSizeY);
         PictureSender.send(croped);
     }
 
