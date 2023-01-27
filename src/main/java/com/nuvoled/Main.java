@@ -5,6 +5,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
 import org.apache.commons.cli.*;
+import org.apache.log4j.varia.NullAppender;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -36,6 +37,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("Nuvoled Presenter");
+
+        org.apache.log4j.BasicConfigurator.configure(new NullAppender());
 
         scaleFactor = Float.parseFloat("0.6");
         offSet = Float.parseFloat("0");
