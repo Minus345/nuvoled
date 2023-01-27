@@ -35,24 +35,10 @@
             <artifactId>commons-cli</artifactId>
             <version>1.5.0</version>
         </dependency>
-        <!--<dependency>
-            <groupId>com.sample</groupId>
-            <artifactId>sample</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/webcam-capture-0.3.13.jar</systemPath>
-        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.2</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.nativelibs4java/bridj -->
-        <dependency>
-            <groupId>com.nativelibs4java</groupId>
-            <artifactId>bridj</artifactId>
-            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -67,33 +53,36 @@
         <dependency>
             <groupId>com.nativelibs4java</groupId>
             <artifactId>bridj</artifactId>
-                        <version>0.7.0</version>
-<!--            <version>0.8.0-SNAPSHOT</version>-->
+            <!--                        <version>0.7.0</version>-->
+            <version>0.8.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
+        <!--        <dependency>
+                    <groupId>com.github.sarxos</groupId>
+                    <artifactId>webcam-capture-driver-openimaj</artifactId>
+                    <version>0.3.12</version>
+                </dependency>-->
+
         <dependency>
             <groupId>com.github.sarxos</groupId>
-            <artifactId>webcam-capture-driver-openimaj</artifactId>
-            <version>0.3.12</version>
+            <artifactId>webcam-capture-driver-vlcj</artifactId>
+            <version>0.3.13-SNAPSHOT</version>
         </dependency>
-
-        <!-- <dependency>
-             <groupId>com.github.sarxos</groupId>
-             <artifactId>webcam-capture-driver-vlcj</artifactId>
-             <version>0.3.13-SNAPSHOT</version>
-         </dependency>-->
         <dependency>
             <groupId>com.github.sarxos</groupId>
             <artifactId>webcam-capture</artifactId>
-            <version>0.3.12</version>
+            <version>0.3.13-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.openimaj</groupId>
-            <artifactId>core-video-capture</artifactId>
-            <version>1.3.10</version>
-        </dependency>
+        <!--
+         static new webcam vlc4j .....
+         <dependency>
+                   <groupId>org.openimaj</groupId>
+                   <artifactId>core-video-capture</artifactId>
+                   <version>1.3.8</version>
+                   <scope>compile</scope>
+               </dependency>-->
 
     </dependencies>
 
