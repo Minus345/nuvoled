@@ -48,16 +48,14 @@ public class PictureSender {
 
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
-
     private static boolean only_changed_pictures = false;
     private static int color_mode = 10;
-
     private static final boolean use_filter = false;
-    //private static final boolean test_jpg = true;
     private static final boolean debug = false;
     private static final boolean DEBUG_RGB = false;
-
     private static boolean image_identical = false;
+    private static int channelOld = 0;
+    private static int channel;
 
     public static void setScreenMode(boolean screenMode_b, int colormode) {
         only_changed_pictures = screenMode_b;
@@ -65,34 +63,18 @@ public class PictureSender {
     }
 
     public static void send(BufferedImage image) {
-
-        /*
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", os);
-        if (debug) {
-            System.out.println(os.size());
-        }
-
-        RescaleOp rescaleOp = new RescaleOp(1.2f, 15, null);
-rescaleOp.filter(image, image);  // Source and destination are the same.
-
-        */
-
-        //applyColorspace(image)
         send_rgb(applyFilter(image));
-
         if (DEBUG_RGB) {
             System.out.println(":");
             System.out.println("Image Buffer RGBdata:");
             printRgbFromPicture(image);
             System.out.println(":");
         }
-
     }
 
     private static void send_rgb(BufferedImage image) {
         //checkPicture(image); // checks if the picture ist big enough
-        getRgbFromPicture(image, color_mode); //gets rgb data from pictures
+        getRgbFromPicture(image, color_mode); //updates rgb array
 
         if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
@@ -112,10 +94,27 @@ rescaleOp.filter(image, image);  // Source and destination are the same.
             }
         }
 
+        //Art net implementation
+        if (Main.isArtnetEnabled()) {
+            byte[] dmx = Main.getArtnet().readDmxData(Main.getSubnet(), Main.getUniversum());
+            channel = dmx[Main.getChannel()];
+            if (channel == channelOld) {
+                return;
+            } else {
+                //System.out.println("Artnet: " + Byte.toUnsignedInt((byte) channel));
+                channelOld = channel;
+                double brightness = (double) Byte.toUnsignedInt((byte) channel) / (double) 100;
+                System.out.println("Brightness: " + brightness);
+                for (int i = 0; i < rgb.length; i++) {
+                    rgb[i] = (byte) (rgb[i] * brightness);
+                }
+            }
+        }
+
         int pixel = 0;
         int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
 
-        for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
+        for (int counter = 0; counter <= MaxPackets; counter++) {
             byte[] message = new byte[1450];
             message[0] = 36;
             message[1] = 36;
@@ -137,7 +136,6 @@ rescaleOp.filter(image, image);  // Source and destination are the same.
                     pixel++;
                     message[9 + 2 + i] = 0;
                 } else {
-                    //https://en.wikipedia.org/wiki/YCbCr
                     message[9 + i] = rgb[pixel];
                     pixel++;
                     message[9 + 1 + i] = rgb[pixel];
@@ -355,7 +353,6 @@ rescaleOp.filter(image, image);  // Source and destination are the same.
         }
         return rgbCounternumber;
     }
-
 
     private static void checkPicture(BufferedImage image) {
         if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {

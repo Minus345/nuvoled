@@ -1,5 +1,6 @@
 package com.nuvoled;
 
+import ch.bildspur.artnet.ArtNetClient;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamResolution;
 import com.nuvoled.sender.PictureSender;
@@ -21,7 +22,6 @@ public class Main {
 
     private static int port;
     private static byte courantFrame;
-    //Args
     private static String broadcastIpAddress;
     private static int panelSizeX;
     private static int panelSizeY;
@@ -34,6 +34,11 @@ public class Main {
     private static int sleep;
     private static Webcam webcam;
     private static String activeWebcam;
+    private static boolean artnetEnabled;
+    private static ArtNetClient artnet;
+    private static int subnet;
+    private static int universum;
+    private static int channel;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("Nuvoled Presenter");
@@ -59,6 +64,11 @@ public class Main {
         int xPosition = 0;
         int yPosition = 0;
         int colorMode = 10;
+
+        artnetEnabled = false;
+        subnet = 0;
+        universum = 0;
+        channel = 0;
 
         var options = new Options()
                 .addOption("h", "help", false, "Help Message")
@@ -123,6 +133,12 @@ public class Main {
                         .hasArg(true)
                         .desc("use webcam as input")
                         .argName("<webcam name>")
+                        .build())
+                .addOption(Option.builder("a")
+                        .longOpt("artnet")
+                        .hasArg(true)
+                        .desc("enables artnet")
+                        .argName("<ip>")
                         .build());
 
         CommandLineParser parser = new DefaultParser();
@@ -176,6 +192,12 @@ public class Main {
                 read = read.replaceAll("-", " ");
                 activeWebcam = read;
                 mode = "webcam";
+            }
+            if (line.hasOption("a")){
+                System.out.println("Starting Artnet");
+                artnet = new ArtNetClient();
+                artnet.start(line.getOptionValue("a"));
+                artnetEnabled = true;
             }
         } catch (ParseException exp) {
             // oops, something went wrong
@@ -347,6 +369,18 @@ public class Main {
         return panelSizeY;
     }
 
+    public static int getSubnet() {
+        return subnet;
+    }
+
+    public static int getUniversum() {
+        return universum;
+    }
+
+    public static int getChannel() {
+        return channel;
+    }
+
     public static int rotationDegree() {
         return rotation;
     }
@@ -365,5 +399,13 @@ public class Main {
 
     public static int getSleep() {
         return sleep;
+    }
+
+    public static boolean isArtnetEnabled() {
+        return artnetEnabled;
+    }
+
+    public static ArtNetClient getArtnet() {
+        return artnet;
     }
 }
