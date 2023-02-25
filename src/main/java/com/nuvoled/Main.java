@@ -393,6 +393,10 @@ public class Main {
         return scaleFactor;
     }
 
+    public static void setScaleFactor(Float scaleFactor) {
+        Main.scaleFactor = scaleFactor;
+    }
+
     public static Float getOffset() {
         return offSet;
     }

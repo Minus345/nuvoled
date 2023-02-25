@@ -97,18 +97,10 @@ public class PictureSender {
         //Art net implementation
         if (Main.isArtnetEnabled()) {
             byte[] dmx = Main.getArtnet().readDmxData(Main.getSubnet(), Main.getUniversum());
-            channel = dmx[Main.getChannel()];
-            if (channel == channelOld) {
-                return;
-            } else {
-                //System.out.println("Artnet: " + Byte.toUnsignedInt((byte) channel));
-                channelOld = channel;
-                double brightness = (double) Byte.toUnsignedInt((byte) channel) / (double) 100;
-                System.out.println("Brightness: " + brightness);
-                for (int i = 0; i < rgb.length; i++) {
-                    rgb[i] = (byte) (rgb[i] * brightness);
-                }
-            }
+            channel = Byte.toUnsignedInt(dmx[Main.getChannel()]);
+            float value = channel / (float) 100;
+            Main.setScaleFactor(value);
+            //System.out.println(value);
         }
 
         int pixel = 0;
