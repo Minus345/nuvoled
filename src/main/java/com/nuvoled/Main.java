@@ -57,7 +57,9 @@ public class Main {
         int xPanelCount = 1;
         int yPanelCount = 1;
 
+        //broadcastIpAddress = "127.0.0.255";
         broadcastIpAddress = "169.254.255.255";
+
         mode = "video";
         rotation = 0;
         int screenNumber = 0;
@@ -139,6 +141,24 @@ public class Main {
                         .hasArg(true)
                         .desc("enables artnet")
                         .argName("<ip>")
+                        .build())
+                .addOption(Option.builder("as")
+                        .longOpt("artnet")
+                        .hasArg(true)
+                        .desc("artnet subnet")
+                        .argName("< 0 - 16 >")
+                        .build())
+                .addOption(Option.builder("au")
+                        .longOpt("artnet")
+                        .hasArg(true)
+                        .desc("artnet universe")
+                        .argName("< 0 - 16 >")
+                        .build())
+                .addOption(Option.builder("ac")
+                        .longOpt("artnet")
+                        .hasArg(true)
+                        .desc("artnet channel")
+                        .argName("< 0 - 513 >")
                         .build());
 
         CommandLineParser parser = new DefaultParser();
@@ -198,6 +218,9 @@ public class Main {
                 artnet = new ArtNetClient();
                 artnet.start(line.getOptionValue("a"));
                 artnetEnabled = true;
+                if(line.hasOption("as")) subnet = Integer.parseInt(line.getOptionValue("as"));
+                if(line.hasOption("au")) universum = Integer.parseInt(line.getOptionValue("au"));
+                if(line.hasOption("ac")) channel = Integer.parseInt(line.getOptionValue("ac"));
             }
         } catch (ParseException exp) {
             // oops, something went wrong
