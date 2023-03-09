@@ -100,7 +100,11 @@ public class PictureSender {
             channel = Byte.toUnsignedInt(dmx[Main.getChannel()]);
             float value = channel / (float) 100;
             Main.setScaleFactor(value);
-            System.out.println(value);
+
+            if(Main.isArtnetDebug()){
+                System.out.println("A: " + channel);
+                System.out.println("B: " + value);
+            }
         }
 
         int pixel = 0;
