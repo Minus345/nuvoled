@@ -40,6 +40,7 @@ public class Main {
     private static int universum;
     private static int channel;
     private static boolean artnetDebug;
+    private static String wichPanel;
 
     private static int xPanelCount = 1;
     private static int yPanelCount = 1;
@@ -55,8 +56,26 @@ public class Main {
         scaleFactor = Float.parseFloat("0.6");
         offSet = Float.parseFloat("0");
         courantFrame = 2;
-        int onepanelSizeX = 128;
-        int onepanelSizeY = 128;
+
+        wichPanel = "P5";
+
+        int onepanelSizeX = 0;
+        int onepanelSizeY = 0;
+
+        switch (wichPanel) {
+            case "P4" -> {
+                onepanelSizeX = 128;
+                onepanelSizeY = 128;
+                break;
+            }
+            case "P5" -> {
+                onepanelSizeX = 128;
+                onepanelSizeY = 96;
+                break;
+            }
+        }
+
+
         port = 2000;
         bindToInterface = false;
         sleep = 0;
@@ -231,7 +250,7 @@ public class Main {
                         .desc("artnet channel")
                         .argName("< 0 - 513 >")
                         .build())
-                .addOption("ad","artnetDebug",false,"enables artnet debug");
+                .addOption("ad", "artnetDebug", false, "enables artnet debug");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line;
@@ -285,7 +304,7 @@ public class Main {
                 activeWebcam = read;
                 mode = "webcam";
             }
-            if(line.hasOption("ad")){
+            if (line.hasOption("ad")) {
                 System.out.println("ad");
             }
             if (line.hasOption("a")) {
@@ -307,7 +326,6 @@ public class Main {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
     }
-
 
     public static void listWebcams() {
         try {
@@ -356,10 +374,21 @@ public class Main {
             System.out.println("Video mode");
             PictureSender.setScreenMode(false, colorMode);
         }
-
+        System.currentTimeMillis();
+        long time;
+        int i =0;
         while (true) {
+            i++;
+            time = System.currentTimeMillis();
             BufferedImage image = robot.createScreenCapture(rectangle);
             PictureSender.send(image);
+            float fps = (float) 1 / ((float) (System.currentTimeMillis() - time) / 1000);
+
+            if (i == 100){
+                System.out.println("fps: " + fps);
+                i = 0;
+            }
+
         }
 
     }

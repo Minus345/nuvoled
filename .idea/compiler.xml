@@ -9,8 +9,5 @@
         <module name="nuvoled" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="nuvoled" target="19" />
-    </bytecodeTargetLevel>
   </component>
 </project>
