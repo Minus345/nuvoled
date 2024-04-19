@@ -8,17 +8,25 @@ Nuvoled Application in Java
 `java -jar nuvoled.jar -h` for help
 
 ### Other Parameters ###
- `-b,--bind` bind to interface 169.254  
- `-br,--brightness <0.6>` brightness value with 0.x -1.x  
- `-h,--help` Help Message  
- `-o,--offset <0>` offset (Contrast)  _//new in version 1.7_  
- `-px,--panelsx <1>` Number of Panels horizontal  
- `-py,--panelsy <1>` Number of Panels vertical  
- `-r,--rotation <0>` rotation degree 0/90/180/270  
- `-s,--sleep <15>` sleep ime in ms  
- `-sn,--screennr <0>` number of screen  
- `-sx,--startx <0>` Pixel start horizontal  
- `-sy,--starty <0>` Pixal start vertical  
+`-a,--artnet <<ip>>                  enables artnet`  
+`-ac,--artnetChannel << 0 - 513 >>   artnet channel`  
+`-ad,--artnetDebug                   enables artnet debug`  
+`-as,--artnetSubnet << 0 - 16 >>     artnet subnet`  
+`-au,--artnetUniverse << 0 - 16 >>   artnet universe`  
+`-b,--bind                           bind to interface 169.254`  
+`-br,--brightness <0.6>              brightness value with 0.x -1.x`  
+`-h,--help                           Help Message`  
+`-l,--list                           list available webcams`  
+`-o,--offset <0>                     offset (Contrast)`  
+`-p,--Panel <arg>                    choose Panel`  
+`-px,--panelsx <1>                   Number of Panels horizontal`  
+`-py,--panelsy <1>                   Number of Panels vertical`  
+`-r,--rotation <0>                   rotation degree 0/90/180/270`  
+`-s,--sleep <0>                      sleep ime in ms`  
+`-sn,--screennr <0>                  number of screen`  
+`-sx,--startx <0>                    Pixel start horizontal`  
+`-sy,--starty <0>                    Pixal start vertical`  
+`-w,--webcam <<webcam name>>         use webcam as input`  
 ### Mac ###  
 use  
 `-b` to binde the interface  

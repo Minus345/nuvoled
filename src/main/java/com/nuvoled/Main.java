@@ -56,26 +56,6 @@ public class Main {
         scaleFactor = Float.parseFloat("0.6");
         offSet = Float.parseFloat("0");
         courantFrame = 2;
-
-        wichPanel = "P5";
-
-        int onepanelSizeX = 0;
-        int onepanelSizeY = 0;
-
-        switch (wichPanel) {
-            case "P4" -> {
-                onepanelSizeX = 128;
-                onepanelSizeY = 128;
-                break;
-            }
-            case "P5" -> {
-                onepanelSizeX = 128;
-                onepanelSizeY = 96;
-                break;
-            }
-        }
-
-
         port = 2000;
         bindToInterface = false;
         sleep = 0;
@@ -95,6 +75,27 @@ public class Main {
         channel = 0;
 
         commandLineParameters(args);
+
+        if (wichPanel == null || wichPanel.isEmpty()) {
+            System.out.println("Choose Panel");
+            System.exit(10);
+        }
+
+        int onepanelSizeX = 0;
+        int onepanelSizeY = 0;
+
+        switch (wichPanel) {
+            case "P4" -> {
+                onepanelSizeX = 128;
+                onepanelSizeY = 128;
+                break;
+            }
+            case "P5" -> {
+                onepanelSizeX = 128;
+                onepanelSizeY = 96;
+                break;
+            }
+        }
 
         if (Objects.equals(mode, "webcam")) {
             System.out.println(activeWebcam);
@@ -141,6 +142,7 @@ public class Main {
         panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
 
+        System.out.println("Panel                    : " + wichPanel);
         System.out.println("x/y Panel Count          : " + xPanelCount + "/" + yPanelCount);
         System.out.println("x/y Panel Size           : " + onepanelSizeX + "/" + onepanelSizeY);
         System.out.println("x/y Pixels               : " + panelSizeX + "/" + panelSizeY);
@@ -250,7 +252,8 @@ public class Main {
                         .desc("artnet channel")
                         .argName("< 0 - 513 >")
                         .build())
-                .addOption("ad", "artnetDebug", false, "enables artnet debug");
+                .addOption("ad", "artnetDebug", false, "enables artnet debug")
+                .addOption("p", "Panel", true, "choose Panel");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line;
@@ -321,6 +324,9 @@ public class Main {
                 System.out.println("Channel: " + channel);
                 System.out.println("Debug: " + artnetDebug);
             }
+            if (line.hasOption("p")) {
+                wichPanel = String.valueOf(line.getOptionValue("p"));
+            }
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
@@ -374,19 +380,23 @@ public class Main {
             System.out.println("Video mode");
             PictureSender.setScreenMode(false, colorMode);
         }
-        System.currentTimeMillis();
+
+        boolean showFps = false;
         long time;
-        int i =0;
+        int i = 0;
         while (true) {
             i++;
             time = System.currentTimeMillis();
             BufferedImage image = robot.createScreenCapture(rectangle);
             PictureSender.send(image);
-            float fps = (float) 1 / ((float) (System.currentTimeMillis() - time) / 1000);
 
-            if (i == 100){
-                System.out.println("fps: " + fps);
-                i = 0;
+            if (showFps) {
+                float fps = (float) 1 / ((float) (System.currentTimeMillis() - time) / 1000);
+
+                if (i == 100) {
+                    System.out.println("fps: " + fps);
+                    i = 0;
+                }
             }
 
         }
