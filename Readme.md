@@ -7,6 +7,10 @@ Nuvoled Application in Java
 ### New Version (from 1.6) ###
 `java -jar nuvoled.jar -h` for help
 
+Chose Panel: `-p`: 
+*     "P4"  -> NuvoLED P4
+*     "P5"  -> NuvoLED P5    (Outdoor)
+
 ### Other Parameters ###
 `-a,--artnet <<ip>>                  enables artnet`  
 `-ac,--artnetChannel << 0 - 513 >>   artnet channel`  
