@@ -19,7 +19,6 @@ import java.util.Objects;
 
 public class Main {
 
-
     private static int port;
     private static byte courantFrame;
     private static String broadcastIpAddress;
@@ -66,7 +65,7 @@ public class Main {
         mode = "video";
         rotation = 0;
 
-        int colorMode = 10;
+        int colorMode = 30;
 
         artnetEnabled = false;
         artnetDebug = false;
@@ -153,7 +152,7 @@ public class Main {
         System.out.println("bind to interface        : " + bindToInterface);
         System.out.println("scaleFactor (Brightness) : " + scaleFactor.toString());
         System.out.println("offset (Contrast)        : " + offSet.toString());
-        System.out.println("color (10/rgb 20/jpg)    : " + colorMode);
+        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
         System.out.println("sleep time               : " + sleep);
 
         switch (mode) {
@@ -382,11 +381,14 @@ public class Main {
         }
 
         boolean showFps = false;
-        long time;
+        long time = 0;
         int i = 0;
         while (true) {
-            i++;
-            time = System.currentTimeMillis();
+            if (showFps) {
+                i++;
+                time = System.currentTimeMillis();
+            }
+
             BufferedImage image = robot.createScreenCapture(rectangle);
             PictureSender.send(image);
 

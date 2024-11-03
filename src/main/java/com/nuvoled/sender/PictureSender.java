@@ -2,47 +2,8 @@ package com.nuvoled.sender;
 
 import com.nuvoled.Main;
 
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
-import java.awt.image.RescaleOp;
 import java.util.Arrays;
-
-//import static com.nuvoled.sender.PictureCompress.compress;
-
-/*
-https://libjpeg-turbo.org/
-private unsafe void jpegdecode(byte* imagedata, byte** @out, uint* outS, uint imageheight, uint imagewidth, uint quality)
-{
-	System.Runtime.CompilerServices.Unsafe.SkipInit(out jpeg_compress_struct cinfo);
-	System.Runtime.CompilerServices.Unsafe.SkipInit(out jpeg_error_mgr jerr);
-	*(int*)(&cinfo) = (int)<Module>.jpeg_std_error(&jerr);
-	<Module>.jpeg_CreateCompress(&cinfo, 62, 360u);
-	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, uint>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 28)) = imagewidth;
-	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, uint>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 32)) = imageheight;
-	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 36)) = 3;
-	System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 40)) = 2;
-	uint outsize = 600000u;
-	<Module>.jpeg_mem_dest(&cinfo, @out, &outsize);
-	<Module>.jpeg_set_defaults(&cinfo);
-	<Module>.jpeg_set_quality(&cinfo, (int)quality, 1);
-	<Module>.jpeg_start_compress(&cinfo, 1);
-	int row_stride = System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 28)) * 3;
-	if ((uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 208)) < (uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 32)))
-	{
-		do
-		{
-			byte* row_pointer = System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 208)) * row_stride + imagedata;
-			<Module>.jpeg_write_scanlines(&cinfo, &row_pointer, 1u);
-		}
-		while ((uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 208)) < (uint)System.Runtime.CompilerServices.Unsafe.As<jpeg_compress_struct, int>(ref System.Runtime.CompilerServices.Unsafe.AddByteOffset(ref cinfo, 32)));
-	}
-	<Module>.jpeg_finish_compress(&cinfo);
-	<Module>.jpeg_destroy_compress(&cinfo);
-	*outS = outsize;
-}
- */
-
 
 public class PictureSender {
 
@@ -63,13 +24,7 @@ public class PictureSender {
     }
 
     public static void send(BufferedImage image) {
-        send_rgb(applyFilter(image));
-        if (DEBUG_RGB) {
-            System.out.println(":");
-            System.out.println("Image Buffer RGBdata:");
-            printRgbFromPicture(image);
-            System.out.println(":");
-        }
+        send_rgb(image);
     }
 
     private static void send_rgb(BufferedImage image) {
@@ -101,7 +56,7 @@ public class PictureSender {
             float value = channel / (float) 100;
             Main.setScaleFactor(value);
 
-            if(Main.isArtnetDebug()){
+            if (Main.isArtnetDebug()) {
                 System.out.println("A: " + channel);
                 System.out.println("B: " + value);
             }
@@ -116,7 +71,7 @@ public class PictureSender {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20
+            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20 RGB565 -> 30
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -152,60 +107,6 @@ public class PictureSender {
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
-    public static BufferedImage applyColorspace(BufferedImage image) {
-
-        //if (use_filter) {
-        //   ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-
-        //   ColorConvertOp op = new ColorConvertOp(cs, null);
-        //   BufferedImage bufferedImage = op.filter(image, null);
-        //   send_rgb(bufferedImage);
-
-        return image;
-    }
-
-    public static BufferedImage applyFilter(BufferedImage image) {
-
-        RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
-        rescaleOp.filter(image, image);  // Source and destination are the same.
-        return image;
-    }
-
-    private static void send_jpg(byte[] image) {
-        //checkPicture(image); // checks if the picture ist big enough
-        int pixel = 0;
-        int MaxPackets = (image.length / 1440) + 1;
-
-        System.out.println("image " + image.length + " frames " + MaxPackets);
-
-        for (int counter = 0; counter <= MaxPackets; counter++) { //35 = (128 * 128 * 3)/1440
-            byte[] message = new byte[1450];
-            message[0] = 36;
-            message[1] = 36;
-            message[2] = 20;
-            message[3] = Main.getCourantFrame();
-            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20
-            message[5] = (byte) (counter >> 8);
-            message[6] = (byte) (counter & 255);
-            message[7] = (byte) (MaxPackets >> 8);
-            message[8] = (byte) (MaxPackets & 255);
-            message[9] = 45;
-
-            for (int i = 1; i < 1440; i++) {
-                if (pixel >= image.length) {
-                    message[9 + i] = 0;
-                } else {
-                    //https://en.wikipedia.org/wiki/YCbCr
-                    message[9 + i] = image[pixel];
-                }
-                pixel++;
-            }
-            SendSync.send_data(message);
-        }
-        SendSync.send_end_frame();
-        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
-    }
-
     private static void printRgbFromPicture(BufferedImage image) {
         int rgbCounterNumber = 0;
         for (int y = 1; y <= 1; y++) {
@@ -235,14 +136,44 @@ public class PictureSender {
 
     private static void getRgbFromPicture(BufferedImage image, int colormode) {
 
-        if (colormode == 10) {
-            getLedRgbData(image);
-            return;
+        switch (colormode) {
+            case 10:
+                getLedRgbData(image);
+                break;
+            case 20:
+                getLedJpgData(image);
+                break;
+            case 30:
+                getLedRgb565Data(image);
+                break;
+        }
+    }
+
+    private static void getLedRgb565Data(BufferedImage image) {
+
+        for (int y = 0; y < Main.getPanelSizeY(); y++) {
+            for (int x = 0; x < Main.getPanelSizeX(); x++) {
+                int pixel = image.getRGB(x, y);
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = (pixel) & 0xff;
+
+                int red5 = red / 255 * 31;
+                int green6 = red / 255 * 31;
+                int blue5 = red / 255 * 31;
+
+                int red5Shifted = red5 << 11;
+                int green6Shifted = green6 << 5;
+
+                byte[] rgb565 = new byte[red5Shifted | green6Shifted | blue5];
+
+                System.out.println(rgb565);
+
+               // rgb[rgbCounterNumber] = (byte) blue;
+            }
         }
 
-        if (colormode == 20) {
-            getLedJpgData(image);
-        }
+        //System.out.println(rgb);
     }
 
     private static void getLedRgbData(BufferedImage image) {
