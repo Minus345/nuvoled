@@ -3,6 +3,8 @@ package com.nuvoled.sender;
 import com.nuvoled.Main;
 
 import java.awt.image.BufferedImage;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class PictureSender {
@@ -29,8 +31,10 @@ public class PictureSender {
 
     private static void send_rgb(BufferedImage image) {
         //checkPicture(image); // checks if the picture ist big enough
-        getRgbFromPicture(image, color_mode); //updates rgb array
+        //getRgbFromPicture(image, color_mode); //updates rgb array
+        getLedRgb565Data(image);
 
+         /*
         if (only_changed_pictures) {
             if (Arrays.equals(rgb, rgbOld)) {
                 if (image_identical) {
@@ -49,6 +53,8 @@ public class PictureSender {
             }
         }
 
+          */
+
         //Art net implementation
         if (Main.isArtnetEnabled()) {
             byte[] dmx = Main.getArtnet().readDmxData(Main.getSubnet(), Main.getUniversum());
@@ -63,7 +69,8 @@ public class PictureSender {
         }
 
         int pixel = 0;
-        int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1;
+        int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+        //System.out.println(Main.getPanelSizeX() + " : " + Main.getPanelSizeY() );
 
         for (int counter = 0; counter <= MaxPackets; counter++) {
             byte[] message = new byte[1450];
@@ -71,7 +78,7 @@ public class PictureSender {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20 RGB565 -> 30
+            message[4] = (byte) (30); //RGB -> 10 JPG -> 20 RGB565 -> 30
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -104,7 +111,7 @@ public class PictureSender {
         }
         SendSync.send_end_frame();
 
-        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+        // System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
     private static void printRgbFromPicture(BufferedImage image) {
@@ -151,6 +158,8 @@ public class PictureSender {
 
     private static void getLedRgb565Data(BufferedImage image) {
 
+        int rgbCounterNumber = 0;
+
         for (int y = 0; y < Main.getPanelSizeY(); y++) {
             for (int x = 0; x < Main.getPanelSizeX(); x++) {
                 int pixel = image.getRGB(x, y);
@@ -158,22 +167,38 @@ public class PictureSender {
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
 
-                int red5 = red / 255 * 31;
-                int green6 = red / 255 * 31;
-                int blue5 = red / 255 * 31;
+                double red5 = blue / 255F * 31F;
+                double green6 = red / 255F * 31F;
+                double blue5 = green / 255F * 31F;
 
-                int red5Shifted = red5 << 11;
-                int green6Shifted = green6 << 5;
+                int red5Shifted = (int) red5 << 11;
+                int green6Shifted = (int) green6 << 5;
+                int blue5Shifted = (int) blue5 << 0;
 
-                byte[] rgb565 = new byte[red5Shifted | green6Shifted | blue5];
+                int rgb565 = red5Shifted | green6Shifted | blue5Shifted;
 
-                System.out.println(rgb565);
+                short rgb565short = (short) rgb565;
 
-               // rgb[rgbCounterNumber] = (byte) blue;
+                byte[] bytes = BigInteger.valueOf(rgb565short).toByteArray();
+
+                if (bytes.length != 2) {
+                    rgb[rgbCounterNumber] = 0;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) rgb565short;
+                    rgbCounterNumber++;
+                } else {
+                    rgb[rgbCounterNumber] = bytes[0];
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = bytes[1];
+                    rgbCounterNumber++;
+                }
+
+
+                //System.out.println(rgb565);
             }
         }
 
-        //System.out.println(rgb);
+        //System.out.println(Arrays.toString(rgb));
     }
 
     private static void getLedRgbData(BufferedImage image) {
