@@ -167,9 +167,9 @@ public class PictureSender {
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
 
-                double red5 = blue / 255F * 31F;
-                double green6 = red / 255F * 31F;
-                double blue5 = green / 255F * 31F;
+                double red5 = red / 255F * 31F;
+                double green6 = green / 255F * 31F;
+                double blue5 =  blue / 255F * 31F;
 
                 int red5Shifted = (int) red5 << 11;
                 int green6Shifted = (int) green6 << 5;
@@ -179,20 +179,15 @@ public class PictureSender {
 
                 short rgb565short = (short) rgb565;
 
-                byte[] bytes = BigInteger.valueOf(rgb565short).toByteArray();
+                short a = (short) 31;
 
-                if (bytes.length != 2) {
-                    rgb[rgbCounterNumber] = 0;
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = (byte) rgb565short;
-                    rgbCounterNumber++;
-                } else {
-                    rgb[rgbCounterNumber] = bytes[0];
-                    rgbCounterNumber++;
-                    rgb[rgbCounterNumber] = bytes[1];
-                    rgbCounterNumber++;
-                }
-
+                byte[] bytes = new byte[2];
+                bytes[0] = (byte) (rgb565short & 0xff);
+                bytes[1] = (byte) ((rgb565short >> 8) & 0xff);
+                rgb[rgbCounterNumber] = bytes[0];
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = bytes[1];
+                rgbCounterNumber++;
 
                 //System.out.println(rgb565);
             }

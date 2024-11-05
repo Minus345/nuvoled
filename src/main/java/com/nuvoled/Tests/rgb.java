@@ -7,7 +7,7 @@ package com.nuvoled.Tests;
 
 5 + 6 + 5
 R   G   B
-B   G   R
+
 
 Screen LED
 
@@ -15,9 +15,9 @@ Rot     Blau
 Grün    Lila -> Rot mit 6 bits
 Blau    Grün
 
-B R G
-00000 00000 000000
-5 + 5 + 6
+R   G   B
+00000 000000 000000
+5 + 6 + 5
 
  */
 
