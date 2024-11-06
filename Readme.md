@@ -11,6 +11,11 @@ Chose Panel: `-p`:
 *     "P4"  -> NuvoLED P4
 *     "P5"  -> NuvoLED P5    (Outdoor)
 
+### Known Issues
+* rotation in rgb565 mode
+* dimming in rgb565 mode
+
+
 ### Other Parameters ###
 `-a,--artnet <<ip>>                  enables artnet`  
 `-ac,--artnetChannel << 0 - 513 >>   artnet channel`  
@@ -30,7 +35,8 @@ Chose Panel: `-p`:
 `-sn,--screennr <0>                  number of screen`  
 `-sx,--startx <0>                    Pixel start horizontal`  
 `-sy,--starty <0>                    Pixal start vertical`  
-`-w,--webcam <<webcam name>>         use webcam as input`  
+`-w,--webcam <<webcam name>>         use webcam as input`
+`-rgb565<true/false>                 rgb565 mode`
 ### Mac ###  
 use  
 `-b` to binde the interface  

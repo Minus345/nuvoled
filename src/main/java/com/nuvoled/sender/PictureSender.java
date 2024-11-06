@@ -3,16 +3,13 @@ package com.nuvoled.sender;
 import com.nuvoled.Main;
 
 import java.awt.image.BufferedImage;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class PictureSender {
 
     public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
     private static boolean only_changed_pictures = false;
-    private static int color_mode = 10;
+    private static int color_mode = Main.getColorMode();
     private static final boolean use_filter = false;
     private static final boolean debug = false;
     private static final boolean DEBUG_RGB = false;
@@ -31,8 +28,8 @@ public class PictureSender {
 
     private static void send_rgb(BufferedImage image) {
         //checkPicture(image); // checks if the picture ist big enough
-        //getRgbFromPicture(image, color_mode); //updates rgb array
-        getLedRgb565Data(image);
+
+        getRgbFromPicture(image, color_mode); //updates rgb array
 
          /*
         if (only_changed_pictures) {
@@ -69,8 +66,13 @@ public class PictureSender {
         }
 
         int pixel = 0;
-        int MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
-        //System.out.println(Main.getPanelSizeX() + " : " + Main.getPanelSizeY() );
+        int MaxPackets = 0;
+
+        if (color_mode == 30) {
+            MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+        } else {
+            MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+        }
 
         for (int counter = 0; counter <= MaxPackets; counter++) {
             byte[] message = new byte[1450];
@@ -145,12 +147,14 @@ public class PictureSender {
 
         switch (colormode) {
             case 10:
+                System.out.println("RGB");
                 getLedRgbData(image);
                 break;
             case 20:
                 getLedJpgData(image);
                 break;
             case 30:
+                System.out.println("RGB565");
                 getLedRgb565Data(image);
                 break;
         }
@@ -169,17 +173,14 @@ public class PictureSender {
 
                 double red5 = red / 255F * 31F;
                 double green6 = green / 255F * 31F;
-                double blue5 =  blue / 255F * 31F;
+                double blue5 = blue / 255F * 31F;
 
                 int red5Shifted = (int) red5 << 11;
                 int green6Shifted = (int) green6 << 5;
                 int blue5Shifted = (int) blue5 << 0;
 
                 int rgb565 = red5Shifted | green6Shifted | blue5Shifted;
-
                 short rgb565short = (short) rgb565;
-
-                short a = (short) 31;
 
                 byte[] bytes = new byte[2];
                 bytes[0] = (byte) (rgb565short & 0xff);
@@ -189,7 +190,6 @@ public class PictureSender {
                 rgb[rgbCounterNumber] = bytes[1];
                 rgbCounterNumber++;
 
-                //System.out.println(rgb565);
             }
         }
 

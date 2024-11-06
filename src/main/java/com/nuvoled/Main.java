@@ -40,6 +40,7 @@ public class Main {
     private static int channel;
     private static boolean artnetDebug;
     private static String wichPanel;
+    private static int colorMode;
 
     private static int xPanelCount = 1;
     private static int yPanelCount = 1;
@@ -65,7 +66,7 @@ public class Main {
         mode = "video";
         rotation = 0;
 
-        int colorMode = 30;
+        colorMode = 10;
 
         artnetEnabled = false;
         artnetDebug = false;
@@ -94,6 +95,10 @@ public class Main {
                 onepanelSizeY = 96;
                 break;
             }
+            default -> {
+                System.out.println("No Panel defined");
+                System.exit(1);
+            }
         }
 
         if (Objects.equals(mode, "webcam")) {
@@ -121,20 +126,6 @@ public class Main {
             webcam.open();
             Main.webcam = webcam;
         }
-
-        /*
-        BufferedImage image = webcam.getImage();
-        BufferedImage croped = image.getSubimage(0, 0, 128, 128);
-        ImageIO.write(croped, "PNG", new File("croped.png"));
-        ImageIO.write(image, "PNG", new File("image.png"));
-        /*
-
-        if (args.length < 10) {
-            System.out.println("Fehlende argumente");
-            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false] [brightness] [offset]");
-            return;
-        }
-         */
 
         pictureConfiguration = new Integer[]{rotation, screenNumber, xPosition, yPosition, colorMode};
 
@@ -252,7 +243,8 @@ public class Main {
                         .argName("< 0 - 513 >")
                         .build())
                 .addOption("ad", "artnetDebug", false, "enables artnet debug")
-                .addOption("p", "Panel", true, "choose Panel");
+                .addOption("p", "Panel", true, "choose Panel")
+                .addOption("rgb", "rgb565", true, "sets the mode to rgb565");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line;
@@ -325,6 +317,9 @@ public class Main {
             }
             if (line.hasOption("p")) {
                 wichPanel = String.valueOf(line.getOptionValue("p"));
+            }
+            if (line.hasOption("rgb565")) {
+                Main.setColorMode(30);
             }
         } catch (ParseException exp) {
             // oops, something went wrong
@@ -496,5 +491,13 @@ public class Main {
 
     public static boolean isArtnetDebug() {
         return artnetDebug;
+    }
+
+    public static int getColorMode() {
+        return colorMode;
+    }
+
+    public static void setColorMode(int colorMode) {
+        Main.colorMode = colorMode;
     }
 }
