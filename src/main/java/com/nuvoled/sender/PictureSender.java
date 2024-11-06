@@ -80,7 +80,7 @@ public class PictureSender {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = (byte) (30); //RGB -> 10 JPG -> 20 RGB565 -> 30
+            message[4] = (byte) (color_mode); //RGB -> 10 JPG -> 20 RGB565 -> 30
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
@@ -147,14 +147,12 @@ public class PictureSender {
 
         switch (colormode) {
             case 10:
-                System.out.println("RGB");
                 getLedRgbData(image);
                 break;
             case 20:
                 getLedJpgData(image);
                 break;
             case 30:
-                System.out.println("RGB565");
                 getLedRgb565Data(image);
                 break;
         }
