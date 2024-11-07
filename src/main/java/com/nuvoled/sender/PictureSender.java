@@ -3,6 +3,7 @@ package com.nuvoled.sender;
 import com.nuvoled.Main;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.util.Arrays;
 
 public class PictureSender {
@@ -15,7 +16,7 @@ public class PictureSender {
     private static boolean image_identical = false;
 
     public static void send(BufferedImage image) {
-        getFormat(image, color_mode); //updates rgb array
+        getFormat(applyFilter(image), color_mode); //updates rgb array
         artNetCheck();
         onlySendChangedPicture();
 
@@ -81,6 +82,13 @@ public class PictureSender {
                 getLedRgb565Data(image);
                 break;
         }
+    }
+
+    public static BufferedImage applyFilter(BufferedImage image) {
+
+        RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
+        rescaleOp.filter(image, image);  // Source and destination are the same.
+        return image;
     }
 
     private static void getLedRgb565Data(BufferedImage image) {
