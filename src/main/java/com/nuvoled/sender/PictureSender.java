@@ -3,70 +3,24 @@ package com.nuvoled.sender;
 import com.nuvoled.Main;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 public class PictureSender {
 
-    public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];// 128*128*3
+    public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
     public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
     private static boolean only_changed_pictures = false;
-    private static int color_mode = Main.getColorMode();
-    private static final boolean use_filter = false;
-    private static final boolean debug = false;
-    private static final boolean DEBUG_RGB = false;
+    private static final int color_mode = Main.getColorMode();
+    private static final boolean debugForOnlySendChangedPicture = false;
     private static boolean image_identical = false;
-    private static int channelOld = 0;
-    private static int channel;
-
-    public static void setScreenMode(boolean screenMode_b, int colormode) {
-        only_changed_pictures = screenMode_b;
-        color_mode = colormode;
-    }
 
     public static void send(BufferedImage image) {
-        send_rgb(image);
-    }
-
-    private static void send_rgb(BufferedImage image) {
-        //checkPicture(image); // checks if the picture ist big enough
-
-        getRgbFromPicture(image, color_mode); //updates rgb array
-
-         /*
-        if (only_changed_pictures) {
-            if (Arrays.equals(rgb, rgbOld)) {
-                if (image_identical) {
-                    if (debug) {
-                        System.out.print(".");
-                    }
-                    return;
-                } else {
-                    if (debug) {
-                        System.out.println("-");
-                    }
-                    image_identical = true;
-                }
-            } else {
-                image_identical = false;
-            }
-        }
-
-          */
-
-        //Art net implementation
-        if (Main.isArtnetEnabled()) {
-            byte[] dmx = Main.getArtnet().readDmxData(Main.getSubnet(), Main.getUniversum());
-            channel = Byte.toUnsignedInt(dmx[Main.getChannel()]);
-            float value = channel / (float) 100;
-            Main.setScaleFactor(value);
-
-            if (Main.isArtnetDebug()) {
-                System.out.println("A: " + channel);
-                System.out.println("B: " + value);
-            }
-        }
+        getFormat(image, color_mode); //updates rgb array
+        artNetCheck();
+        onlySendChangedPicture();
 
         int pixel = 0;
-        int MaxPackets = 0;
+        int MaxPackets;
 
         if (color_mode == 30) {
             MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
@@ -113,44 +67,15 @@ public class PictureSender {
         }
         SendSync.send_end_frame();
 
-        // System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
+        //gehört zu onlySendChangedPicture
+        System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
     }
 
-    private static void printRgbFromPicture(BufferedImage image) {
-        int rgbCounterNumber = 0;
-        for (int y = 1; y <= 1; y++) {
-            for (int x = 1; x <= Main.getPanelSizeX(); x++) {
-                int pixel = image.getRGB(x, y);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = (pixel) & 0xff;
-                if (debug) {
-                    System.out.print((byte) blue);
-                    System.out.print(" ");
-                    System.out.print((byte) green);
-                    System.out.print(" ");
-                    System.out.print((byte) red);
-                    System.out.print(" ");
-                }
-                rgb[rgbCounterNumber] = (byte) blue;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) green;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) red;
-                rgbCounterNumber++;
-            }
-        }
-
-    }
-
-    private static void getRgbFromPicture(BufferedImage image, int colormode) {
+    private static void getFormat(BufferedImage image, int colormode) {
 
         switch (colormode) {
             case 10:
                 getLedRgbData(image);
-                break;
-            case 20:
-                getLedJpgData(image);
                 break;
             case 30:
                 getLedRgb565Data(image);
@@ -265,47 +190,39 @@ public class PictureSender {
         }
     }
 
-    private static void getLedJpgData(BufferedImage image) {
+    private static void artNetCheck() {
+        //Art net implementation
+        if (Main.isArtnetEnabled()) {
+            byte[] dmx = Main.getArtnet().readDmxData(Main.getSubnet(), Main.getUniversum());
+            int channel = Byte.toUnsignedInt(dmx[Main.getChannel()]);
+            float value = channel / (float) 100;
+            Main.setScaleFactor(value);
 
-        int rgbCounternumber = 0;
-        int panelSize = 128;
-        //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
-        int rowsX = Main.getPanelSizeX() / panelSize;
-        int rowsY = Main.getPanelSizeY() / panelSize;
-        for (int y = 0; y < rowsY; y++) {
-            for (int x = 0; x < rowsX; x++) {
-                rgbCounternumber = getPixelPerPanel(image, rgbCounternumber, x, y, panelSize);
+            if (Main.isArtnetDebug()) {
+                System.out.println("A: " + channel);
+                System.out.println("B: " + value);
             }
         }
     }
 
-    private static int getPixelPerPanel(BufferedImage image, int rgbCounternumber, int rowX, int colY, int panelSize) {
-        int startX = rowX * panelSize;
-        int startY = colY * panelSize;
-        for (int y = 0; y < panelSize; y++) {
-            for (int x = 0; x < panelSize; x++) {
-                int pixel = image.getRGB(startX + x, startY + y);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                //int blue = (pixel) & 0xff;
-                rgb[rgbCounternumber] = (byte) ((pixel) & 0xff); //blue
-                rgbCounternumber++;
-                rgb[rgbCounternumber] = (byte) green;
-                rgbCounternumber++;
-                rgb[rgbCounternumber] = (byte) red;
-                rgbCounternumber++;
+    private static void onlySendChangedPicture() {
+        if (only_changed_pictures) {
+            if (Arrays.equals(rgb, rgbOld)) {
+                if (image_identical) {
+                    if (debugForOnlySendChangedPicture) {
+                        System.out.print(".");
+                    }
+                    return;
+                } else {
+                    if (debugForOnlySendChangedPicture) {
+                        System.out.println("-");
+                    }
+                    image_identical = true;
+                }
+            } else {
+                image_identical = false;
             }
         }
-        return rgbCounternumber;
     }
-
-    private static void checkPicture(BufferedImage image) {
-        if (image.getHeight() < Main.getPanelSizeY() || image.getWidth() < Main.getPanelSizeX()) {
-            System.out.println("Falsches Format");
-            System.out.println("Bitte Format von mindestens " + Main.getPanelSizeX() + " * " + Main.getPanelSizeY() + " Pixeln verwenden");
-            System.exit(0);
-        }
-    }
-
 
 }

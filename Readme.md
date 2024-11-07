@@ -36,7 +36,7 @@ Chose Panel: `-p`:
 `-sx,--startx <0>                    Pixel start horizontal`  
 `-sy,--starty <0>                    Pixal start vertical`  
 `-w,--webcam <<webcam name>>         use webcam as input`
-`-rgb565<true/false>                 rgb565 mode`
+`-rgb565                             rgb565 mode`
 ### Mac ###  
 use  
 `-b` to binde the interface  
