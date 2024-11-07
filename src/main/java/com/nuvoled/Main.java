@@ -1,8 +1,6 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamResolution;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
 import org.apache.commons.cli.*;
@@ -15,31 +13,32 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Objects;
 
 public class Main {
 
-    private static int port;
-    private static byte courantFrame;
-    private static String broadcastIpAddress;
+    private static int port = 2000;
+    private static byte courantFrame = 2;
+    private static String broadcastIpAddress = "169.254.255.255";
     private static int panelSizeX;
     private static int panelSizeY;
-    private static String mode;
-    private static boolean bindToInterface;
-    private static Float scaleFactor;
-    private static Float offSet;
+    private static String mode = "video";
+    private static boolean bindToInterface = false;
+    private static Float scaleFactor = 0.6F;
+    private static Float offSet = 0F;
     private static Integer[] pictureConfiguration;
-    private static int rotation;
-    private static int sleep;
-    private static Webcam webcam;
-    private static String activeWebcam;
-    private static boolean artnetEnabled;
+    private static int rotation = 0;
+    private static int sleep = 0;
+
+    private static boolean artnetEnabled = false;
+    private static boolean artnetDebug = false;
     private static ArtNetClient artnet;
-    private static int subnet;
-    private static int universum;
-    private static int channel;
-    private static boolean artnetDebug;
+    private static int subnet = 0;
+    private static int universum = 0;
+    private static int channel = 0;
+
     private static String wichPanel;
+    private static int colorMode = 10;
+    private static boolean showFps = false;
 
     private static int xPanelCount = 1;
     private static int yPanelCount = 1;
@@ -51,27 +50,6 @@ public class Main {
         System.out.println("Nuvoled Presenter");
 
         org.apache.log4j.BasicConfigurator.configure(new NullAppender());
-
-        scaleFactor = Float.parseFloat("0.6");
-        offSet = Float.parseFloat("0");
-        courantFrame = 2;
-        port = 2000;
-        bindToInterface = false;
-        sleep = 0;
-
-        //broadcastIpAddress = "127.0.0.255";
-        broadcastIpAddress = "169.254.255.255";
-
-        mode = "video";
-        rotation = 0;
-
-        int colorMode = 30;
-
-        artnetEnabled = false;
-        artnetDebug = false;
-        subnet = 0;
-        universum = 0;
-        channel = 0;
 
         commandLineParameters(args);
 
@@ -94,49 +72,11 @@ public class Main {
                 onepanelSizeY = 96;
                 break;
             }
-        }
-
-        if (Objects.equals(mode, "webcam")) {
-            System.out.println(activeWebcam);
-            Webcam webcam = Webcam.getWebcamByName(activeWebcam);
-            if (webcam != null) {
-                System.out.println("Webcam selected: " + webcam.getName());
-            } else {
-                System.out.println("No webcam detected");
+            default -> {
+                System.out.println("No Panel defined");
                 System.exit(1);
             }
-
-            //@formatter:off
-            Dimension[] nonStandardResolutions = new Dimension[]{
-                    WebcamResolution.PAL.getSize(),
-                    WebcamResolution.FHD.getSize(),
-                    new Dimension(2000, 1000),
-                    new Dimension(1000, 500),
-            };
-            //@formatter:on
-
-            webcam.setCustomViewSizes(nonStandardResolutions);
-            webcam.setViewSize(WebcamResolution.FHD.getSize());
-            System.out.println(webcam.getViewSize());
-            webcam.open();
-            Main.webcam = webcam;
         }
-
-        /*
-        BufferedImage image = webcam.getImage();
-        BufferedImage croped = image.getSubimage(0, 0, 128, 128);
-        ImageIO.write(croped, "PNG", new File("croped.png"));
-        ImageIO.write(image, "PNG", new File("image.png"));
-        /*
-
-        if (args.length < 10) {
-            System.out.println("Fehlende argumente");
-            System.out.println("java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false] [brightness] [offset]");
-            return;
-        }
-         */
-
-        pictureConfiguration = new Integer[]{rotation, screenNumber, xPosition, yPosition, colorMode};
 
         panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
@@ -157,8 +97,7 @@ public class Main {
 
         switch (mode) {
             case "picture" -> pictureMode();
-            case "screen", "video" -> screenAndVideo(pictureConfiguration);
-            case "webcam" -> useWebcam();
+            case "screen", "video" -> screenAndVideo();
         }
     }
 
@@ -166,7 +105,10 @@ public class Main {
         var options = new Options()
                 .addOption("h", "help", false, "Help Message")
                 .addOption("b", "bind", false, "bind to interface 169.254")
-                .addOption("l", "list", false, "list available webcams")
+                .addOption("ad", "artnetDebug", false, "enables artnet debug")
+                .addOption("p", "Panel", true, "choose Panel")
+                .addOption("rgb", "rgb565", false, "sets the mode to rgb565")
+                .addOption("fps", "fps", false, "prints out fps")
                 .addOption(Option.builder("px")
                         .longOpt("panelsx")
                         .hasArg(true)
@@ -221,12 +163,6 @@ public class Main {
                         .desc("offset (Contrast) ")
                         .argName("0")
                         .build())
-                .addOption(Option.builder("w")
-                        .longOpt("webcam")
-                        .hasArg(true)
-                        .desc("use webcam as input")
-                        .argName("<webcam name>")
-                        .build())
                 .addOption(Option.builder("a")
                         .longOpt("artnet")
                         .hasArg(true)
@@ -250,9 +186,7 @@ public class Main {
                         .hasArg(true)
                         .desc("artnet channel")
                         .argName("< 0 - 513 >")
-                        .build())
-                .addOption("ad", "artnetDebug", false, "enables artnet debug")
-                .addOption("p", "Panel", true, "choose Panel");
+                        .build());
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line;
@@ -261,11 +195,6 @@ public class Main {
             line = parser.parse(options, args);
             if (line.hasOption("b")) {
                 bindToInterface = true;
-            }
-            if (line.hasOption("l")) {
-                //only list webcams
-                listWebcams();
-                System.exit(0);
             }
             if (line.hasOption("h")) {
                 HelpFormatter formatter = new HelpFormatter();
@@ -300,12 +229,6 @@ public class Main {
             if (line.hasOption("o")) {
                 offSet = Float.valueOf(line.getOptionValue("s"));
             }
-            if (line.hasOption("w")) {
-                String read = String.valueOf(line.getOptionValue("w"));
-                read = read.replaceAll("-", " ");
-                activeWebcam = read;
-                mode = "webcam";
-            }
             if (line.hasOption("ad")) {
                 System.out.println("ad");
             }
@@ -326,43 +249,25 @@ public class Main {
             if (line.hasOption("p")) {
                 wichPanel = String.valueOf(line.getOptionValue("p"));
             }
+            if (line.hasOption("rgb565")) {
+                Main.setColorMode(30);
+            }
+            if (line.hasOption("fps")) {
+                Main.setShowFps(true);
+            }
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
     }
 
-    public static void listWebcams() {
-        try {
-            for (Webcam webcam : Webcam.getWebcams()) {
-                System.out.println("Webcam detected: " + webcam.getName().replaceAll(" ", "-"));
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println("on MAC can't list Webcams ...");
-        }
-    }
-
-    public static void useWebcam() {
-        System.out.println("Webcam mode");
-        int x = pictureConfiguration[2];
-        int y = pictureConfiguration[3];
-        System.out.println(x + " : " + y);
-        BufferedImage image = webcam.getImage();
-        BufferedImage croped = image.getSubimage(x, y, panelSizeX, panelSizeY);
-        PictureSender.send(croped);
-    }
-
-    public static void screenAndVideo(Integer[] pictureConfiguration) throws AWTException {
+    public static void screenAndVideo() throws AWTException {
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        int screenNumber = pictureConfiguration[1];
-        Robot robot = new Robot(screens[screenNumber]);
+        Robot robot = new Robot(screens[getScreenNumber()]);
         Rectangle rectangle = new Rectangle();
-        rotation = pictureConfiguration[0];
-        Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
-        int x = pictureConfiguration[2] + screenBounds.x;
-        int y = pictureConfiguration[3] + screenBounds.y;
-        int colorMode = pictureConfiguration[4];
+        Rectangle screenBounds = screens[getScreenNumber()].getDefaultConfiguration().getBounds();
+        int x = getxPosition() + screenBounds.x;
+        int y = getyPosition() + screenBounds.y;
         rectangle.setLocation(x, y);
         rectangle.setSize(panelSizeX, panelSizeY);
 
@@ -370,17 +275,6 @@ public class Main {
             return;
         }
 
-        if (Objects.equals(pictureConfiguration[4], "screen")) {
-            System.out.println("Screen mode");
-            PictureSender.setScreenMode(true, colorMode);
-
-        }
-        if (Objects.equals(pictureConfiguration[4], "video")) {
-            System.out.println("Video mode");
-            PictureSender.setScreenMode(false, colorMode);
-        }
-
-        boolean showFps = false;
         long time = 0;
         int i = 0;
         while (true) {
@@ -496,5 +390,45 @@ public class Main {
 
     public static boolean isArtnetDebug() {
         return artnetDebug;
+    }
+
+    public static int getColorMode() {
+        return colorMode;
+    }
+
+    public static void setColorMode(int colorMode) {
+        Main.colorMode = colorMode;
+    }
+
+    public static int getScreenNumber() {
+        return screenNumber;
+    }
+
+    public static void setScreenNumber(int screenNumber) {
+        Main.screenNumber = screenNumber;
+    }
+
+    public static int getxPosition() {
+        return xPosition;
+    }
+
+    public static void setxPosition(int xPosition) {
+        Main.xPosition = xPosition;
+    }
+
+    public static int getyPosition() {
+        return yPosition;
+    }
+
+    public static void setyPosition(int yPosition) {
+        Main.yPosition = yPosition;
+    }
+
+    public static boolean isShowFps() {
+        return showFps;
+    }
+
+    public static void setShowFps(boolean showFps) {
+        Main.showFps = showFps;
     }
 }
