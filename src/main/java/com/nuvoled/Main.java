@@ -1,6 +1,7 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
+import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
 import org.apache.commons.cli.*;
@@ -21,7 +22,7 @@ public class Main {
     private static String broadcastIpAddress = "169.254.255.255";
     private static int panelSizeX;
     private static int panelSizeY;
-    private static String mode = "video";
+    private static String mode = "ndi";
     private static boolean bindToInterface = false;
     private static Float scaleFactor = 0.6F;
     private static Float offSet = 0F;
@@ -98,6 +99,7 @@ public class Main {
         switch (mode) {
             case "picture" -> pictureMode();
             case "screen", "video" -> screenAndVideo();
+            case "ndi" -> Ndi.ndi();
         }
     }
 

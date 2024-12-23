@@ -85,7 +85,6 @@ public class PictureSender {
     }
 
     public static BufferedImage applyFilter(BufferedImage image) {
-
         RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
         return image;
