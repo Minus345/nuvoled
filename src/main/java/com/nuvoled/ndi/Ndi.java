@@ -1,6 +1,7 @@
 package com.nuvoled.ndi;
 
 import com.nuvoled.Main;
+import com.nuvoled.sender.SendSync;
 import me.walkerknapp.devolay.*;
 
 import java.nio.ByteBuffer;
@@ -22,7 +23,10 @@ public class Ndi {
 
         System.out.println("Starting");
         findSources();
-        getVideo();
+
+        while (true) {
+            sendNDI();
+        }
     }
 
     private static void findSources() {
@@ -120,6 +124,64 @@ public class Ndi {
             //frameSync.close();
             //receiver.close();
         }
+    }
 
+    public static void sendNDI() throws InterruptedException {
+        getVideo();
+        //artNetCheck();
+
+        int pixel = 0;
+        int MaxPackets;
+
+        //TODO: RGB565
+ /*
+            if (color_mode == 30) {
+                MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+            } else {
+
+            */
+
+        MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+        //    }
+
+
+        for (int counter = 0; counter <= MaxPackets; counter++) {
+            byte[] message = new byte[1450];
+            message[0] = 36;
+            message[1] = 36;
+            message[2] = 20;
+            message[3] = Main.getCourantFrame();
+            message[4] = (byte) (10); //RGB -> 10 JPG -> 20 RGB565 -> 30
+            message[5] = (byte) (counter >> 8);
+            message[6] = (byte) (counter & 255);
+            message[7] = (byte) (MaxPackets >> 8);
+            message[8] = (byte) (MaxPackets & 255);
+            message[9] = 45;
+
+            for (int i = 1; i < 1440; i = i + 3) {
+                if (pixel >= rgb.length) {
+                    //setzt die letzten bytes des Psackest auf 0
+                    message[9 + i] = 0;
+                    pixel++;
+                    message[9 + 1 + i] = 0;
+                    pixel++;
+                    message[9 + 2 + i] = 0;
+                } else {
+                    message[9 + i] = rgb[pixel];
+                    pixel++;
+                    message[9 + 1 + i] = rgb[pixel];
+                    pixel++;
+                    message[9 + 2 + i] = rgb[pixel];
+                }
+                pixel++;
+            }
+            SendSync.send_data(message);
+        }
+        try {
+            Thread.sleep(Main.getSleep());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        SendSync.send_end_frame();
     }
 }
