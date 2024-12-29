@@ -45,6 +45,16 @@ Single Dimmer Channel for dimming the hole image:
 `-sx,--startx <0>                    Pixel start horizontal`   
 `-sy,--starty <0>                    Pixal start vertical`   
 
+### NDI Supprt ###
+OBS Plugin:  
+https://github.com/DistroAV/DistroAV  
+
+Java Lib:  
+https://github.com/WalkerKnapp/devolay  
+
+NDI Tools:  
+https://ndi.video/tools/
+
 ### Mac ###  
 use  
 `-b` to binde the interface  
