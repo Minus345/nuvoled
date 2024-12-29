@@ -1,13 +1,18 @@
 package com.nuvoled.ndi;
 
+import com.nuvoled.Main;
 import me.walkerknapp.devolay.*;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Ndi {
 
     private static DevolayReceiver receiver;
     private static DevolayFinder finder;
+    private static int pixelX;
+    private static int pixelY;
+    public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
 
     public static void ndi() throws InterruptedException {
         System.out.println("----NDI----");
@@ -56,22 +61,65 @@ public class Ndi {
                 DevolayVideoFrame videoFrame1 = videoFrame;
                 ByteBuffer byteBuffer = videoFrame1.getData();
 
-                System.out.println(videoFrame1.getXResolution() + " / " + videoFrame1.getYResolution());
+                //TODO: put this outside of loop
+                pixelX = videoFrame1.getXResolution();
+                pixelY = videoFrame1.getYResolution();
 
-                byte[] a = new byte[4];
-                byteBuffer.get(a, 0, 4);
+                System.out.println(pixelX + " / " + pixelY);
 
+                /*
+                if (Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
+                    System.out.println("Pixel X and Y from NDI Source are not the same as your panel configuration");
+                    System.exit(10);
+                }
+
+                 */
+
+                //NDI Source muss doppelt so viel Pixel horizontal und vertikal haben wie Panel Source
+                // https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
+
+                //Get the hole frame in one array:
+                int pannlXY = Main.getPanelSizeX() * Main.getPanelSizeY();
+                int pixelCount = pixelX / 2 * pixelY / 2; // Nur jeder 2 Pixel
+                int pixelBufferLength = pixelCount * 4 * 2; //4: Wegen YUV 2: Wegen wir nehmen nur jeden 2 Pixel
+                byte[] frameBuffer = new byte[pixelBufferLength];
+                int bufferLength = byteBuffer.limit();
+                System.out.println(bufferLength);
+                byteBuffer.get(frameBuffer, 0, pixelBufferLength);
+
+                if (pixelBufferLength != bufferLength) System.exit(101);
+
+                //TODO: Rotatoin
+
+                int rgbCounterNumber = 0;
+
+                for (int i = 0; i <= pixelBufferLength / 2 - 1; i = i + 4) { // /2, weil wir nur jeden zweiten pixel nehmen
+                    int[] pixel = YUV2RGB.toRGB(frameBuffer[i], frameBuffer[i + 1], frameBuffer[i + 2]);
+                    int red = pixel[0] & 0xff;
+                    int green = pixel[1] & 0xff;
+                    int blue = pixel[2] & 0xff;
+                    rgb[rgbCounterNumber] = (byte) blue;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) green;
+                    rgbCounterNumber++;
+                    rgb[rgbCounterNumber] = (byte) red;
+                    rgbCounterNumber++;
+                }
+                System.out.println(Arrays.toString(rgb));
+                System.out.println(rgb[rgb.length - 1]);
+
+
+                // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
+                Thread.sleep((long) (1000 / clockSpeed));
             }
-            // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
-            Thread.sleep((long) (1000 / clockSpeed));
+
+            // Destroy the references to each. Not necessary, but can free up the memory faster than Java's GC by itself
+            //videoFrame.close();
+            //audioFrame.close();
+            // Make sure to close the framesync before the receiver
+            //frameSync.close();
+            //receiver.close();
         }
 
-        // Destroy the references to each. Not necessary, but can free up the memory faster than Java's GC by itself
-        //videoFrame.close();
-        //audioFrame.close();
-        // Make sure to close the framesync before the receiver
-        //frameSync.close();
-        //receiver.close();
     }
-
 }
