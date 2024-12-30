@@ -25,8 +25,8 @@ public class YUV2RGB {
 
         int[] outputRGB = new int[3];
         outputRGB[0] = roundR;
-        outputRGB[1] = roundB;
-        outputRGB[2] = roundG;
+        outputRGB[1] = roundG;
+        outputRGB[2] = roundB;
         return outputRGB;
     }
 
