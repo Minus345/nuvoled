@@ -52,6 +52,8 @@ public class Ndi {
                 break;
             }
 
+            //ToDO: Select Sources - Command Line Input
+
             // Query the updated list of sources
             sources = finder.getCurrentSources();
             System.out.println("Network sources (" + sources.length + " found).");
@@ -62,7 +64,13 @@ public class Ndi {
         receiver.connect(sources[0]);
     }
 
-    private static void getVideo() throws InterruptedException {
+    /**
+     * NDI Source muss doppelt so viel Pixel horizontal und vertikal haben wie Panel Source
+     * https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
+     *
+     * @throws InterruptedException
+     */
+    private static void getVideoDataOnlyEverySecondPixel() throws InterruptedException {
 
         // Run at 30Hz
         final float clockSpeed = 30;
@@ -94,9 +102,6 @@ public class Ndi {
                 }
 
                  */
-
-            //NDI Source muss doppelt so viel Pixel horizontal und vertikal haben wie Panel Source
-            // https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
 
             //Get the hole frame in one array:
             int pannlXY = Main.getPanelSizeX() * Main.getPanelSizeY();
@@ -143,16 +148,115 @@ public class Ndi {
         }
     }
 
+    private static void getVideoData_4_2_2_subsampling() throws InterruptedException {
+        // Run at 30Hz
+        final float clockSpeed = 30;
+        // Capture a video frame
+        if (frameSync.captureVideo(videoFrame)) {
+            System.out.println("frame here");
+        } else {
+            System.out.println("no frame");
+        }
+
+        if (frameSync.captureVideo(videoFrame)) { // Only returns true if a video frame was returned
+            DevolayVideoFrame videoFrame1 = videoFrame;
+            ByteBuffer byteBuffer = videoFrame1.getData();
+
+            //TODO: put this outside of loop
+            pixelX = videoFrame1.getXResolution();
+            pixelY = videoFrame1.getYResolution();
+
+            System.out.println(pixelX + " / " + pixelY);
+                /*
+                if (Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
+                    System.out.println("Pixel X and Y from NDI Source are not the same as your panel configuration");
+                    System.exit(10);
+                }
+                 */
+
+            //Get the hole frame in one array:
+            int pannlXY = Main.getPanelSizeX() * Main.getPanelSizeY();
+            int pixelCount = pixelX * pixelY;
+
+            int pixelBufferLength = pixelCount * 4 / 2; //4: Wegen YUV -> Eigentlich ja nur mal 2 weil pro pixel 2 bytes
+            byte[] frameBuffer = new byte[pixelBufferLength];
+            int bufferLength = byteBuffer.limit();
+            System.out.println(bufferLength);
+            byteBuffer.get(frameBuffer, 0, pixelBufferLength);
+
+            if (pixelCount != pannlXY) System.exit(101);
+            if (pixelBufferLength != bufferLength) System.exit(102);
+
+            //TODO: Rotatoin
+
+            int rgbCounterNumber = 0;
+
+            for (int i = 0; i <= pixelBufferLength - 1; i = i + 4) {
+
+
+                /*
+                Pixel in FrameBuffer:
+                The ordering of these pixels is U0, Y0, V0, Y1.
+
+                                Y | U | V
+
+                  Pixel 1:      Y0 | U0 | V0
+                  Pixel 2:      Y1 | U0 | V0
+
+                                U0 | Y0 | V0 | Y1
+                                0  | 1  | 2 | 3
+                 */
+
+
+                //First Pixel
+                int[] pixel1 = YUV2RGB.toRGB(frameBuffer[i + 1], frameBuffer[i], frameBuffer[i + 2]);
+                int red1 = pixel1[0] & 0xff;
+                int green1 = pixel1[1] & 0xff;
+                int blue1 = pixel1[2] & 0xff;
+
+                rgb[rgbCounterNumber] = (byte) blue1;
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = (byte) green1;
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = (byte) red1;
+                rgbCounterNumber++;
+
+                //Second Pixel
+                int[] pixel2 = YUV2RGB.toRGB(frameBuffer[i + 3], frameBuffer[i], frameBuffer[i + 2]);
+                int red2 = pixel2[0] & 0xff;
+                int green2 = pixel2[1] & 0xff;
+                int blue2 = pixel2[2] & 0xff;
+
+                rgb[rgbCounterNumber] = (byte) blue2;
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = (byte) green2;
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = (byte) red2;
+                rgbCounterNumber++;
+
+            }
+            //System.out.println(Arrays.toString(rgb));
+            System.out.println(" Y: " + frameBuffer[0] + " U: " + frameBuffer[1] + " V: " + frameBuffer[2]);
+            System.out.println(" r: " + rgb[2] + " g: " + rgb[1] + "b: " + rgb[0]);
+
+            // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
+            Thread.sleep((long) (1000 / clockSpeed));
+        }
+    }
+
     private static void sendNDI() throws InterruptedException {
         //Thread.sleep(1000);
         System.out.println("NEW FRAME");
-        getVideo();
+        //getVideoDataOnlyEverySecondPixel();
+        getVideoData_4_2_2_subsampling();
         //artNetCheck();
 
         int pixel = 0;
         int MaxPackets;
 
         //TODO: RGB565
+
+        //TODO: Detecting if Stream isn´t working anymore
  /*
             if (color_mode == 30) {
                 MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
