@@ -5,6 +5,8 @@ import com.nuvoled.sender.SendSync;
 import me.walkerknapp.devolay.*;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Ndi {
 
@@ -44,15 +46,35 @@ public class Ndi {
         // Run for one minute
         DevolaySource[] sources = null;
         long startTime = System.currentTimeMillis();
+        int sourceNumber = 0;
+
+        final boolean useFirstOne = true; //TODO: make it changeable within cli
+
         while (System.currentTimeMillis() - startTime < 1000 * 60) {
             // Query with a timeout of 5 seconds
             if (!finder.waitForSources(5000)) {
                 // If no new sources were found
                 System.out.println("No change to the sources list found.");
+
+                //If useFirstOne is enabled; to first source found the programm connects
+                if (useFirstOne) {
+                    sourceNumber = 1;
+                    break;
+                }
+
+                //User Input to select the right source
+                System.out.println("Enter Source Number:");
+                Scanner scanner = new Scanner(System.in);
+                sourceNumber = scanner.nextInt();
+
+                //user error catching:
+                if (sourceNumber < 0 || sourceNumber > Objects.requireNonNull(sources).length) {
+                    System.out.println("Wrong Input. Pleas enter a Number within range");
+                    System.exit(102);
+                }
+                System.out.println("Connecting to: " + sourceNumber + ". | " + sources[sourceNumber - 1].getSourceName());
                 break;
             }
-
-            //ToDO: Select Sources - Command Line Input
 
             // Query the updated list of sources
             sources = finder.getCurrentSources();
@@ -61,91 +83,8 @@ public class Ndi {
                 System.out.println((i + 1) + ". " + sources[i].getSourceName());
             }
         }
-        receiver.connect(sources[0]);
-    }
-
-    /**
-     * NDI Source muss doppelt so viel Pixel horizontal und vertikal haben wie Panel Source
-     * https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
-     *
-     * @throws InterruptedException
-     */
-    private static void getVideoDataOnlyEverySecondPixel() throws InterruptedException {
-
-        // Run at 30Hz
-        final float clockSpeed = 30;
-
-        // while (true) {
-
-        // Capture a video frame
-        if (frameSync.captureVideo(videoFrame)) {
-            System.out.println("frame here");
-        } else {
-            System.out.println("no frame");
-        }
-
-
-        if (frameSync.captureVideo(videoFrame)) { // Only returns true if a video frame was returned
-            DevolayVideoFrame videoFrame1 = videoFrame;
-            ByteBuffer byteBuffer = videoFrame1.getData();
-
-            //TODO: put this outside of loop
-            pixelX = videoFrame1.getXResolution();
-            pixelY = videoFrame1.getYResolution();
-
-            System.out.println(pixelX + " / " + pixelY);
-
-                /*
-                if (Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
-                    System.out.println("Pixel X and Y from NDI Source are not the same as your panel configuration");
-                    System.exit(10);
-                }
-
-                 */
-
-            //Get the hole frame in one array:
-            int pannlXY = Main.getPanelSizeX() * Main.getPanelSizeY();
-            int pixelCount = pixelX / 2 * pixelY / 2; // Nur jeder 2 Pixel
-            int pixelBufferLength = pixelCount * 4 * 2; //4: Wegen YUV 2: Wegen wir nehmen nur jeden 2 Pixel
-            byte[] frameBuffer = new byte[pixelBufferLength];
-            int bufferLength = byteBuffer.limit();
-            System.out.println(bufferLength);
-            byteBuffer.get(frameBuffer, 0, pixelBufferLength);
-
-            if (pixelBufferLength != bufferLength) System.exit(101);
-
-            //TODO: Rotatoin
-
-            int rgbCounterNumber = 0;
-
-            for (int i = 0; i <= pixelBufferLength / 2 - 1; i = i + 4) { // /2, weil wir nur jeden zweiten pixel nehmen
-                int[] pixel = YUV2RGB.toRGB(frameBuffer[i + 1], frameBuffer[i], frameBuffer[i + 2]);  //The ordering of these pixels is U0, Y0, V0, Y1.
-                int red = pixel[0] & 0xff;
-                int green = pixel[1] & 0xff;
-                int blue = pixel[2] & 0xff;
-                rgb[rgbCounterNumber] = (byte) blue;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) green;
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = (byte) red;
-                rgbCounterNumber++;
-            }
-            //System.out.println(Arrays.toString(rgb));
-            System.out.println(" Y: " + frameBuffer[0] + " U: " + frameBuffer[1] + " V: " + frameBuffer[2]);
-            System.out.println(" r: " + rgb[2] + " g: " + rgb[1] + "b: " + rgb[0]);
-
-
-            // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
-            Thread.sleep((long) (1000 / clockSpeed));
-            //   }
-
-            // Destroy the references to each. Not necessary, but can free up the memory faster than Java's GC by itself
-            //videoFrame.close();
-            //audioFrame.close();
-            // Make sure to close the framesync before the receiver
-            //frameSync.close();
-            //receiver.close();
-        }
+        assert sources != null;
+        receiver.connect(sources[sourceNumber - 1]);
     }
 
     private static void getVideoData_4_2_2_subsampling() throws InterruptedException {
@@ -179,6 +118,7 @@ public class Ndi {
 
             if (pixelCount != pannlXY) System.exit(101);
             if (pixelBufferLength != bufferLength) System.exit(102);
+            //TODO: Ordentliche Fehler Ausgeben
 
             //TODO: Rotatoin
 
