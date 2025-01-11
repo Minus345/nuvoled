@@ -151,12 +151,6 @@ public class Ndi {
     private static void getVideoData_4_2_2_subsampling() throws InterruptedException {
         // Run at 30Hz
         final float clockSpeed = 30;
-        // Capture a video frame
-        if (frameSync.captureVideo(videoFrame)) {
-            System.out.println("frame here");
-        } else {
-            System.out.println("no frame");
-        }
 
         if (frameSync.captureVideo(videoFrame)) { // Only returns true if a video frame was returned
             DevolayVideoFrame videoFrame1 = videoFrame;
@@ -166,7 +160,7 @@ public class Ndi {
             pixelX = videoFrame1.getXResolution();
             pixelY = videoFrame1.getYResolution();
 
-            System.out.println(pixelX + " / " + pixelY);
+            //System.out.println(pixelX + " / " + pixelY);
                 /*
                 if (Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
                     System.out.println("Pixel X and Y from NDI Source are not the same as your panel configuration");
@@ -181,7 +175,6 @@ public class Ndi {
             int pixelBufferLength = pixelCount * 4 / 2; //4: Wegen YUV -> Eigentlich ja nur mal 2 weil pro pixel 2 bytes
             byte[] frameBuffer = new byte[pixelBufferLength];
             int bufferLength = byteBuffer.limit();
-            System.out.println(bufferLength);
             byteBuffer.get(frameBuffer, 0, pixelBufferLength);
 
             if (pixelCount != pannlXY) System.exit(101);
@@ -195,6 +188,10 @@ public class Ndi {
 
 
                 /*
+
+                Y: Intensity
+                U + V: Colour
+
                 Pixel in FrameBuffer:
                 The ordering of these pixels is U0, Y0, V0, Y1.
 
@@ -236,8 +233,8 @@ public class Ndi {
 
             }
             //System.out.println(Arrays.toString(rgb));
-            System.out.println(" Y: " + frameBuffer[0] + " U: " + frameBuffer[1] + " V: " + frameBuffer[2]);
-            System.out.println(" r: " + rgb[2] + " g: " + rgb[1] + "b: " + rgb[0]);
+            //System.out.println(" Y: " + ((int) frameBuffer[1] & 0xff) + " U: " + (frameBuffer[0] & 0xff) + " V: " + (frameBuffer[2] & 0xff));
+            //System.out.println(" R: " + rgb[2] + " G: " + rgb[1] + " B: " + rgb[0]);
 
             // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
             Thread.sleep((long) (1000 / clockSpeed));
@@ -246,7 +243,7 @@ public class Ndi {
 
     private static void sendNDI() throws InterruptedException {
         //Thread.sleep(1000);
-        System.out.println("NEW FRAME");
+        //System.out.println("NEW FRAME");
         //getVideoDataOnlyEverySecondPixel();
         getVideoData_4_2_2_subsampling();
         //artNetCheck();
