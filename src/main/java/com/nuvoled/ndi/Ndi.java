@@ -5,6 +5,7 @@ import com.nuvoled.sender.SendSync;
 import me.walkerknapp.devolay.*;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -49,7 +50,7 @@ public class Ndi {
         long startTime = System.currentTimeMillis();
         int sourceNumber = 0;
 
-        final boolean useFirstOne = false; //TODO: make it changeable within cli
+        final boolean useFirstOne = true; //TODO: make it changeable within cli
 
         while (System.currentTimeMillis() - startTime < 1000 * 60) {
             // Query with a timeout of 5 seconds
@@ -112,7 +113,7 @@ public class Ndi {
             int ndiPixelBufferLength = ndiPixelCount * 4 / 2; //4: Wegen YUV → Eigentlich ja nur mal 2 weil pro pixel 2 bytes
             int bufferLength = byteBuffer.limit();
 
-            if (ndiPixelCount != panelXY || ndiPixelBufferLength != bufferLength || Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
+            if (ndiPixelCount != panelXY || ndiPixelBufferLength != bufferLength) { //|| Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY
                 System.out.println("Pixel count of NDI Source and configured panels are not the Same ");
                 System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + pixelX + " y: " + pixelY);
                 System.exit(0);
@@ -171,6 +172,36 @@ public class Ndi {
                 rgbCounterNumber++;
 
             }
+
+
+            //Rotation 90 Degree:
+            int height = pixelY;
+            int width = pixelX;
+
+            // 128*96*3 = 36864
+
+            byte[] rotated = new byte[rgb.length];
+
+            int a = 0;
+
+            for (int x = 0; x < width; x++) {
+                for (int y = 1; y < height * 3; y = y + 3) {
+                    System.out.println("x: " + x + ", y: " + y + ", a: " + a + ", R: " + ((y * width - x) / 95));
+                    rotated[a] = rgb[y * width - x];
+                    a++;
+                    rotated[a] = rgb[y * width + 1 - x + 1];
+                    a++;
+                    rotated[a] = rgb[y * width + 2 - x + 2];
+                    a++;
+                }
+            }
+
+            System.out.println(Arrays.toString(rotated));
+            System.out.println("---------------------------");
+
+            rgb = rotated;
+
+
             //System.out.println(Arrays.toString(rgb));
             //System.out.println(" Y: " + ((int) ndiFrameBuffer[1] & 0xff) + " U: " + (ndiFrameBuffer[0] & 0xff) + " V: " + (ndiFrameBuffer[2] & 0xff));
             //System.out.println(" R: " + rgb[2] + " G: " + rgb[1] + " B: " + rgb[0]);
