@@ -30,13 +30,14 @@ public class Ndi {
         System.out.println("Connect to DatagrammSocket");
         if (!SendSync.setDatagramSocket()) {
             System.out.println("Internal Error: No DatagrammSocket connected");
-            System.exit(101);
+            System.exit(0);
         }
 
         System.out.println("Setting up NDI");
         videoFrame = new DevolayVideoFrame();
         frameSync = new DevolayFrameSync(receiver);
 
+        System.out.println("Running");
         while (true) {
             sendNDI();
         }
@@ -48,13 +49,18 @@ public class Ndi {
         long startTime = System.currentTimeMillis();
         int sourceNumber = 0;
 
-        final boolean useFirstOne = true; //TODO: make it changeable within cli
+        final boolean useFirstOne = false; //TODO: make it changeable within cli
 
         while (System.currentTimeMillis() - startTime < 1000 * 60) {
             // Query with a timeout of 5 seconds
             if (!finder.waitForSources(5000)) {
                 // If no new sources were found
                 System.out.println("No change to the sources list found.");
+
+                if (sources == null) {
+                    System.out.println("No Sources Found");
+                    System.exit(0);
+                }
 
                 //If useFirstOne is enabled; to first source found the programm connects
                 if (useFirstOne) {
@@ -95,38 +101,33 @@ public class Ndi {
             DevolayVideoFrame videoFrame1 = videoFrame;
             ByteBuffer byteBuffer = videoFrame1.getData();
 
-            //TODO: put this outside of loop
+            //Get NDI Meta Data
             pixelX = videoFrame1.getXResolution();
             pixelY = videoFrame1.getYResolution();
 
-            //System.out.println(pixelX + " / " + pixelY);
-                /*
-                if (Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
-                    System.out.println("Pixel X and Y from NDI Source are not the same as your panel configuration");
-                    System.exit(10);
-                }
-                 */
+            //Compare if Incoming NDI Stream is the same resolution as the configured panel Count
+            int panelXY = Main.getPanelSizeX() * Main.getPanelSizeY();
+            int ndiPixelCount = pixelX * pixelY;
+
+            int ndiPixelBufferLength = ndiPixelCount * 4 / 2; //4: Wegen YUV → Eigentlich ja nur mal 2 weil pro pixel 2 bytes
+            int bufferLength = byteBuffer.limit();
+
+            if (ndiPixelCount != panelXY || ndiPixelBufferLength != bufferLength || Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY) {
+                System.out.println("Pixel count of NDI Source and configured panels are not the Same ");
+                System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + pixelX + " y: " + pixelY);
+                System.exit(0);
+            }
 
             //Get the hole frame in one array:
-            int pannlXY = Main.getPanelSizeX() * Main.getPanelSizeY();
-            int pixelCount = pixelX * pixelY;
+            byte[] ndiFrameBuffer = new byte[ndiPixelBufferLength];
+            byteBuffer.get(ndiFrameBuffer, 0, ndiPixelBufferLength);
 
-            int pixelBufferLength = pixelCount * 4 / 2; //4: Wegen YUV -> Eigentlich ja nur mal 2 weil pro pixel 2 bytes
-            byte[] frameBuffer = new byte[pixelBufferLength];
-            int bufferLength = byteBuffer.limit();
-            byteBuffer.get(frameBuffer, 0, pixelBufferLength);
-
-            if (pixelCount != pannlXY) System.exit(101);
-            if (pixelBufferLength != bufferLength) System.exit(102);
-            //TODO: Ordentliche Fehler Ausgeben
-
-            //TODO: Rotatoin
+            //TODO: Rotation
+            //TODO: brightness
 
             int rgbCounterNumber = 0;
 
-            for (int i = 0; i <= pixelBufferLength - 1; i = i + 4) {
-
-
+            for (int i = 0; i <= ndiPixelBufferLength - 1; i = i + 4) {
                 /*
 
                 Y: Intensity
@@ -143,10 +144,8 @@ public class Ndi {
                                 U0 | Y0 | V0 | Y1
                                 0  | 1  | 2 | 3
                  */
-
-
                 //First Pixel
-                int[] pixel1 = YUV2RGB.toRGB(frameBuffer[i + 1], frameBuffer[i], frameBuffer[i + 2]);
+                int[] pixel1 = YUV2RGB.toRGB(ndiFrameBuffer[i + 1], ndiFrameBuffer[i], ndiFrameBuffer[i + 2]);
                 int red1 = pixel1[0] & 0xff;
                 int green1 = pixel1[1] & 0xff;
                 int blue1 = pixel1[2] & 0xff;
@@ -159,7 +158,7 @@ public class Ndi {
                 rgbCounterNumber++;
 
                 //Second Pixel
-                int[] pixel2 = YUV2RGB.toRGB(frameBuffer[i + 3], frameBuffer[i], frameBuffer[i + 2]);
+                int[] pixel2 = YUV2RGB.toRGB(ndiFrameBuffer[i + 3], ndiFrameBuffer[i], ndiFrameBuffer[i + 2]);
                 int red2 = pixel2[0] & 0xff;
                 int green2 = pixel2[1] & 0xff;
                 int blue2 = pixel2[2] & 0xff;
@@ -173,7 +172,7 @@ public class Ndi {
 
             }
             //System.out.println(Arrays.toString(rgb));
-            //System.out.println(" Y: " + ((int) frameBuffer[1] & 0xff) + " U: " + (frameBuffer[0] & 0xff) + " V: " + (frameBuffer[2] & 0xff));
+            //System.out.println(" Y: " + ((int) ndiFrameBuffer[1] & 0xff) + " U: " + (ndiFrameBuffer[0] & 0xff) + " V: " + (ndiFrameBuffer[2] & 0xff));
             //System.out.println(" R: " + rgb[2] + " G: " + rgb[1] + " B: " + rgb[0]);
 
             // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
@@ -220,7 +219,7 @@ public class Ndi {
 
             for (int i = 1; i < 1440; i = i + 3) {
                 if (pixel >= rgb.length) {
-                    //setzt die letzten bytes des Psackest auf 0
+                    //setzt die letzten bytes des Packsets auf 0
                     message[9 + i] = 0;
                     pixel++;
                     message[9 + 1 + i] = 0;
