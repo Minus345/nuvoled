@@ -84,6 +84,11 @@ public class PictureSender {
         }
     }
 
+    /**
+     * Sets the brightness of the picture
+     * @param image
+     * @return
+     */
     public static BufferedImage applyFilter(BufferedImage image) {
         RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
