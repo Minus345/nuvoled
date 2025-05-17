@@ -53,7 +53,11 @@ Java Lib:
 https://github.com/WalkerKnapp/devolay  
 
 NDI Tools:  
-https://ndi.video/tools/
+https://ndi.video/tools/  
+
+NDI Doc:  
+https://docs.ndi.video/all/developing-with-ndi/sdk/frame-types  
+https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
 
 ### Mac ###  
 use  
