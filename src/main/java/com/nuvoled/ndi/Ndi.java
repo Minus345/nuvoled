@@ -5,7 +5,6 @@ import com.nuvoled.sender.SendSync;
 import me.walkerknapp.devolay.*;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -13,8 +12,8 @@ public class Ndi {
 
     private static DevolayReceiver receiver;
     private static DevolayFinder finder;
-    private static int pixelX;
-    private static int pixelY;
+    private static int ndiPixelX;
+    private static int ndiPixelY;
     private static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
     private static DevolayVideoFrame videoFrame;
     private static DevolayFrameSync frameSync;
@@ -103,21 +102,23 @@ public class Ndi {
             ByteBuffer byteBuffer = videoFrame1.getData();
 
             //Get NDI Meta Data
-            pixelX = videoFrame1.getXResolution();
-            pixelY = videoFrame1.getYResolution();
+            ndiPixelX = videoFrame1.getXResolution();
+            ndiPixelY = videoFrame1.getYResolution();
 
             //Compare if Incoming NDI Stream is the same resolution as the configured panel Count
             int panelXY = Main.getPanelSizeX() * Main.getPanelSizeY();
-            int ndiPixelCount = pixelX * pixelY;
+            int ndiPixelCount = ndiPixelX * ndiPixelY;
 
             int ndiPixelBufferLength = ndiPixelCount * 4 / 2; //4: Wegen YUV → Eigentlich ja nur mal 2 weil pro pixel 2 bytes
             int bufferLength = byteBuffer.limit();
 
             if (ndiPixelCount != panelXY || ndiPixelBufferLength != bufferLength) { //|| Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY
                 System.out.println("Pixel count of NDI Source and configured panels are not the Same ");
-                System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + pixelX + " y: " + pixelY);
+                System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
                 System.exit(0);
             }
+
+            System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
 
             //Get the hole frame in one array:
             byte[] ndiFrameBuffer = new byte[ndiPixelBufferLength];
@@ -128,6 +129,7 @@ public class Ndi {
 
             int rgbCounterNumber = 0;
 
+            //ndi Data -> RGB
             for (int i = 0; i <= ndiPixelBufferLength - 1; i = i + 4) {
                 /*
 
@@ -173,36 +175,65 @@ public class Ndi {
 
             }
 
-
             //Rotation 90 Degree:
-            int height = pixelY;
-            int width = pixelX;
-
-            // 128*96*3 = 36864
-
-            byte[] rotated = new byte[rgb.length];
-
+            //conversion into Points
+            Point[] rgbPoint = new Point[rgb.length / 3];
             int a = 0;
+            for (int i = 0; i < rgb.length / 3; i++) {
+                rgbPoint[i] = new Point(rgb[a], rgb[a + 1], rgb[a + 2]);
+                a = a + 3;
+            }
 
-            for (int x = 0; x < width; x++) {
-                for (int y = 1; y < height * 3; y = y + 3) {
-                    System.out.println("x: " + x + ", y: " + y + ", a: " + a + ", R: " + ((y * width - x) / 95));
-                    rotated[a] = rgb[y * width - x];
-                    a++;
-                    rotated[a] = rgb[y * width + 1 - x + 1];
-                    a++;
-                    rotated[a] = rgb[y * width + 2 - x + 2];
-                    a++;
+            //conversion into 2D Array
+            Point[][] rotated = new Point[ndiPixelX][ndiPixelY];
+            int rgbArrayPositionCounter = 0;
+            for (int i = 0; i < rotated.length; i++) {
+                for (int j = 0; j < rotated[i].length; j++) {
+                    rotated[i][j] = rgbPoint[rgbArrayPositionCounter];
+                    rgbArrayPositionCounter++;
                 }
             }
 
-            System.out.println(Arrays.toString(rotated));
-            System.out.println("---------------------------");
+            /*
+            //Rotation of the array
+            int n = mat.length;
 
-            rgb = rotated;
+            // Initialize the result matrix with zeros
+            Point[][] res = new Point[n][n];
+
+            // Flip the matrix clockwise using nested loops
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    res[j][n - i - 1] = mat[i][j];
+                }
+            }
+
+            // Copy result back to mat
+            for (int i = 0; i < n; i++) {
+                System.arraycopy(res[i], 0, mat[i], 0, n);
+            }
 
 
-            //System.out.println(Arrays.toString(rgb));
+             */
+            //conversion to 1D Array
+            rgbArrayPositionCounter = 0;
+            for (int i = 0; i < rotated.length; i++) {
+                for (int j = 0; j < rotated[i].length; j++) {
+                    rgbPoint[rgbArrayPositionCounter] = rotated[i][j];
+                    rgbArrayPositionCounter++;
+                }
+            }
+
+
+            //conversion into standard values
+            a = 0;
+            for (int i = 0; i < rgb.length; i = i + 3) {
+                rgb[i] = rgbPoint[a].getR();
+                rgb[i + 1] = rgbPoint[a].getG();
+                rgb[i + 2] = rgbPoint[a].getB();
+                a++;
+            }
+
             //System.out.println(" Y: " + ((int) ndiFrameBuffer[1] & 0xff) + " U: " + (ndiFrameBuffer[0] & 0xff) + " V: " + (ndiFrameBuffer[2] & 0xff));
             //System.out.println(" R: " + rgb[2] + " G: " + rgb[1] + " B: " + rgb[0]);
 
