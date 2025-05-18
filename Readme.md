@@ -16,6 +16,9 @@ Chose Panel: `-p`:
 
 ### Known Issues
 * rotation in rgb565 mode
+* rotation in ndi only 90
+* rotation in p5 mode not working
+* brightness in ndi mode
 
 
 ### Other Parameters ###

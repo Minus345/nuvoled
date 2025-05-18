@@ -1,6 +1,7 @@
 package com.nuvoled.ndi;
 
 import com.nuvoled.Main;
+import com.nuvoled.Rotation;
 import com.nuvoled.sender.SendSync;
 import me.walkerknapp.devolay.*;
 
@@ -124,7 +125,6 @@ public class Ndi {
             byte[] ndiFrameBuffer = new byte[ndiPixelBufferLength];
             byteBuffer.get(ndiFrameBuffer, 0, ndiPixelBufferLength);
 
-            //TODO: Rotation
             //TODO: brightness
 
             int rgbCounterNumber = 0;
@@ -175,62 +175,14 @@ public class Ndi {
 
             }
 
+            //TODO: Rotation
             //Rotation 90 Degree:
-            //conversion into Points
-            Point[] rgbPoint = new Point[rgb.length / 3];
-            int a = 0;
-            for (int i = 0; i < rgb.length / 3; i++) {
-                rgbPoint[i] = new Point(rgb[a], rgb[a + 1], rgb[a + 2]);
-                a = a + 3;
+
+            switch (Main.rotationDegree()){
+                case 90 -> Rotation.rotate90(rgb, ndiPixelX, ndiPixelY);
+                case 180 -> Rotation.rotate180(rgb, ndiPixelX, ndiPixelY);
+                case 270 -> Rotation.rotate270(rgb, ndiPixelX, ndiPixelY);
             }
-
-            //conversion into 2D Array
-            Point[][] notRotated = new Point[ndiPixelY][ndiPixelX];
-            int rgbArrayPositionCounter = 0;
-            for (int i = 0; i < notRotated.length; i++) {
-                for (int j = 0; j < notRotated[i].length; j++) {
-                    notRotated[i][j] = rgbPoint[rgbArrayPositionCounter];
-                    rgbArrayPositionCounter++;
-                }
-            }
-
-            //rotation
-            //input int[y][x] -> int[4][3]
-
-            int resY = ndiPixelY;
-            int resX = ndiPixelX;
-
-            // int[x][y]
-            Point[][] Rotated = new Point[resX][resY];
-
-            for (int i = 0; i < resY; i++) {
-                for (int j = 0; j < resX; j++) {
-                    //System.out.println(i + ", " + j + " -> " + j + ", " + (resY - i - 1));
-                    Rotated[j][resY - i - 1] = notRotated[i][j];
-                }
-            }
-
-            //conversion to 1D Array
-            rgbArrayPositionCounter = 0;
-            for (int i = 0; i < Rotated.length; i++) {
-                for (int j = 0; j < Rotated[i].length; j++) {
-                    rgbPoint[rgbArrayPositionCounter] = Rotated[i][j];
-                    rgbArrayPositionCounter++;
-                }
-            }
-
-
-            //conversion into standard values
-            a = 0;
-            for (int i = 0; i < rgb.length; i = i + 3) {
-                rgb[i] = rgbPoint[a].getR();
-                rgb[i + 1] = rgbPoint[a].getG();
-                rgb[i + 2] = rgbPoint[a].getB();
-                a++;
-            }
-
-            //System.out.println(" Y: " + ((int) ndiFrameBuffer[1] & 0xff) + " U: " + (ndiFrameBuffer[0] & 0xff) + " V: " + (ndiFrameBuffer[2] & 0xff));
-            //System.out.println(" R: " + rgb[2] + " G: " + rgb[1] + " B: " + rgb[0]);
 
             // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
             Thread.sleep((long) (1000 / clockSpeed));

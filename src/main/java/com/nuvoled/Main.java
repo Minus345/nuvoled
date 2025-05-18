@@ -22,7 +22,7 @@ public class Main {
     private static String broadcastIpAddress = "169.254.255.255";
     private static int panelSizeX;
     private static int panelSizeY;
-    private static String mode = "ndi";
+    private static String mode = "screen";
     private static boolean bindToInterface = false;
     private static Float scaleFactor = 0.6F;
     private static Float offSet = 0F;
@@ -98,7 +98,7 @@ public class Main {
 
         switch (mode) {
             case "picture" -> pictureMode();
-            case "screen", "video" -> screenAndVideo();
+            case "screen" -> captureFromScreen();
             case "ndi" -> Ndi.ndi();
         }
     }
@@ -111,6 +111,7 @@ public class Main {
                 .addOption("p", "Panel", true, "choose Panel")
                 .addOption("rgb", "rgb565", false, "sets the mode to rgb565")
                 .addOption("fps", "fps", false, "prints out fps")
+                .addOption("ndi", "ndi", false, "enables ndi mode")
                 .addOption(Option.builder("px")
                         .longOpt("panelsx")
                         .hasArg(true)
@@ -257,13 +258,16 @@ public class Main {
             if (line.hasOption("fps")) {
                 Main.setShowFps(true);
             }
+            if (line.hasOption("ndi")) {
+                mode = "ndi";
+            }
         } catch (ParseException exp) {
             // oops, something went wrong
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         }
     }
 
-    public static void screenAndVideo() throws AWTException {
+    public static void captureFromScreen() throws AWTException {
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         Robot robot = new Robot(screens[getScreenNumber()]);
         Rectangle rectangle = new Rectangle();
