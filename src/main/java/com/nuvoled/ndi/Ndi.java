@@ -118,7 +118,7 @@ public class Ndi {
                 System.exit(0);
             }
 
-            System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
+            //System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
 
             //Get the hole frame in one array:
             byte[] ndiFrameBuffer = new byte[ndiPixelBufferLength];
@@ -185,41 +185,36 @@ public class Ndi {
             }
 
             //conversion into 2D Array
-            Point[][] rotated = new Point[ndiPixelX][ndiPixelY];
+            Point[][] notRotated = new Point[ndiPixelY][ndiPixelX];
             int rgbArrayPositionCounter = 0;
-            for (int i = 0; i < rotated.length; i++) {
-                for (int j = 0; j < rotated[i].length; j++) {
-                    rotated[i][j] = rgbPoint[rgbArrayPositionCounter];
+            for (int i = 0; i < notRotated.length; i++) {
+                for (int j = 0; j < notRotated[i].length; j++) {
+                    notRotated[i][j] = rgbPoint[rgbArrayPositionCounter];
                     rgbArrayPositionCounter++;
                 }
             }
 
-            /*
-            //Rotation of the array
-            int n = mat.length;
+            //rotation
+            //input int[y][x] -> int[4][3]
 
-            // Initialize the result matrix with zeros
-            Point[][] res = new Point[n][n];
+            int resY = ndiPixelY;
+            int resX = ndiPixelX;
 
-            // Flip the matrix clockwise using nested loops
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    res[j][n - i - 1] = mat[i][j];
+            // int[x][y]
+            Point[][] Rotated = new Point[resX][resY];
+
+            for (int i = 0; i < resY; i++) {
+                for (int j = 0; j < resX; j++) {
+                    //System.out.println(i + ", " + j + " -> " + j + ", " + (resY - i - 1));
+                    Rotated[j][resY - i - 1] = notRotated[i][j];
                 }
             }
 
-            // Copy result back to mat
-            for (int i = 0; i < n; i++) {
-                System.arraycopy(res[i], 0, mat[i], 0, n);
-            }
-
-
-             */
             //conversion to 1D Array
             rgbArrayPositionCounter = 0;
-            for (int i = 0; i < rotated.length; i++) {
-                for (int j = 0; j < rotated[i].length; j++) {
-                    rgbPoint[rgbArrayPositionCounter] = rotated[i][j];
+            for (int i = 0; i < Rotated.length; i++) {
+                for (int j = 0; j < Rotated[i].length; j++) {
+                    rgbPoint[rgbArrayPositionCounter] = Rotated[i][j];
                     rgbArrayPositionCounter++;
                 }
             }
