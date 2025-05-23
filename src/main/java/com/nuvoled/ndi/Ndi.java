@@ -178,10 +178,10 @@ public class Ndi {
             //TODO: Rotation
             //Rotation 90 Degree:
 
-            switch (Main.rotationDegree()){
-                case 90 -> Rotation.rotate90(rgb, ndiPixelX, ndiPixelY);
-                case 180 -> Rotation.rotate180(rgb, ndiPixelX, ndiPixelY);
-                case 270 -> Rotation.rotate270(rgb, ndiPixelX, ndiPixelY);
+            switch (Main.rotationDegree()) {
+                case 90 -> rgb = Rotation.rotate90(rgb, ndiPixelX, ndiPixelY);
+                case 180 -> rgb = Rotation.rotate180(rgb, ndiPixelX, ndiPixelY);
+                case 270 -> rgb = Rotation.rotate270(rgb, ndiPixelX, ndiPixelY);
             }
 
             // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
