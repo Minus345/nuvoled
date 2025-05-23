@@ -8,7 +8,6 @@ public class Rotation {
         Point[][] rotated = new Point[ndiPixelX][ndiPixelY];
         for (int i = 0; i < ndiPixelY; i++) {
             for (int j = 0; j < ndiPixelX; j++) {
-                //System.out.println(i + ", " + j + " -> " + j + ", " + (resY - i - 1));
                 rotated[j][ndiPixelY - i - 1] = notRotated[i][j];
             }
         }
@@ -21,7 +20,14 @@ public class Rotation {
     }
 
     public static byte[] rotate270(byte[] rgb, int ndiPixelX, int ndiPixelY) {
-        return rgb;
+        Point[][] notRotated = decodePointTo2DArray(decodeToPoints(rgb), ndiPixelX, ndiPixelY);
+        Point[][] rotated = new Point[ndiPixelX][ndiPixelY];
+        for (int i = 0; i < ndiPixelY; i++) {
+            for (int j = 0; j < ndiPixelX; j++) {
+                rotated[ndiPixelX - j - 1][i] = notRotated[i][j];
+            }
+        }
+        return encodePointToByteArray(encodPointTo1DArray(rotated, rgb.length), rgb.length);
     }
 
     private static Point[] decodeToPoints(byte[] rgb) {
