@@ -41,6 +41,15 @@ Chose Panel: `-p`:
 #### RGB565
 * Normal ✅
 * NDI ✅
+
+#### Brightness
+* Normal ❓
+* NDI ❓
+
+#### FPS Display
+* Normal ✅
+* NDI ✅
+
 ### Other Parameters ###
 
 #### Global ####
