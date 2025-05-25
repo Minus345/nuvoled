@@ -203,12 +203,10 @@ public class Ndi {
         if (Main.getColorMode() == 30) {
             rgb = Rgb565.getLedRgb565Data(rgb);
         }
-        //artNetCheck();
+        //artNetCheck(); //TODO: Test ArtNet
 
         int pixel = 0;
         int MaxPackets;
-
-        //TODO: RGB565
 
         //TODO: Detecting if Stream isn´t working anymore
  /*
