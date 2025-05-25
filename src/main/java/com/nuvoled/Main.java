@@ -275,7 +275,20 @@ public class Main {
         int x = getxPosition() + screenBounds.x;
         int y = getyPosition() + screenBounds.y;
         rectangle.setLocation(x, y);
+
+        switch (Main.rotationDegree()) {
+            case 90, 270 -> {
+                int buf = Main.panelSizeX;
+                Main.panelSizeX = Main.getPanelSizeY();
+                Main.panelSizeY = buf;
+            }
+            case 180 -> {
+                System.out.println("not Supported");
+                System.exit(-1);
+            }
+        }
         rectangle.setSize(panelSizeX, panelSizeY);
+        System.out.println(panelSizeX + " : " + panelSizeY);
 
         if (!SendSync.setDatagramSocket()) {
             return;
