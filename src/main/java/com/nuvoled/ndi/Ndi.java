@@ -183,7 +183,7 @@ public class Ndi {
             }
 
             //Rotation
-            switch (Main.rotationDegree()) {
+            switch (Main.getRotation()) {
                 case 90 -> rgb = Rotation.rotate90(rgb, ndiPixelX, ndiPixelY);
                 case 180 -> rgb = Rotation.rotate180(rgb, ndiPixelX, ndiPixelY);
                 case 270 -> rgb = Rotation.rotate270(rgb, ndiPixelX, ndiPixelY);

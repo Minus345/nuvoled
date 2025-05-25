@@ -96,7 +96,7 @@ public class PictureSender {
      * @return
      */
     public static BufferedImage applyFilter(BufferedImage image) {
-        RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
+        RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffSet(), null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
         return image;
     }
@@ -118,7 +118,7 @@ public class PictureSender {
             }
         }
 
-        switch (Main.rotationDegree()) {
+        switch (Main.getRotation()) {
             case 90 -> rgb = Rotation.rotate90(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
             case 180 -> rgb = Rotation.rotate180(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
             case 270 -> rgb = Rotation.rotate270(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
@@ -129,7 +129,7 @@ public class PictureSender {
 
         int rgbCounterNumber = 0;
 
-        if (Main.rotationDegree() == 180) {
+        if (Main.getRotation() == 180) {
             //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
             for (int y = Main.getPanelSizeY() - 1; y >= 0; y--) {
                 for (int x = Main.getPanelSizeX() - 1; x >= 0; x--) {
@@ -146,7 +146,7 @@ public class PictureSender {
                 }
             }
 
-        } else if (Main.rotationDegree() == 90) {
+        } else if (Main.getRotation() == 90) {
             //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
             for (int x = Main.getPanelSizeX() - 1; x >= 0; x--) {
                 for (int y = 0; y < Main.getPanelSizeY(); y++) {
@@ -162,7 +162,7 @@ public class PictureSender {
                     rgbCounterNumber++;
                 }
             }
-        } else if (Main.rotationDegree() == 270) {
+        } else if (Main.getRotation() == 270) {
             //System.out.println( "x: " + Main.getPanelSizeX() + " Y: " +  Main.getPanelSizeY());
             for (int x = 0; x < Main.getPanelSizeX(); x++) {
                 for (int y = Main.getPanelSizeY() - 1; y >= 0; y--) {

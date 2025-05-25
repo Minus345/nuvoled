@@ -40,7 +40,7 @@ Chose Panel: `-p`:
 
 #### RGB565
 * Normal ✅
-* NDI ✅
+* NDI ✅ (no improvement in data rates)
 
 #### Brightness
 * Normal ❓
@@ -52,33 +52,28 @@ Chose Panel: `-p`:
 
 ### Other Parameters ###
 
-#### Global ####
-
-`-p,--Panel <arg>                    choose Panel`  
-`-px,--panelsx <1>                   Number of Panels horizontal`  
-`-py,--panelsy <1>                   Number of Panels vertical`  
-`-br,--brightness <0.6>              brightness value with 0.x -1.x`  
-`-o,--offset <0>                     offset (Contrast)`  
-`-r,--rotation <0>                   rotation degree 0/90/180/270`  
-`-rgb,--rgb565                       sets the mode to rgb565`  
-`-s,--sleep <0>                      sleep ime in ms`  
-`-sn,--screennr <0>                  number of screen`
-
-#### ArtNet ####
-
-Single Dimmer Channel for dimming the hole image:  
-`-a,--artnet <<ip>>                  enables artnet`  
+`usage: java -jar nuvoled.jar`  
+`-a,--artnet <<ip>>                  enables artnet`   
 `-ac,--artnetChannel << 0 - 513 >>   artnet channel`  
 `-ad,--artnetDebug                   enables artnet debug`  
 `-as,--artnetSubnet << 0 - 16 >>     artnet subnet`  
-`-au,--artnetUniverse << 0 - 16 >>   artnet universe`
-
-#### Optional/Debugging
-
+`-au,--artnetUniverse << 0 - 16 >>   artnet universe`  
 `-b,--bind                           bind to interface 169.254`  
+`-br,--brightness <0.6>              brightness value with 0.x -1.x`  
 `-fps,--fps                          prints out fps`  
-`-sx,--startx <0>                    Pixel start horizontal`   
-`-sy,--starty <0>                    Pixal start vertical`
+`-h,--help                           Help Message`  
+`-ndi,--ndi                          enables ndi mode`  
+`-o,--offset <0>                     offset (Contrast)`  
+`-p,--Panel <arg>                    choose Panel`  
+`-px,--panelsx <1>                   Number of Panels horizontal`  
+`-py,--panelsy <1>                   Number of Panels vertical`  
+`-r,--rotation <0>                   rotation degree 0/90/180/270`  
+`-rgb,--rgb565                       sets the mode to rgb565`  
+`-s,--sleep <0>                      sleep ime in ms`  
+`-sn,--screennr <0>                  number of screen`  
+`-sx,--startx <0>                    Pixel start horizontal`  
+`-sy,--starty <0>                    Pixal start vertical`  
+
 
 ### NDI Supprt ###
 
