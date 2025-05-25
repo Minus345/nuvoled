@@ -1,6 +1,7 @@
 package com.nuvoled.sender;
 
 import com.nuvoled.Main;
+import com.nuvoled.Rotation;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -29,6 +30,7 @@ public class PictureSender {
             MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
         }
 
+        //prep message
         for (int counter = 0; counter <= MaxPackets; counter++) {
             byte[] message = new byte[1450];
             message[0] = 36;
@@ -76,7 +78,8 @@ public class PictureSender {
 
         switch (colormode) {
             case 10:
-                getLedRgbData(image);
+                //getLedRgbData(image);
+                getLedRgbDataNewRotFunction(image);
                 break;
             case 30:
                 getLedRgb565Data(image);
@@ -86,6 +89,7 @@ public class PictureSender {
 
     /**
      * Sets the brightness of the picture
+     *
      * @param image
      * @return
      */
@@ -129,6 +133,30 @@ public class PictureSender {
         }
 
         //System.out.println(Arrays.toString(rgb));
+    }
+
+    private static void getLedRgbDataNewRotFunction(BufferedImage image) {
+        int rgbCounterNumber = 0;
+        for (int y = 0; y < Main.getPanelSizeY(); y++) {
+            for (int x = 0; x < Main.getPanelSizeX(); x++) {
+                int pixel = image.getRGB(x, y);
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = (pixel) & 0xff;
+                rgb[rgbCounterNumber] = (byte) blue;
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = (byte) green;
+                rgbCounterNumber++;
+                rgb[rgbCounterNumber] = (byte) red;
+                rgbCounterNumber++;
+            }
+        }
+
+        switch (Main.rotationDegree()) {
+            case 90 -> rgb = Rotation.rotate90(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
+            case 180 -> rgb = Rotation.rotate180(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
+            case 270 -> rgb = Rotation.rotate270(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
+        }
     }
 
     private static void getLedRgbData(BufferedImage image) {
