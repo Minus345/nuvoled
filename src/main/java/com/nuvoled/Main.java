@@ -450,4 +450,12 @@ public class Main {
     public static void setShowFps(boolean showFps) {
         Main.showFps = showFps;
     }
+
+    public static void setPanelSizeX(int panelSizeX) {
+        Main.panelSizeX = panelSizeX;
+    }
+
+    public static void setPanelSizeY(int panelSizeY) {
+        Main.panelSizeY = panelSizeY;
+    }
 }
