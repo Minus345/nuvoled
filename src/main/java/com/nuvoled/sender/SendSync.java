@@ -51,7 +51,7 @@ public class SendSync {
 
         InetAddress address = null;
         InetSocketAddress inetAddr = null;
-        if (Main.getBindToInterface()) {
+        if (Main.isBindToInterface()) {
             NetworkInterface nif = findNetworkInterface();
             Enumeration<InetAddress> nifAddresses = nif.getInetAddresses();
             inetAddr = new InetSocketAddress(nifAddresses.nextElement(), 0);
@@ -59,7 +59,7 @@ public class SendSync {
 
         try {
 
-            if (Main.getBindToInterface()) {
+            if (Main.isBindToInterface()) {
                 datagramSocket = new DatagramSocket(inetAddr);
             } else {
                 datagramSocket = new DatagramSocket();

@@ -12,7 +12,7 @@ public class VideoSender {
 
     public static void send(BufferedImage image,DatagramSocket datagramSocket) {
         int rgbCounterNumber = 0;
-        if (Main.rotationDegree() == 0) {
+        if (Main.getRotation() == 0) {
             for (int y = 1; y <= Main.getPanelSizeY(); y++) {
                 for (int x = 1; x <= Main.getPanelSizeX(); x++) {
                     int pixel = image.getRGB(x, y);
