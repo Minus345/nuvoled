@@ -1,6 +1,7 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
+import com.nuvoled.Util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
@@ -294,26 +295,12 @@ public class Main {
             return;
         }
 
-        long time = 0;
-        int i = 0;
-        while (true) {
-            if (showFps) {
-                i++;
-                time = System.currentTimeMillis();
-            }
 
+        while (true) {
+            Fps.fpsStart();
             BufferedImage image = robot.createScreenCapture(rectangle);
             PictureSender.send(image);
-
-            if (showFps) {
-                float fps = (float) 1 / ((float) (System.currentTimeMillis() - time) / 1000);
-
-                if (i == 100) {
-                    System.out.println("fps: " + fps);
-                    i = 0;
-                }
-            }
-
+            Fps.fpsEnd();
         }
 
     }
@@ -458,4 +445,6 @@ public class Main {
     public static void setPanelSizeY(int panelSizeY) {
         Main.panelSizeY = panelSizeY;
     }
+
+
 }

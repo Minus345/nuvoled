@@ -1,6 +1,7 @@
 package com.nuvoled.ndi;
 
 import com.nuvoled.Main;
+import com.nuvoled.Util.Fps;
 import com.nuvoled.Util.Rgb565;
 import com.nuvoled.Util.Rotation;
 import com.nuvoled.sender.SendSync;
@@ -41,7 +42,9 @@ public class Ndi {
 
         System.out.println("Running");
         while (true) {
+            Fps.fpsStart();
             sendNDI();
+            Fps.fpsEnd();
         }
     }
 
