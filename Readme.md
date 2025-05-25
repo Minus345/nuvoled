@@ -43,8 +43,8 @@ Chose Panel: `-p`:
 * NDI ✅ (no improvement in data rates)
 
 #### Brightness
-* Normal ❓
-* NDI ❓
+* Normal ✅
+* NDI ❌
 
 #### FPS Display
 * Normal ✅
