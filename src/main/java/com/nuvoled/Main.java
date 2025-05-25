@@ -81,7 +81,7 @@ public class Main {
         panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
 
         System.out.println("Panel                    : " + wichPanel);
-        System.out.println("x/y Panel Count          : " + xPanelCount + "/" + yPanelCount);
+        System.out.println("x/y Panel Count          : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
         System.out.println("x/y Panel Size           : " + onepanelSizeX + "/" + onepanelSizeY);
         System.out.println("x/y Pixels               : " + panelSizeX + "/" + panelSizeY);
         System.out.println("rotation Degree          : " + Main.getRotation());

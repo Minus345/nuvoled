@@ -108,10 +108,10 @@ public class CLI {
                 System.exit(0);
             }
             if (line.hasOption("px")) {
-                Main.setPanelSizeX(Integer.parseInt(line.getOptionValue("px")));
+                Main.setxPanelCount(Integer.parseInt(line.getOptionValue("px")));
             }
             if (line.hasOption("py")) {
-                Main.setPanelSizeY(Integer.parseInt(line.getOptionValue("py")));
+                Main.setyPanelCount(Integer.parseInt(line.getOptionValue("py")));
             }
             if (line.hasOption("sx")) {
                 Main.setxPosition(Integer.parseInt(line.getOptionValue("sx")));
