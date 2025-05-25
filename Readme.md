@@ -34,10 +34,13 @@ Chose Panel: `-p`:
 
 | rotation degree | P4 normal               | P4 Ndi | P5 normal | P5 Ndi |
 |-----------------|-------------------------|--------|-----------|--------|
-| 90              | ✅  (old implementation) | ❓      | ❌         | ✅      |
+| 90              | ✅  (old implementation) | ❓      | ✅         | ✅      |
 | 180             | ❓                       | ❌      | ❌         | ❌      |
-| 270             | ✅  (old implementation) | ❓      | ❌         | ✅      |
+| 270             | ✅  (old implementation) | ❓      | ✅         | ✅      |
 
+#### RGB565
+* Normal ✅
+* NDI ✅
 ### Other Parameters ###
 
 #### Global ####

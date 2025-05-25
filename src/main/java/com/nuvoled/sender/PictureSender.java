@@ -1,7 +1,8 @@
 package com.nuvoled.sender;
 
 import com.nuvoled.Main;
-import com.nuvoled.Rotation;
+import com.nuvoled.Util.Rgb565;
+import com.nuvoled.Util.Rotation;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -78,11 +79,12 @@ public class PictureSender {
 
         switch (colormode) {
             case 10:
-                //getLedRgbData(image);
+                //getLedRgbData(image); //<- old faster implementation only for P4
                 getLedRgbDataNewRotFunction(image);
                 break;
             case 30:
-                getLedRgb565Data(image);
+                getLedRgbDataNewRotFunction(image);
+                rgb = Rgb565.getLedRgb565Data(rgb);
                 break;
         }
     }
@@ -97,42 +99,6 @@ public class PictureSender {
         RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffset(), null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
         return image;
-    }
-
-    private static void getLedRgb565Data(BufferedImage image) {
-
-        int rgbCounterNumber = 0;
-
-        for (int y = 0; y < Main.getPanelSizeY(); y++) {
-            for (int x = 0; x < Main.getPanelSizeX(); x++) {
-                int pixel = image.getRGB(x, y);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = (pixel) & 0xff;
-
-                double red5 = red / 255F * 31F;
-                double green6 = green / 255F * 31F;
-                double blue5 = blue / 255F * 31F;
-
-                int red5Shifted = (int) red5 << 11;
-                int green6Shifted = (int) green6 << 5;
-                int blue5Shifted = (int) blue5 << 0;
-
-                int rgb565 = red5Shifted | green6Shifted | blue5Shifted;
-                short rgb565short = (short) rgb565;
-
-                byte[] bytes = new byte[2];
-                bytes[0] = (byte) (rgb565short & 0xff);
-                bytes[1] = (byte) ((rgb565short >> 8) & 0xff);
-                rgb[rgbCounterNumber] = bytes[0];
-                rgbCounterNumber++;
-                rgb[rgbCounterNumber] = bytes[1];
-                rgbCounterNumber++;
-
-            }
-        }
-
-        //System.out.println(Arrays.toString(rgb));
     }
 
     private static void getLedRgbDataNewRotFunction(BufferedImage image) {

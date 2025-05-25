@@ -1,7 +1,8 @@
 package com.nuvoled.ndi;
 
 import com.nuvoled.Main;
-import com.nuvoled.Rotation;
+import com.nuvoled.Util.Rgb565;
+import com.nuvoled.Util.Rotation;
 import com.nuvoled.sender.SendSync;
 import me.walkerknapp.devolay.*;
 
@@ -119,6 +120,9 @@ public class Ndi {
                 System.exit(0);
             }
 
+            Main.setPanelSizeX(ndiPixelX);
+            Main.setPanelSizeY(ndiPixelY);
+
             //System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
 
             //Get the hole frame in one array:
@@ -175,14 +179,13 @@ public class Ndi {
 
             }
 
-            //TODO: Rotation
-            //Rotation 90 Degree:
-
+            //Rotation
             switch (Main.rotationDegree()) {
                 case 90 -> rgb = Rotation.rotate90(rgb, ndiPixelX, ndiPixelY);
                 case 180 -> rgb = Rotation.rotate180(rgb, ndiPixelX, ndiPixelY);
                 case 270 -> rgb = Rotation.rotate270(rgb, ndiPixelX, ndiPixelY);
             }
+
 
             // Here is the clock. The frame-sync is smart enough to adapt the video and audio to match 30Hz with this.
             Thread.sleep((long) (1000 / clockSpeed));
@@ -190,10 +193,13 @@ public class Ndi {
     }
 
     private static void sendNDI() throws InterruptedException {
-        //Thread.sleep(1000);
-        //System.out.println("NEW FRAME");
         //getVideoDataOnlyEverySecondPixel();
         getVideoData_4_2_2_subsampling();
+
+        //RGB565 check:
+        if (Main.getColorMode() == 30) {
+            rgb = Rgb565.getLedRgb565Data(rgb);
+        }
         //artNetCheck();
 
         int pixel = 0;
@@ -219,7 +225,7 @@ public class Ndi {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = (byte) (10); //RGB -> 10 JPG -> 20 RGB565 -> 30
+            message[4] = (byte) Main.getColorMode(); //RGB -> 10 JPG -> 20 RGB565 -> 30
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (MaxPackets >> 8);
