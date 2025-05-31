@@ -2,16 +2,12 @@
 
 Nuvoled Application in Java
 
-- **Java 19.0.1 required**
+- **Java 21.x.x required**
 - Tested on Windows / (Mac) / Linux (Jetson)
-
-New Version out v3.1 with rgb565 support
 
 ***
 
 ## Start Parameters ##
-
-### New Version (from 1.6) ###
 
 `java -jar nuvoled.jar -h` for help
 
@@ -22,14 +18,6 @@ Chose Panel: `-p`:
 
 ### Known Issues
 
-* rotation in rgb565 mode
-* rotation in ndi only 90,180
-* rotation in p5 mode not working
-* brightness in ndi mode
-* no fps in ndi mode
-
-### Tested:
-
 #### Rotation
 
 | rotation degree | P4 normal               | P4 Ndi | P5 normal | P5 Ndi |
@@ -39,8 +27,9 @@ Chose Panel: `-p`:
 | 270             | ✅  (old implementation) | ❓      | ✅         | ✅      |
 
 #### RGB565
-* Normal ✅
-* NDI ✅ (no improvement in data rates)
+* Normal ❌ 
+* NDI ❌
+-> wrong colour
 
 #### Brightness
 * Normal ✅
@@ -77,6 +66,9 @@ Chose Panel: `-p`:
 
 ### NDI Supprt ###
 
+**NDI SDK has to be installed**  
+https://ndi.video/for-developers/ndi-sdk/download/
+
 OBS Plugin:  
 https://github.com/DistroAV/DistroAV
 
@@ -104,10 +96,5 @@ you need to set the sleep
 ### Windows ###
 
 should work out of the box
-
-### Old Version (up to 1.5) ###   
-
-Start:
-`java -jar nuvoled.jar start [ip] [Pannal x] [Pannel y] screen [ 90/180/270] [screen number] [x] [y] [colorMode] [bind to interface true/false] [brightness] [offset]`
 ***
     
