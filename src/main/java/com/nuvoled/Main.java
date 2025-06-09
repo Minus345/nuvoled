@@ -51,6 +51,15 @@ public class Main {
 
         CLI.commandLineParameters(args);
 
+        if (rotation != 0){
+            System.out.println("If you use **rotation**:\n" +
+                    "* configure your panels resolution in _Nuvoled Home_ **AND** _Nuvoled Presenter_ as if they were not rotated in reality\n" +
+                    "* then configure your rotation start parameter (_-r_)\n" +
+                    "* if you use a NDI Source: Configure the resolution with the rotation -> like in reality");
+        }
+
+        System.out.println();
+
         if (wichPanel == null || wichPanel.isEmpty()) {
             System.out.println("Choose Panel");
             System.out.println("Usage: -p \"P4\" / -p \"P5\"");

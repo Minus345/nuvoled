@@ -1,4 +1,4 @@
-# Nuvoled #
+# Nuvoled Presenter#
 
 Nuvoled Application in Java
 
@@ -16,20 +16,26 @@ Chose Panel: `-p`:
 *     "P4"  -> NuvoLED P4
 *     "P5"  -> NuvoLED P5    (Outdoor)
 
+***
+
 ### Known Issues
 
 #### Rotation
 
+If you use **rotation**:
+* configure your panels resolution in _Nuvoled Home_ **AND** _Nuvoled Presenter_ as if they were not rotated in reality
+* then configure your rotation start parameter (_-r_)
+* if you use a NDI Source: Configure the resolution with the rotation -> like in reality
+
 | rotation degree | P4 normal               | P4 Ndi | P5 normal | P5 Ndi |
 |-----------------|-------------------------|--------|-----------|--------|
-| 90              | ✅  (old implementation) | ❓      | ✅         | ✅      |
+| 90              | ❓  (old implementation) | ❓      | ✅         | ✅      |
 | 180             | ❓                       | ❌      | ❌         | ❌      |
-| 270             | ✅  (old implementation) | ❓      | ✅         | ✅      |
+| 270             | ❓  (old implementation) | ❓      | ✅         | ✅      |
 
 #### RGB565
-* Normal ❌ 
-* NDI ❌
--> wrong colour
+* Normal ✅ 
+* NDI ✅
 
 #### Brightness
 * Normal ✅
@@ -38,6 +44,11 @@ Chose Panel: `-p`:
 #### FPS Display
 * Normal ✅
 * NDI ✅
+
+### TODO:
+* Testing P4
+* RGB565 fix array length (should be shorter)
+* make NID more configurable
 
 ### Other Parameters ###
 

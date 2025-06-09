@@ -10,32 +10,37 @@ public class Rgb565 {
      * @return output translated to rgb565 values
      */
     public static byte[] getLedRgb565Data(byte[] input) {
-
         int rgbCounterNumber = 0;
-        byte[] output = new byte[input.length]; //sollte noch kürzer sein
-
-        //ToDO: fix rgb565
+        byte[] output = new byte[input.length]; //TODO: sollte noch kürzer sein
 
         for (int i = 0; i < input.length; i = i + 3) { //input bgr
-            int red = input[i];
-            int green = input[i + 1];
-            int blue = input[i + 2];
+            byte blue = input[i];
+            byte green = input[i + 1];
+            byte red = input[i + 2];
 
-            //what is this doing?
-            double red5 = red / 255F * 31F;
-            double green6 = green / 255F * 31F;
-            double blue5 = blue / 255F * 31F;
+            // Convert byte to int to be within [0 , 255]
+            int red5 = red & 0xff;
+            int green6 = green & 0xff;
+            int blue5 = blue & 0xff;
 
-            int red5Shifted = (int) red5 << 11;
-            int green6Shifted = (int) green6 << 5;
-            int blue5Shifted = (int) blue5 << 0;
+            //Source: https://barth-dev.de/about-rgb565-and-how-to-convert-into-it/
+            int red5Shifted = (red5 & 0b11111000) << 8;
+            int green6Shifted = (green6 & 0b11111100) << 3;
+            int blue5Shifted = blue5 >> 3;
 
-            int rgb565 = red5Shifted | green6Shifted | blue5Shifted;
+            int rgb565 = red5Shifted | green6Shifted | blue5Shifted; //output r g b
+
             short rgb565short = (short) rgb565;
 
             byte[] bytes = new byte[2];
-            bytes[0] = (byte) (rgb565short & 0xff);
-            bytes[1] = (byte) ((rgb565short >> 8) & 0xff);
+            bytes[0] = (byte) (rgb565short);  //second 8 Bits
+            bytes[1] = (byte) ((rgb565short >> 8)); //first 8 Bits
+
+            //little fix for the "terminal Black" -> sets the green last green bit to 0; if its the only thing active
+            if (bytes[0] == 32 && bytes[1] == 0) {
+                bytes[0] = 0;
+            }
+
             output[rgbCounterNumber] = bytes[0];
             rgbCounterNumber++;
             output[rgbCounterNumber] = bytes[1];
