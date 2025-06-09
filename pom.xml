@@ -57,6 +57,7 @@
             <groupId>me.walkerknapp</groupId>
             <artifactId>devolay</artifactId>
             <version>2.1.1</version>
+            <classifier>integrated</classifier>
         </dependency>
     </dependencies>
 

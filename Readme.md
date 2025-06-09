@@ -2,6 +2,10 @@
 
 Nuvoled Application in Java
 
+Also supports sending video over the network using the Newtek NDI® SDK.
+For more information about NDI®, see:  
+http://NDI.NewTek.com/
+
 - **Java 21.x.x required**
 - Tested on Windows / (Mac) / Linux (Jetson)
 
@@ -77,7 +81,6 @@ If you use **rotation**:
 
 ### NDI Supprt ###
 
-**NDI SDK has to be installed**  
 https://ndi.video/for-developers/ndi-sdk/download/
 
 OBS Plugin:  
