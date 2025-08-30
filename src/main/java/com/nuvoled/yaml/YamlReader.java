@@ -37,11 +37,20 @@ public class YamlReader {
     private void loadParameters() {
         try {
             //global settings
-            Main.setBindToInterface((boolean) settings.get("bindToInterface"));
-            Main.setScaleFactor((float) ((double) settings.get("scaleFactor")));
-            Main.setOffSet((float) ((double) settings.get("offSet")));
+            Main.setWichPanel((String) settings.get("PanelVersion"));
+            Main.setxPanelCount((int) settings.get("PanelCountX"));
+            Main.setyPanelCount((int) settings.get("PanelCountY"));
+            Main.setBrightness((float)((double) settings.get("brightness")));
+            if((boolean) settings.get("rgb565")){
+                Main.setColorMode(30);
+            }
+
+            //panel settings
             Main.setRotation((int) settings.get("rotation"));
             Main.setSleep((int) settings.get("sleep"));
+            Main.setBindToInterface((boolean) settings.get("bindToInterface"));
+            Main.setOffSet((float) ((double) settings.get("offSet")));
+            Main.setShowFps((boolean) settings.get("showFps"));
 
             //ndi
             Main.setMode((String) settings.get("mode"));
@@ -53,13 +62,7 @@ public class YamlReader {
             Main.setUniversum((int) settings.get("artnetUniversum"));
             Main.setChannel((int) settings.get("artnetChannel"));
 
-            //panel settings
-            Main.setColorMode((int) settings.get("colorMode"));
-            Main.setShowFps((boolean) settings.get("showFps"));
-
             //panel specific
-            Main.setxPanelCount((int) settings.get("PanelCountX"));
-            Main.setyPanelCount((int) settings.get("PanelCountY"));
             Main.setScreenNumber((int) settings.get("screenNumber"));
             Main.setxPosition((int) settings.get("PositionX"));
             Main.setyPosition((int) settings.get("PositionY"));

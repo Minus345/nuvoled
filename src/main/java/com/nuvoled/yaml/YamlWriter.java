@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class YamlWriter {
 
@@ -23,7 +24,13 @@ public class YamlWriter {
             if (file.createNewFile()) {
                 System.out.println("File created: " + file.getName());
             } else {
-                System.out.println("File already exists.");
+                System.out.println("File already exists. Do you want to override it? \nEnter: [Y/n]");
+                Scanner scanner = new Scanner(System.in);
+                String yesno = scanner.nextLine();
+                if (!yesno.equals("Y")) {
+                    System.exit(0);
+                }
+                System.out.println("Overriding config file...");
             }
 
             //write to file
@@ -42,17 +49,26 @@ public class YamlWriter {
             e.printStackTrace();
             System.exit(-1);
         }
+        System.out.println("Now you can edit the config file ( " + path + " ) and start the application with your configurations.\nTo start the application with a config file: java -jar nuvoled.jar <path>");
+        System.exit(0);
     }
 
     private Map<String, Object> createYamlData() {
         Map<String, Object> data = new LinkedHashMap<>();
 
         //global settings
-        data.put("bindToInterface", false);
-        data.put("scaleFactor", 0.6);
-        data.put("offSet", 0.0);
+        data.put("PanelVersion", "P4");
+        data.put("PanelCountX", 1);
+        data.put("PanelCountY", 1);
+        data.put("brightness", 0.6);
+        data.put("rgb565", false);
+
+        //panel settings
         data.put("rotation", 0);
         data.put("sleep", 0);
+        data.put("bindToInterface", false);
+        data.put("offSet", 0.0);
+        data.put("showFps", false);
 
         //ndi
         data.put("mode", "screen");
@@ -64,13 +80,7 @@ public class YamlWriter {
         data.put("artnetUniversum", 0);
         data.put("artnetChannel", 0);
 
-        //panel settings
-        data.put("colorMode", 10);
-        data.put("showFps", false);
-
         //panel specific
-        data.put("PanelCountX", 1);
-        data.put("PanelCountY", 1);
         data.put("screenNumber", 0);
         data.put("PositionX", 0);
         data.put("PositionY", 0);

@@ -1,16 +1,19 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
-import com.nuvoled.Util.CLI;
 import com.nuvoled.Util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
+import com.nuvoled.yaml.YamlReader;
+import com.nuvoled.yaml.YamlWriter;
 import org.apache.log4j.varia.NullAppender;
 
+import javax.xml.xpath.XPath;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Main {
 
@@ -23,7 +26,7 @@ public class Main {
 
     //global settings
     private static boolean bindToInterface = false;
-    private static Float scaleFactor = 0.6F;
+    private static Float brightness = 0.6F;
     private static Float offSet = 0F;
     private static int rotation = 0;
     private static int sleep = 0;
@@ -40,7 +43,13 @@ public class Main {
     private static int channel = 0;
 
     //panel settings
+    /**
+     * "P4" / "P5"
+     */
     private static String wichPanel;
+    /**
+     * 10/rgb 20/jpg 30/rgb565
+     */
     private static int colorMode = 10;
     private static boolean showFps = false;
 
@@ -52,11 +61,27 @@ public class Main {
     private static int yPosition = 0;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
-        System.out.println("Nuvoled Presenter");
+        System.out.println("  _  _              _        _ \n" +
+                " | \\| |_  ___ _____| |___ __| |\n" +
+                " | .` | || \\ V / _ \\ / -_) _` |\n" +
+                " |_|\\_|\\_,_|\\_/\\___/_\\___\\__,_|\n" +
+                "                               ");
 
-        org.apache.log4j.BasicConfigurator.configure(new NullAppender());
+        org.apache.log4j.BasicConfigurator.configure(new NullAppender()); //?
+        String defaultMessage = "To crate a config file type: java -jar nuvoled.jar create <path>\nTo start the application with a config file: java -jar nuvoled.jar <path>";
 
-        CLI.commandLineParameters(args);
+        if (args.length == 0 || args.length > 2) {
+            System.out.println(defaultMessage);
+            System.exit(-1);
+        } else if (args.length == 1) {
+            new YamlReader(args[0]);
+        } else if (args[0].equals("create")) {
+            new YamlWriter(args[1]);
+        } else {
+            System.out.println(defaultMessage);
+            System.exit(-1);
+        }
+
 
         if (rotation != 0) {
             System.out.println("""
@@ -67,12 +92,6 @@ public class Main {
         }
 
         System.out.println();
-
-        if (wichPanel == null || wichPanel.isEmpty()) {
-            System.out.println("Choose Panel");
-            System.out.println("Usage: -p \"P4\" / -p \"P5\"");
-            System.exit(-1);
-        }
 
         int onepanelSizeX = 0;
         int onepanelSizeY = 0;
@@ -105,7 +124,7 @@ public class Main {
         System.out.println("x/y Start Position       : " + xPosition + "/" + yPosition);
         System.out.println("broadcastIpAddress       : " + broadcastIpAddress);
         System.out.println("bind to interface        : " + bindToInterface);
-        System.out.println("scaleFactor (Brightness) : " + scaleFactor.toString());
+        System.out.println("scaleFactor (Brightness) : " + brightness.toString());
         System.out.println("offset (Contrast)        : " + offSet.toString());
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
         System.out.println("sleep time               : " + sleep);
@@ -189,7 +208,6 @@ public class Main {
     }
 
 
-
     public static int getChannel() {
         return channel;
     }
@@ -258,12 +276,12 @@ public class Main {
         Main.rotation = rotation;
     }
 
-    public static Float getScaleFactor() {
-        return scaleFactor;
+    public static Float getBrightness() {
+        return brightness;
     }
 
-    public static void setScaleFactor(Float scaleFactor) {
-        Main.scaleFactor = scaleFactor;
+    public static void setBrightness(Float brightness) {
+        Main.brightness = brightness;
     }
 
     public static int getScreenNumber() {
