@@ -14,30 +14,37 @@ import java.io.IOException;
 
 public class Main {
 
-    private static int port = 2000;
+    //not changed
+    private static final int port = 2000;
     private static byte courantFrame = 2;
-    private static String broadcastIpAddress = "169.254.255.255";
+    private static final String broadcastIpAddress = "169.254.255.255";
     private static int panelSizeX;
     private static int panelSizeY;
-    private static String mode = "screen";
+
+    //global settings
     private static boolean bindToInterface = false;
     private static Float scaleFactor = 0.6F;
     private static Float offSet = 0F;
-    private static Integer[] pictureConfiguration;
     private static int rotation = 0;
     private static int sleep = 0;
 
+    //ndi
+    private static String mode = "screen";
+
+    //art-net
+    private static ArtNetClient artnet;
     private static boolean artnetEnabled = false;
     private static boolean artnetDebug = false;
-    private static ArtNetClient artnet;
     private static int subnet = 0;
     private static int universum = 0;
     private static int channel = 0;
 
+    //panel settings
     private static String wichPanel;
     private static int colorMode = 10;
     private static boolean showFps = false;
 
+    //panel specific
     private static int xPanelCount = 1;
     private static int yPanelCount = 1;
     private static int screenNumber = 0;
@@ -51,11 +58,12 @@ public class Main {
 
         CLI.commandLineParameters(args);
 
-        if (rotation != 0){
-            System.out.println("If you use **rotation**:\n" +
-                    "* configure your panels resolution in _Nuvoled Home_ **AND** _Nuvoled Presenter_ as if they were not rotated in reality\n" +
-                    "* then configure your rotation start parameter (_-r_)\n" +
-                    "* if you use a NDI Source: Configure the resolution with the rotation -> like in reality");
+        if (rotation != 0) {
+            System.out.println("""
+                    If you use **rotation**:
+                    * configure your panels resolution in _Nuvoled Home_ **AND** _Nuvoled Presenter_ as if they were not rotated in reality
+                    * then configure your rotation start parameter (_-r_)
+                    * if you use a NDI Source: Configure the resolution with the rotation -> like in reality""");
         }
 
         System.out.println();
@@ -73,12 +81,10 @@ public class Main {
             case "P4" -> {
                 onepanelSizeX = 128;
                 onepanelSizeY = 128;
-                break;
             }
             case "P5" -> {
                 onepanelSizeX = 128;
                 onepanelSizeY = 96;
-                break;
             }
             default -> {
                 System.out.println("No Panel defined");
@@ -182,9 +188,7 @@ public class Main {
         return broadcastIpAddress;
     }
 
-    public static void setBroadcastIpAddress(String broadcastIpAddress) {
-        Main.broadcastIpAddress = broadcastIpAddress;
-    }
+
 
     public static int getChannel() {
         return channel;
@@ -242,20 +246,8 @@ public class Main {
         Main.panelSizeY = panelSizeY;
     }
 
-    public static Integer[] getPictureConfiguration() {
-        return pictureConfiguration;
-    }
-
-    public static void setPictureConfiguration(Integer[] pictureConfiguration) {
-        Main.pictureConfiguration = pictureConfiguration;
-    }
-
     public static int getPort() {
         return port;
-    }
-
-    public static void setPort(int port) {
-        Main.port = port;
     }
 
     public static int getRotation() {
