@@ -123,7 +123,7 @@ public class CLI {
                 Main.setRotation(Integer.parseInt(line.getOptionValue("r")));
             }
             if (line.hasOption("br")) {
-                Main.setScaleFactor(Float.parseFloat(line.getOptionValue("br")));
+                Main.setBrightness(Float.parseFloat(line.getOptionValue("br")));
             }
             if (line.hasOption("sn")) {
                 Main.setScreenNumber(Integer.parseInt(line.getOptionValue("sn")));

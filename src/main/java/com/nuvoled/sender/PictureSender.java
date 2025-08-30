@@ -96,7 +96,7 @@ public class PictureSender {
      * @return
      */
     public static BufferedImage applyFilter(BufferedImage image) {
-        RescaleOp rescaleOp = new RescaleOp(Main.getScaleFactor(), Main.getOffSet(), null);
+        RescaleOp rescaleOp = new RescaleOp(Main.getBrightness(), Main.getOffSet(), null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
         return image;
     }
@@ -202,7 +202,7 @@ public class PictureSender {
             byte[] dmx = Main.getArtnet().readDmxData(Main.getSubnet(), Main.getUniversum());
             int channel = Byte.toUnsignedInt(dmx[Main.getChannel()]);
             float value = channel / (float) 100;
-            Main.setScaleFactor(value);
+            Main.setBrightness(value);
 
             if (Main.isArtnetDebug()) {
                 System.out.println("A: " + channel);
