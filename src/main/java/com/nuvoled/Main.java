@@ -1,7 +1,7 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
-import com.nuvoled.Util.Fps;
+import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
@@ -9,11 +9,9 @@ import com.nuvoled.yaml.YamlReader;
 import com.nuvoled.yaml.YamlWriter;
 import org.apache.log4j.varia.NullAppender;
 
-import javax.xml.xpath.XPath;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
 
@@ -70,6 +68,7 @@ public class Main {
         org.apache.log4j.BasicConfigurator.configure(new NullAppender()); //?
         String defaultMessage = "To crate a config file type: java -jar nuvoled.jar create <path>\nTo start the application with a config file: java -jar nuvoled.jar <path>";
 
+        //parsing the command line arguments
         if (args.length == 0 || args.length > 2) {
             System.out.println(defaultMessage);
             System.exit(-1);
@@ -81,7 +80,6 @@ public class Main {
             System.out.println(defaultMessage);
             System.exit(-1);
         }
-
 
         if (rotation != 0) {
             System.out.println("""
@@ -107,27 +105,27 @@ public class Main {
             }
             default -> {
                 System.out.println("No Panel defined");
-                System.exit(1);
+                System.exit(-1);
             }
         }
 
         panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
         panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
 
-        System.out.println("Panel                    : " + wichPanel);
-        System.out.println("x/y Panel Count          : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
-        System.out.println("x/y Panel Size           : " + onepanelSizeX + "/" + onepanelSizeY);
-        System.out.println("x/y Pixels               : " + panelSizeX + "/" + panelSizeY);
-        System.out.println("rotation Degree          : " + Main.getRotation());
-        System.out.println("mode                     : " + mode);
-        System.out.println("Screen Number            : " + screenNumber);
-        System.out.println("x/y Start Position       : " + xPosition + "/" + yPosition);
-        System.out.println("broadcastIpAddress       : " + broadcastIpAddress);
-        System.out.println("bind to interface        : " + bindToInterface);
-        System.out.println("scaleFactor (Brightness) : " + brightness.toString());
-        System.out.println("offset (Contrast)        : " + offSet.toString());
-        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
-        System.out.println("sleep time               : " + sleep);
+        System.out.println("Panel                               : " + Main.getWichPanel());
+        System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
+        System.out.println("x/y Panel Size                      : " + onepanelSizeX + "/" + onepanelSizeY);
+        System.out.println("x/y Pixels                          : " + Main.getPanelSizeX() + "/" + Main.getPanelSizeY());
+        System.out.println("rotation Degree                     : " + Main.getRotation());
+        System.out.println("mode                                : " + Main.getMode());
+        System.out.println("Screen Number                       : " + Main.getScreenNumber());
+        System.out.println("x/y Start Position                  : " + Main.getxPosition() + "/" + Main.getyPosition());
+        System.out.println("broadcastIpAddress                  : " + Main.getBroadcastIpAddress());
+        System.out.println("bind to interface                   : " + Main.isBindToInterface());
+        System.out.println("scaleFactor (Brightness)            : " + Main.getBrightness());
+        System.out.println("offset (Contrast)                   : " + Main.getOffSet());
+        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + Main.getColorMode());
+        System.out.println("sleep time                          : " + Main.getSleep());
 
         switch (mode) {
             case "screen" -> captureFromScreen();

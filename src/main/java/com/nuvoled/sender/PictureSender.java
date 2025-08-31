@@ -1,8 +1,8 @@
 package com.nuvoled.sender;
 
 import com.nuvoled.Main;
-import com.nuvoled.Util.Rgb565;
-import com.nuvoled.Util.Rotation;
+import com.nuvoled.util.Rgb565;
+import com.nuvoled.util.Rotation;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -125,7 +125,11 @@ public class PictureSender {
         }
     }
 
-    private static void getLedRgbData(BufferedImage image) {
+    /**
+     * Old deprecated but probably faster rotation methode for P4 panels
+     * @param image
+     */
+    private static void getLedRgbDataWithRotation(BufferedImage image) {
 
         int rgbCounterNumber = 0;
 
