@@ -7,7 +7,6 @@ import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.SendSync;
 import com.nuvoled.yaml.YamlReader;
 import com.nuvoled.yaml.YamlWriter;
-import org.apache.log4j.varia.NullAppender;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -59,13 +58,14 @@ public class Main {
     private static int yPosition = 0;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
-        System.out.println("  _  _              _        _ \n" +
-                " | \\| |_  ___ _____| |___ __| |\n" +
-                " | .` | || \\ V / _ \\ / -_) _` |\n" +
-                " |_|\\_|\\_,_|\\_/\\___/_\\___\\__,_|\n" +
-                "                               ");
+        System.out.println("""
+                  _  _              _        _\s
+                 | \\| |_  ___ _____| |___ __| |
+                 | .` | || \\ V / _ \\ / -_) _` |
+                 |_|\\_|\\_,_|\\_/\\___/_\\___\\__,_|
+                                               \
+                """);
 
-        org.apache.log4j.BasicConfigurator.configure(new NullAppender()); //?
         String defaultMessage = "To crate a config file type: java -jar nuvoled.jar create <path>\nTo start the application with a config file: java -jar nuvoled.jar <path>";
 
         //parsing the command line arguments
@@ -88,8 +88,13 @@ public class Main {
                     * then configure your rotation start parameter (_-r_)
                     * if you use a NDI Source: Configure the resolution with the rotation -> like in reality""");
         }
-
         System.out.println();
+
+        if (Main.isArtnetEnabled()) {
+            Main.setArtnet(new ArtNetClient());
+            artnet.start();
+            //TODO test
+        }
 
         int onepanelSizeX = 0;
         int onepanelSizeY = 0;
@@ -160,6 +165,7 @@ public class Main {
             return;
         }
 
+        //noinspection InfiniteLoopStatement
         while (true) {
             Fps.fpsStart();
             BufferedImage image = robot.createScreenCapture(rectangle);

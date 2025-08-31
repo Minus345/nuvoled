@@ -14,7 +14,8 @@ http://NDI.NewTek.com/
 **You need to configure your LED panels first in
 the [official configuration software](https://www.nuvoled.de/download/).**
 
-- **Java 21.x.x required**
+- **Java 24.0.2 required**
+    - updated java version, because of incompatibility with wayland on ubuntu
 - Tested on:
     - Windows
     - Raspberry PI
@@ -42,11 +43,11 @@ If you use **rotation**:
 2. then configure your rotation start parameter (_-r_)
 3. if you use a NDI Source: Configure the resolution with the rotation -> like in reality
 
-| rotation degree | P4 normal               | P4 Ndi | P5 normal | P5 Ndi |
-|-----------------|-------------------------|--------|-----------|--------|
-| 90              | ❓  (old implementation) | ❓      | ✅         | ✅      |
-| 180             | ❓                       | ❌      | ❌         | ❌      |
-| 270             | ❓  (old implementation) | ❓      | ✅         | ✅      |
+| rotation degree | P4 normal | P4 Ndi | P5 normal | P5 Ndi |
+|-----------------|-----------|--------|-----------|--------|
+| 90              | ✅         | ❓      | ✅         | ✅      |
+| 180             | ❌         | ❌      | ❌         | ❌      |
+| 270             | ✅         | ❓      | ✅         | ✅      |
 
 ### RGB565
 
@@ -94,7 +95,8 @@ If you use **rotation**:
 ### TODO:
 
 1. [x] Add config file
-2. [ ] Testing P4
+2. [x] Testing P4
+3. [ ] Test ArtNet and add network interface configurations 
 3. [ ] RGB565 fix array length (should be shorter)
 4. [ ] make NID more configurable
 

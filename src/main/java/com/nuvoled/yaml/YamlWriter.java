@@ -13,12 +13,20 @@ import java.util.Scanner;
 public class YamlWriter {
     /**
      * Creates a default yaml file in the path. The filename is "config.yaml"
-     * @param path
+     *
+     * @param path path where the config file should be created
      */
     public YamlWriter(String path) {
         try {
             //create empty file in path
-            File file = new File(path + "\\config.yaml");
+            String os = System.getProperty("os.name");
+            File file;
+            if (os.startsWith("Windows")) {
+                file = new File(path + "\\config.yaml");
+            } else {
+                file = new File(path + "/config.yaml");
+            }
+
             if (file.createNewFile()) {
                 System.out.println("File created: " + file.getName());
             } else {
