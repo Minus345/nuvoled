@@ -1,4 +1,4 @@
-package com.nuvoled.Util;
+package com.nuvoled.util;
 
 import com.nuvoled.ndi.Point;
 

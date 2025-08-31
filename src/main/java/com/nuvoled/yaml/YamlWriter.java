@@ -11,13 +11,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class YamlWriter {
-
-    public static void main(String[] args) {
-        new YamlWriter("C:\\Users\\Max\\IdeaProjects\\nuvoled");
-    }
-
+    /**
+     * Creates a default yaml file in the path. The filename is "config.yaml"
+     * @param path
+     */
     public YamlWriter(String path) {
-
         try {
             //create empty file in path
             File file = new File(path + "\\config.yaml");
@@ -36,12 +34,12 @@ public class YamlWriter {
             //write to file
             FileWriter writer = new FileWriter(file);
 
+            //configure SnakeYAML
             DumperOptions options = new DumperOptions();
             options.setPrettyFlow(true);
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
             Yaml yaml = new Yaml(options);
-
             yaml.dump(createYamlData(), writer);
             writer.close();
         } catch (IOException e) {

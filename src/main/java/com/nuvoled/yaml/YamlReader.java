@@ -12,10 +12,6 @@ import java.util.Map;
 public class YamlReader {
     Map<String, Object> settings;
 
-    public static void main(String args[]) throws FileNotFoundException {
-        YamlReader yamlReader = new YamlReader("C:\\Users\\Max\\IdeaProjects\\nuvoled\\config.yaml");
-    }
-
     public YamlReader(String path) {
         //try to load config from path
         try {

@@ -1,6 +1,4 @@
-package com.nuvoled.Util;
-
-import java.util.GregorianCalendar;
+package com.nuvoled.util;
 
 public class Rgb565 {
     /**
