@@ -24,8 +24,8 @@ public class Main {
 
     //global settings
     private static boolean bindToInterface = false;
-    private static Float brightness = 0.6F;
-    private static Float offSet = 0F;
+    private static float brightness = 0.6F;
+    private static float offSet = 0F;
     private static int rotation = 0;
     private static int sleep = 0;
 
