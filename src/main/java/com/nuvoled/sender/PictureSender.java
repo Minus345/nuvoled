@@ -62,14 +62,14 @@ public class PictureSender {
                 }
                 pixel++;
             }
-            SendSync.send_data(message);
+            ManageNetworkConnection.send_data(message);
         }
         try {
             Thread.sleep(Main.getSleep());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        SendSync.send_end_frame();
+        ManageNetworkConnection.sendSyncro();
 
         //gehört zu onlySendChangedPicture
         System.arraycopy(rgb, 0, rgbOld, 0, rgb.length);
