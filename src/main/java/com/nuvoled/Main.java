@@ -4,7 +4,7 @@ import ch.bildspur.artnet.ArtNetClient;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
-import com.nuvoled.sender.SendSync;
+import com.nuvoled.sender.ManageNetworkConnection;
 import com.nuvoled.yaml.YamlReader;
 import com.nuvoled.yaml.YamlWriter;
 
@@ -160,9 +160,7 @@ public class Main {
         rectangle.setSize(panelSizeX, panelSizeY);
         System.out.println(panelSizeX + " : " + panelSizeY);
 
-        if (!SendSync.setDatagramSocket()) {
-            return;
-        }
+        ManageNetworkConnection.setDatagramSocket();
 
         //noinspection InfiniteLoopStatement
         while (true) {

@@ -19,9 +19,8 @@ the [official configuration software](https://www.nuvoled.de/download/).**
 - Tested on:
     - Windows
     - Raspberry PI
-    - Ubuntu
-    - ~~(Mac not supported)~~  
-      See `OS specific settings` further below
+    - Ubuntu   
+    See `OS specific settings` further below
 
 ***
 
@@ -125,12 +124,6 @@ https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
 ***
 
 ## OS specific settings
-
-### Mac
-
-use  
-`-b` to binde the interface  
-`-s 60` to set the delay between two frames
 
 ### Linux (Ubuntu)
 

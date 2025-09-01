@@ -4,7 +4,7 @@ import com.nuvoled.Main;
 import com.nuvoled.util.Fps;
 import com.nuvoled.util.Rgb565;
 import com.nuvoled.util.Rotation;
-import com.nuvoled.sender.SendSync;
+import com.nuvoled.sender.ManageNetworkConnection;
 import me.walkerknapp.devolay.*;
 
 import java.nio.ByteBuffer;
@@ -30,11 +30,8 @@ public class Ndi {
         System.out.println("Starting");
         findSources();
 
-        System.out.println("Connect to DatagrammSocket");
-        if (!SendSync.setDatagramSocket()) {
-            System.out.println("Internal Error: No DatagrammSocket connected");
-            System.exit(0);
-        }
+        //Connecting to DatagramSocket
+        ManageNetworkConnection.setDatagramSocket();
 
         System.out.println("Setting up NDI");
         videoFrame = new DevolayVideoFrame();
@@ -250,7 +247,7 @@ public class Ndi {
                 }
                 pixel++;
             }
-            SendSync.send_data(message);
+            ManageNetworkConnection.send_data(message);
             //System.out.println(Arrays.toString(message));
             //System.out.println(message[10] + " " + message[11] + " " + message[12]);
         }
@@ -259,6 +256,6 @@ public class Ndi {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        SendSync.send_end_frame();
+        ManageNetworkConnection.sendSyncro();
     }
 }
