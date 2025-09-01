@@ -93,20 +93,19 @@ public class Main {
         if (Main.isArtnetEnabled()) {
             Main.setArtnet(new ArtNetClient());
             artnet.start();
-            //TODO test
         }
 
-        int onepanelSizeX = 0;
-        int onepanelSizeY = 0;
+        int onePanelSizeX = 0;
+        int onePanelSizeY = 0;
 
         switch (wichPanel) {
             case "P4" -> {
-                onepanelSizeX = 128;
-                onepanelSizeY = 128;
+                onePanelSizeX = 128;
+                onePanelSizeY = 128;
             }
             case "P5" -> {
-                onepanelSizeX = 128;
-                onepanelSizeY = 96;
+                onePanelSizeX = 128;
+                onePanelSizeY = 96;
             }
             default -> {
                 System.out.println("No Panel defined");
@@ -114,12 +113,12 @@ public class Main {
             }
         }
 
-        panelSizeX = xPanelCount * onepanelSizeX; //Anzahl Panel X * 128 pixel
-        panelSizeY = yPanelCount * onepanelSizeY; //Anzahl Panel Y * 128 pixel
+        panelSizeX = xPanelCount * onePanelSizeX; //Anzahl Panel X * 128 pixel
+        panelSizeY = yPanelCount * onePanelSizeY; //Anzahl Panel Y * 128 pixel
 
         System.out.println("Panel                               : " + Main.getWichPanel());
         System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
-        System.out.println("x/y Panel Size                      : " + onepanelSizeX + "/" + onepanelSizeY);
+        System.out.println("x/y Panel Size                      : " + onePanelSizeX + "/" + onePanelSizeY);
         System.out.println("x/y Pixels                          : " + Main.getPanelSizeX() + "/" + Main.getPanelSizeY());
         System.out.println("rotation Degree                     : " + Main.getRotation());
         System.out.println("mode                                : " + Main.getMode());

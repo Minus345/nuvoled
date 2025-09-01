@@ -3,7 +3,7 @@ package com.nuvoled;
 import java.io.IOException;
 import java.net.*;
 
-public class Receiver {
+public class ConfigurePanels {
 
     private static byte[] mac1 = new byte[4];
 

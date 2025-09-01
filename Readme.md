@@ -14,7 +14,7 @@ http://NDI.NewTek.com/
 **You need to configure your LED panels first in
 the [official configuration software](https://www.nuvoled.de/download/).**
 
-- **Java 24.0.2 required**
+- **[Java 24.0.2 required](https://www.oracle.com/de/java/technologies/downloads/)**
     - updated java version, because of incompatibility with wayland on ubuntu
 - Tested on:
     - Windows
@@ -96,13 +96,16 @@ If you use **rotation**:
 
 1. [x] Add config file
 2. [x] Testing P4
-3. [ ] Test ArtNet and add network interface configurations 
-3. [ ] RGB565 fix array length (should be shorter)
-4. [ ] make NID more configurable
+3. [x] Test ArtNet 
+4. [ ] add network interface configurations
+5. [ ] rewrite network interface (refactoring old code - remove Mac support)
+6. [ ] RGB565 fix array length (should be shorter)
+7. [ ] make NID more configurable
+8. [ ] Network Mapper: sends data over normal Network to a Node; sends it over to the display in udp broadcast
 
 ***
 
-## NDI Supprt
+## NDI Support
 
 https://ndi.video/for-developers/ndi-sdk/download/
 
