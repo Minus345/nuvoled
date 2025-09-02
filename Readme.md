@@ -20,7 +20,7 @@ the [official configuration software](https://www.nuvoled.de/download/).**
     - Windows
     - Raspberry PI
     - Ubuntu   
-    See `OS specific settings` further below
+      See `OS specific settings` further below
 
 ***
 
@@ -95,12 +95,13 @@ If you use **rotation**:
 
 1. [x] Add config file
 2. [x] Testing P4
-3. [x] Test ArtNet 
+3. [x] Test ArtNet
 4. [ ] add network interface configurations
-5. [ ] rewrite network interface (refactoring old code - remove Mac support)
-6. [ ] RGB565 fix array length (should be shorter)
-7. [ ] make NID more configurable
-8. [ ] Network Mapper: sends data over normal Network to a Node; sends it over to the display in udp broadcast
+5. [x] rewrite network interface (refactoring old code - remove Mac support)
+6. [ ] add 180 degree rotation
+7. [ ] RGB565 fix array length (should be shorter)
+8. [ ] make NID more configurable
+9. [ ] Network Mapper: sends data over normal Network to a Node; sends it over to the display in udp broadcast
 
 ***
 

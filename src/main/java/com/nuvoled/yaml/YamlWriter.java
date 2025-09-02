@@ -72,7 +72,6 @@ public class YamlWriter {
         //panel settings
         data.put("rotation", 0);
         data.put("sleep", 0);
-        data.put("bindToInterface", false);
         data.put("offSet", 0.0);
         data.put("showFps", false);
 

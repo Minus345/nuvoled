@@ -22,7 +22,6 @@ public class Main {
     private static int panelSizeY;
 
     //global settings
-    private static boolean bindToInterface = false;
     private static float brightness = 0.6F;
     private static float offSet = 0F;
     private static int rotation = 0;
@@ -125,7 +124,6 @@ public class Main {
         System.out.println("Screen Number                       : " + Main.getScreenNumber());
         System.out.println("x/y Start Position                  : " + Main.getxPosition() + "/" + Main.getyPosition());
         System.out.println("broadcastIpAddress                  : " + Main.getBroadcastIpAddress());
-        System.out.println("bind to interface                   : " + Main.isBindToInterface());
         System.out.println("scaleFactor (Brightness)            : " + Main.getBrightness());
         System.out.println("offset (Contrast)                   : " + Main.getOffSet());
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + Main.getColorMode());
@@ -158,7 +156,6 @@ public class Main {
             }
         }
         rectangle.setSize(panelSizeX, panelSizeY);
-        System.out.println(panelSizeX + " : " + panelSizeY);
 
         ManageNetworkConnection.setDatagramSocket();
 
@@ -194,14 +191,6 @@ public class Main {
 
     public static void setArtnetEnabled(boolean artnetEnabled) {
         Main.artnetEnabled = artnetEnabled;
-    }
-
-    public static boolean isBindToInterface() {
-        return bindToInterface;
-    }
-
-    public static void setBindToInterface(boolean bindToInterface) {
-        Main.bindToInterface = bindToInterface;
     }
 
     public static String getBroadcastIpAddress() {

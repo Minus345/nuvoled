@@ -3,7 +3,6 @@ package com.nuvoled.yaml;
 import com.nuvoled.Main;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -25,7 +24,7 @@ public class YamlReader {
     }
 
     private void loadYamlFromFileInToMemory(String path) throws FileNotFoundException {
-        InputStream input = new FileInputStream(new File(path));
+        InputStream input = new FileInputStream(path);
         Yaml yaml = new Yaml();
         settings = yaml.load(input);
     }
@@ -36,15 +35,16 @@ public class YamlReader {
             Main.setWichPanel((String) settings.get("PanelVersion"));
             Main.setxPanelCount((int) settings.get("PanelCountX"));
             Main.setyPanelCount((int) settings.get("PanelCountY"));
-            Main.setBrightness((float)((double) settings.get("brightness")));
-            if((boolean) settings.get("rgb565")){
+            Main.setBrightness((float) ((double) settings.get("brightness")));
+            if ((boolean) settings.get("rgb565")) {
                 Main.setColorMode(30);
+            } else {
+                Main.setColorMode(10);
             }
 
             //panel settings
             Main.setRotation((int) settings.get("rotation"));
             Main.setSleep((int) settings.get("sleep"));
-            Main.setBindToInterface((boolean) settings.get("bindToInterface"));
             Main.setOffSet((float) ((double) settings.get("offSet")));
             Main.setShowFps((boolean) settings.get("showFps"));
 
