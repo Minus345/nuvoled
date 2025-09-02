@@ -11,6 +11,7 @@ public class ManageNetworkConnection {
 
     /**
      * finds the network interface with address: "169.254.255.255"
+     *
      * @return
      */
     private static InetAddress findNetworkInterface() {
@@ -32,6 +33,7 @@ public class ManageNetworkConnection {
             }
         } catch (SocketException e) {
             System.out.println("Error retrieving network interface list");
+            System.exit(-1);
         }
         System.out.println("No suitable Network card found");
         System.exit(-1);
@@ -46,9 +48,13 @@ public class ManageNetworkConnection {
             InetAddress address = findNetworkInterface();
             datagramSocket = new DatagramSocket(Main.getPort(), address);
             datagramSocket.setBroadcast(true);
+        } catch (BindException e) {
+            System.out.println("Address already in use. Another application is already running on the same network card");
+            System.exit(-1);
         } catch (SocketException e) {
             System.out.println("Could not bind to Network Card");
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 
@@ -82,39 +88,6 @@ public class ManageNetworkConnection {
         }
         if (Main.getCourantFrame() == (byte) 255) {
             //resets frame counter
-            Main.setCourantFrame((byte) 0);
-        }
-    }
-
-    /**
-     * deprecated
-     *
-     * @param Frame
-     * @param numberPacketH
-     * @param numberPacketL
-     */
-    public static void sendFrameFinish(byte Frame, byte numberPacketH, byte numberPacketL) {
-        try {
-            int port = 2000;
-            byte[] FrameFinish = new byte[4];
-            FrameFinish[0] = 36;
-            FrameFinish[1] = 36;
-            FrameFinish[2] = 30;
-            FrameFinish[3] = Frame;
-            FrameFinish[4] = numberPacketH;
-            FrameFinish[5] = numberPacketL;
-
-            DatagramSocket dsocket = new DatagramSocket();
-            dsocket.setSendBufferSize(1048576);
-            DatagramPacket packet = new DatagramPacket(FrameFinish, FrameFinish.length, InetAddress.getByName(Main.getBroadcastIpAddress()), port);
-            dsocket.send(packet);
-            dsocket.close();
-
-            Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-        if (Main.getCourantFrame() == (byte) 255) {
             Main.setCourantFrame((byte) 0);
         }
     }
