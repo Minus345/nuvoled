@@ -75,8 +75,7 @@ If you use **rotation**:
 | brightness      | [0 - ...]      | brightness multiplier. 1 is normal                                                                                      | 0.6           |
 | rgb565          | boolean        | enables rgb565 mode: less colour accurate, more efficient -> you can have more panels with higher framerate connected   | false         |
 | rotation        | 0, 90, 270     | rotates the image 90 or 270 degree -> see _Rotation Chapter_                                                            | 0             |
-| sleep           | int            | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |
-| bindToInterface | boolean        | (deprecated was only for Mac)                                                                                           | false         |
+| sleep           | int            | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |         |
 | offSet          | float          | (currently not in use)                                                                                                  | 0.0           |
 | showFps         | boolean        | shows the fps that are send out, in the terminal                                                                        | false         |
 | mode            | "screen"/"ndi" | "ndi" enables nid mode                                                                                                  | screen        |
