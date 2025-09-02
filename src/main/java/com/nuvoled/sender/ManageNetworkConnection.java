@@ -91,4 +91,8 @@ public class ManageNetworkConnection {
             Main.setCourantFrame((byte) 0);
         }
     }
+
+    public static DatagramSocket getDatagramSocket() {
+        return datagramSocket;
+    }
 }
