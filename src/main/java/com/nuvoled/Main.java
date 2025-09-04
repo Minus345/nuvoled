@@ -1,6 +1,8 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
+import com.nuvoled.configurartion.ConfigManager;
+import com.nuvoled.configurartion.SendConfigureMessages;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
@@ -130,8 +132,10 @@ public class Main {
         System.out.println("sleep time                          : " + Main.getSleep());
 
         ManageNetworkConnection.setDatagramSocket();
-        ConfigurePanels.run();
-        //System.exit(0);
+        ConfigManager.start();
+
+        //SendConfigureMessages.run();
+        System.exit(0);
 
         switch (mode) {
             case "screen" -> captureFromScreen();
