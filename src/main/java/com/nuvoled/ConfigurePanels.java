@@ -2,8 +2,6 @@ package com.nuvoled;
 
 import com.nuvoled.sender.ManageNetworkConnection;
 
-import java.io.IOException;
-import java.net.*;
 import java.util.HexFormat;
 
 public class ConfigurePanels {
@@ -11,17 +9,34 @@ public class ConfigurePanels {
     private static byte[] mac1 = new byte[4];
 
     public static void main(String[] args) {
-        ManageNetworkConnection.setDatagramSocket();
+        //ManageNetworkConnection.setDatagramSocket();
         //reset();
         //sendRedCross();
-        setConfig();
+        //makeConfigAndSendGreenCross();
     }
 
-    private static void reset(){
-        resetAll();
-        sendTrash();
-        sendReset();
+    public static void run() {
+        reset();
+        //sendRedCross();
+        try {
+            Thread.sleep(100);
+        }catch (Exception ignored){
+        }
+        makeConfigAndSendGreenCross();
     }
+
+    private static void reset() {
+        send160();
+        sendTrash();
+        sendRequestForData130();
+        sendRequestForData130();
+        sendDummyConfig120();
+        send160();
+        sendTrash();
+        sendRequestForData130();
+        sendRequestForData130();
+    }
+
     //    0 1  2   3
     //Mac 0 93 126 12
 
@@ -29,7 +44,7 @@ public class ConfigurePanels {
      * In Software angeklickt
      */
     public static void sendRedCross() {
-        byte[] message = new byte[1450];
+        byte[] message = new byte[6];
         message[0] = 36;
         message[1] = 36;
         message[2] = (byte) 160;
@@ -38,10 +53,11 @@ public class ConfigurePanels {
         message[5] = 93;  //mac[1]
         //                  mac[0]
         ManageNetworkConnection.send_data(message);
+        sendTrash();
     }
 
-    public static void resetAll() {
-        byte[] message = new byte[1450];
+    public static void send160() {
+        byte[] message = new byte[6];
         message[0] = 36;
         message[1] = 36;
         message[2] = (byte) 160;
@@ -81,19 +97,58 @@ public class ConfigurePanels {
         ManageNetworkConnection.send_data(message);
     }
 
-    public static void sendReset() {
-        byte[] message = new byte[1450];
+    public static void sendRequestForData130() {
+        byte[] message = new byte[4];
         message[0] = 36;
         message[1] = 36;
         message[2] = (byte) 130;
         message[3] = 0;
-        message[4] = 0;
+        // message[4] = 0;
         ManageNetworkConnection.send_data(message);
     }
 
-    public static void setConfig() {
-        byte[] message = new byte[1450];
+    public static void sendDummyConfig120() {
+        byte[] message = new byte[8];
         message[0] = 36;
+        message[1] = 36;
+        message[2] = (byte) 120;
+        message[3] = 2;
+        message[4] = 0;
+        message[5] = 8;
+        message[6] = 8;
+        message[7] = 0;
+        ManageNetworkConnection.send_data(message);
+    }
+
+    private static void makeConfigAndSendGreenCross() {
+        setConfig();
+        send160();
+        sendTrash();
+        setConfig();
+    }
+
+    public static void setConfig() {
+        byte[] message = new byte[15];
+        message[0] = 36;
+        message[1] = 36;
+        message[2] = (byte) 120; //send config
+        message[3] = (byte) 2; //fix
+        message[4] = 0; //fix
+        message[5] = (byte) (Main.getGlobalPixelInX() / 16); //total screen width /16
+        message[6] = (byte) (Main.getGlobalPixelInY() / 16); //total screen height /16
+        message[7] = 1;//(byte) (Main.getxPanelCount() * Main.getyPanelCount()); //total numbers of modules connected
+        message[8] = 126; //mac[2]
+        message[9] = 12; //mac[3]
+        message[10] = 93; //mac[1]
+        message[11] = (byte) (Main.getOnePanelSizeX() / 16); //modul width /16
+        message[12] = (byte) (Main.getOnePanelSizeY() / 16); //modul height /16
+        message[13] = 0; //offset x
+        message[14] = 18; //offset y
+        ManageNetworkConnection.send_data(message);
+    }
+
+    /*
+            message[0] = 36;
         message[1] = 36;
         message[2] = (byte) 120; //send config
         message[3] = (byte) 2; //fix
@@ -108,8 +163,8 @@ public class ConfigurePanels {
         message[12] = 6; //modul height /16
         message[13] = 0; //offset x
         message[14] = 0; //offset y
-        ManageNetworkConnection.send_data(message);
-    }
+     */
+
 
     /*
     public static void run() {

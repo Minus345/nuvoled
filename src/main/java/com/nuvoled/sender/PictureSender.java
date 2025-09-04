@@ -9,8 +9,8 @@ import java.awt.image.RescaleOp;
 
 public class PictureSender {
 
-    public static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
-    public static byte[] rgbOld = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
+    public static byte[] rgb = new byte[Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3];
+    public static byte[] rgbOld = new byte[Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3];
 
     public static void send(BufferedImage image) {
         getFormat(applyFilter(image)); //updates rgb array
@@ -20,9 +20,9 @@ public class PictureSender {
         int MaxPackets;
 
         if (Main.getColorMode() == 30) {
-            MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+            MaxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
         } else {
-            MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+            MaxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
         }
 
         //prep message
@@ -96,8 +96,8 @@ public class PictureSender {
 
     private static void getLedRgbDataNewRotFunction(BufferedImage image) {
         int rgbCounterNumber = 0;
-        for (int y = 0; y < Main.getPanelSizeY(); y++) {
-            for (int x = 0; x < Main.getPanelSizeX(); x++) {
+        for (int y = 0; y < Main.getGlobalPixelInY(); y++) {
+            for (int x = 0; x < Main.getGlobalPixelInX(); x++) {
                 int pixel = image.getRGB(x, y);
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
@@ -112,10 +112,10 @@ public class PictureSender {
         }
 
         switch (Main.getRotation()) {
-            case 90 -> rgb = Rotation.rotate90(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
+            case 90 -> rgb = Rotation.rotate90(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
             case 180 -> //noinspection DataFlowIssue -> not imlemented
-                    rgb = Rotation.rotate180(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
-            case 270 -> rgb = Rotation.rotate270(rgb, Main.getPanelSizeX(), Main.getPanelSizeY());
+                    rgb = Rotation.rotate180(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
+            case 270 -> rgb = Rotation.rotate270(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
         }
     }
 
