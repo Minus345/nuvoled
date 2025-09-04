@@ -17,7 +17,7 @@ public class Ndi {
     private static DevolayFinder finder;
     private static int ndiPixelX;
     private static int ndiPixelY;
-    private static byte[] rgb = new byte[Main.getPanelSizeX() * Main.getPanelSizeY() * 3];
+    private static byte[] rgb = new byte[Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3];
     private static DevolayVideoFrame videoFrame;
     private static DevolayFrameSync frameSync;
 
@@ -108,7 +108,7 @@ public class Ndi {
             ndiPixelY = videoFrame1.getYResolution();
 
             //Compare if Incoming NDI Stream is the same resolution as the configured panel Count
-            int panelXY = Main.getPanelSizeX() * Main.getPanelSizeY();
+            int panelXY = Main.getGlobalPixelInX() * Main.getGlobalPixelInY();
             int ndiPixelCount = ndiPixelX * ndiPixelY;
 
             int ndiPixelBufferLength = ndiPixelCount * 4 / 2; //4: Wegen YUV → Eigentlich ja nur mal 2 weil pro pixel 2 bytes
@@ -116,12 +116,12 @@ public class Ndi {
 
             if (ndiPixelCount != panelXY || ndiPixelBufferLength != bufferLength) { //|| Main.getPanelSizeX() != pixelX || Main.getPanelSizeY() != pixelY
                 System.out.println("Pixel count of NDI Source and configured panels are not the Same ");
-                System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
+                System.out.println("Configured Pixel: " + "x: " + Main.getGlobalPixelInX() + " y: " + Main.getGlobalPixelInY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
                 System.exit(0);
             }
 
-            Main.setPanelSizeX(ndiPixelX);
-            Main.setPanelSizeY(ndiPixelY);
+            Main.setGlobalPixelInX(ndiPixelX);
+            Main.setGlobalPixelInY(ndiPixelY);
 
             //System.out.println("Configured Pixel: " + "x: " + Main.getPanelSizeX() + " y: " + Main.getPanelSizeY() + " | Form NDI Source: " + "x: " + ndiPixelX + " y: " + ndiPixelY);
 
@@ -213,7 +213,7 @@ public class Ndi {
 
             */
 
-        MaxPackets = ((Main.getPanelSizeX() * Main.getPanelSizeY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+        MaxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
         //    }
 
 

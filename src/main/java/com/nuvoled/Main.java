@@ -18,8 +18,8 @@ public class Main {
     private static final int port = 2000;
     private static byte courantFrame = 2;
     private static final String broadcastIpAddress = "169.254.255.255";
-    private static int panelSizeX;
-    private static int panelSizeY;
+    private static int globalPixelInX;
+    private static int globalPixelInY;
 
     //global settings
     private static float brightness = 0.6F;
@@ -55,6 +55,8 @@ public class Main {
     private static int screenNumber = 0;
     private static int xPosition = 0;
     private static int yPosition = 0;
+    private static int onePanelSizeX = 0;
+    private static int onePanelSizeY = 0;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("""
@@ -94,8 +96,6 @@ public class Main {
             artnet.start();
         }
 
-        int onePanelSizeX = 0;
-        int onePanelSizeY = 0;
 
         switch (wichPanel) {
             case "P4" -> {
@@ -112,13 +112,13 @@ public class Main {
             }
         }
 
-        panelSizeX = xPanelCount * onePanelSizeX; //Anzahl Panel X * 128 pixel
-        panelSizeY = yPanelCount * onePanelSizeY; //Anzahl Panel Y * 128 pixel
+        globalPixelInX = xPanelCount * onePanelSizeX; //Anzahl Panel X * 128 pixel
+        globalPixelInY = yPanelCount * onePanelSizeY; //Anzahl Panel Y * 128 pixel
 
         System.out.println("Panel                               : " + Main.getWichPanel());
         System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
-        System.out.println("x/y Panel Size                      : " + onePanelSizeX + "/" + onePanelSizeY);
-        System.out.println("x/y Pixels                          : " + Main.getPanelSizeX() + "/" + Main.getPanelSizeY());
+        System.out.println("x/y Panel Size                      : " + Main.getOnePanelSizeX() + "/" + Main.getGlobalPixelInY());
+        System.out.println("x/y Pixels                          : " + Main.getGlobalPixelInX() + "/" + Main.getGlobalPixelInY());
         System.out.println("rotation Degree                     : " + Main.getRotation());
         System.out.println("mode                                : " + Main.getMode());
         System.out.println("Screen Number                       : " + Main.getScreenNumber());
@@ -128,6 +128,10 @@ public class Main {
         System.out.println("offset (Contrast)                   : " + Main.getOffSet());
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + Main.getColorMode());
         System.out.println("sleep time                          : " + Main.getSleep());
+
+        ManageNetworkConnection.setDatagramSocket();
+        ConfigurePanels.run();
+        //System.exit(0);
 
         switch (mode) {
             case "screen" -> captureFromScreen();
@@ -146,18 +150,18 @@ public class Main {
 
         switch (Main.getRotation()) {
             case 90, 270 -> {
-                int buf = Main.panelSizeX;
-                Main.panelSizeX = Main.getPanelSizeY();
-                Main.panelSizeY = buf;
+                int buf = Main.globalPixelInX;
+                Main.globalPixelInX = Main.getGlobalPixelInY();
+                Main.globalPixelInY = buf;
             }
             case 180 -> {
                 System.out.println("not Supported");
                 System.exit(-1);
             }
         }
-        rectangle.setSize(panelSizeX, panelSizeY);
+        rectangle.setSize(globalPixelInX, globalPixelInY);
 
-        ManageNetworkConnection.setDatagramSocket();
+        //ManageNetworkConnection.setDatagramSocket();
 
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -238,20 +242,20 @@ public class Main {
         Main.offSet = offSet;
     }
 
-    public static int getPanelSizeX() {
-        return panelSizeX;
+    public static int getGlobalPixelInX() {
+        return globalPixelInX;
     }
 
-    public static void setPanelSizeX(int panelSizeX) {
-        Main.panelSizeX = panelSizeX;
+    public static void setGlobalPixelInX(int globalPixelInX) {
+        Main.globalPixelInX = globalPixelInX;
     }
 
-    public static int getPanelSizeY() {
-        return panelSizeY;
+    public static int getGlobalPixelInY() {
+        return globalPixelInY;
     }
 
-    public static void setPanelSizeY(int panelSizeY) {
-        Main.panelSizeY = panelSizeY;
+    public static void setGlobalPixelInY(int globalPixelInY) {
+        Main.globalPixelInY = globalPixelInY;
     }
 
     public static int getPort() {
@@ -352,5 +356,13 @@ public class Main {
 
     public static void setyPosition(int yPosition) {
         Main.yPosition = yPosition;
+    }
+
+    public static int getOnePanelSizeX() {
+        return onePanelSizeX;
+    }
+
+    public static int getOnePanelSizeY() {
+        return onePanelSizeY;
     }
 }
