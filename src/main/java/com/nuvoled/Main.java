@@ -76,8 +76,21 @@ public class Main {
             System.out.println(defaultMessage);
             System.exit(-1);
         } else if (args.length == 1) {
+            //reds the config file
             new YamlReader(args[0]);
+            wichPanel();
+
+            ManageNetworkConnection.setDatagramSocket();
+        } else if (args[0].equals("config")) {
+            //starts the configuration progress for the LED wall the terminates
+            new YamlReader(args[1]);
+            wichPanel();
+
+            ManageNetworkConnection.setDatagramSocket();
+            ConfigManager.start();
+            System.exit(0);
         } else if (args[0].equals("create")) {
+            //creates yaml file then terminates
             new YamlWriter(args[1]);
         } else {
             System.out.println(defaultMessage);
@@ -99,24 +112,6 @@ public class Main {
         }
 
 
-        switch (wichPanel) {
-            case "P4" -> {
-                onePanelSizeX = 128;
-                onePanelSizeY = 128;
-            }
-            case "P5" -> {
-                onePanelSizeX = 128;
-                onePanelSizeY = 96;
-            }
-            default -> {
-                System.out.println("No Panel defined");
-                System.exit(-1);
-            }
-        }
-
-        globalPixelInX = xPanelCount * onePanelSizeX; //Anzahl Panel X * 128 pixel
-        globalPixelInY = yPanelCount * onePanelSizeY; //Anzahl Panel Y * 128 pixel
-
         System.out.println("Panel                               : " + Main.getWichPanel());
         System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
         System.out.println("x/y Panel Size                      : " + Main.getOnePanelSizeX() + "/" + Main.getGlobalPixelInY());
@@ -130,12 +125,6 @@ public class Main {
         System.out.println("offset (Contrast)                   : " + Main.getOffSet());
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + Main.getColorMode());
         System.out.println("sleep time                          : " + Main.getSleep());
-
-        ManageNetworkConnection.setDatagramSocket();
-        ConfigManager.start();
-
-        //SendConfigureMessages.run();
-        System.exit(0);
 
         switch (mode) {
             case "screen" -> captureFromScreen();
@@ -175,6 +164,26 @@ public class Main {
             Fps.fpsEnd();
         }
 
+    }
+
+    private static void wichPanel(){
+        switch (wichPanel) {
+            case "P4" -> {
+                onePanelSizeX = 128;
+                onePanelSizeY = 128;
+            }
+            case "P5" -> {
+                onePanelSizeX = 128;
+                onePanelSizeY = 96;
+            }
+            default -> {
+                System.out.println("No Panel defined");
+                System.exit(-1);
+            }
+        }
+
+        globalPixelInX = xPanelCount * onePanelSizeX; //Anzahl Panel X * 128 pixel
+        globalPixelInY = yPanelCount * onePanelSizeY; //Anzahl Panel Y * 128 pixel
     }
 
     public static ArtNetClient getArtnet() {
