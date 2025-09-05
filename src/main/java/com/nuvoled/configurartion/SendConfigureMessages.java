@@ -8,15 +8,6 @@ import java.net.DatagramPacket;
 import java.util.HexFormat;
 
 public class SendConfigureMessages {
-    public static void run() {
-        reset();
-        //sendRedCross();
-        try {
-            Thread.sleep(100);
-        } catch (Exception ignored) {
-        }
-        makeConfigAndSendGreenCross();
-    }
 
     public static void reset() {
         send160();
@@ -110,14 +101,14 @@ public class SendConfigureMessages {
         ManageNetworkConnection.send_data(message);
     }
 
-    public static void makeConfigAndSendGreenCross() {
-        setConfig();
+    public static void makeConfigAndSendGreenCross(byte[] mac, int offsetX, int offsetY) {
+        setConfig(mac, offsetX, offsetY);
         send160();
         sendTrash();
-        setConfig();
+        setConfig(mac, offsetX, offsetY);
     }
 
-    private static void setConfig() {
+    private static void setConfig(byte[] mac, int offsetX, int offsetY) {
         byte[] message = new byte[15];
         message[0] = 36;
         message[1] = 36;
@@ -127,13 +118,13 @@ public class SendConfigureMessages {
         message[5] = (byte) (Main.getGlobalPixelInX() / 16); //total screen width /16
         message[6] = (byte) (Main.getGlobalPixelInY() / 16); //total screen height /16
         message[7] = 1;//(byte) (Main.getxPanelCount() * Main.getyPanelCount()); //total numbers of modules connected
-        message[8] = 126; //mac[2]
-        message[9] = 12; //mac[3]
-        message[10] = 93; //mac[1]
+        message[8] = mac[2]; //mac[2]
+        message[9] = mac[3]; //mac[3]
+        message[10] = mac[1]; //mac[1]
         message[11] = (byte) (Main.getOnePanelSizeX() / 16); //modul width /16
         message[12] = (byte) (Main.getOnePanelSizeY() / 16); //modul height /16
-        message[13] = 0; //offset x
-        message[14] = 18; //offset y
+        message[13] = (byte) (offsetX / 16); //offset x /16
+        message[14] = (byte) (offsetY / 16); //offset y /16
         ManageNetworkConnection.send_data(message);
     }
 

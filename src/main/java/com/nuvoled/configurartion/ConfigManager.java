@@ -10,7 +10,7 @@ public class ConfigManager {
 
     private static ArrayList<Panel> waitingList;
     private static Panel[][] alreadyConfiguredPanelMatrix;
-    private static ArrayList<Integer> alreadyConfiguredPanels  = new ArrayList<>();
+    private static ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
 
     public static void start() {
         System.out.println();
@@ -48,12 +48,13 @@ public class ConfigManager {
 
     private static void createCLI() {
         System.out.println();
-        System.out.println("x/y: " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
+        System.out.println("Global Config x/y: " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
         System.out.println();
 
-        String a = "---+";
+        String a = "----+";
         String b = " ";
-        String c = " |";
+        String c = "  |";
+        String d = " |";
         String row1 = "+";
         String row2 = "|";
 
@@ -61,10 +62,15 @@ public class ConfigManager {
         for (int i = 0; i < Main.getyPanelCount(); i++) {
             for (int j = 0; j < Main.getxPanelCount(); j++) {
                 row1 = String.join("", row1, a);
-                if (alreadyConfiguredPanels.contains(x)) {
+                if (alreadyConfiguredPanelsForCLI.contains(x)) {
                     row2 = String.join("", row2, b, "X", c);
                 } else {
-                    row2 = String.join("", row2, b, Integer.toString(x), c);
+                    // to display two-digit numbers correctly
+                    if(x > 9){
+                        row2 = String.join("", row2, b, Integer.toString(x), d);
+                    }else {
+                        row2 = String.join("", row2, b, Integer.toString(x), c);
+                    }
                 }
                 x++;
             }
@@ -80,9 +86,9 @@ public class ConfigManager {
 
     }
 
-    private static void loopOverPanelsInList(){
+    private static void loopOverPanelsInList() {
         Scanner scanner = new Scanner(System.in);
-        while (true){
+        while (true) {
             Panel currant = waitingList.getFirst();
             System.out.println("Selected Mac: " + Arrays.toString(currant.getMac()));
             SendConfigureMessages.sendRedCross(currant.getMac());
@@ -90,16 +96,38 @@ public class ConfigManager {
             System.out.println("Input position number:");
             String number = scanner.nextLine();
             //Fehlerbehandlung
+            int numberInt = Integer.parseInt(number);
             currant.setConfigured(true);
-            currant.setPosition(Integer.parseInt(number));
+            currant.setPosition(numberInt);
 
-            //TODO send config Message
+            int panelOffsetX = 0;
+            int panelOffsetY = 0;
 
-            //TODO add panel to "alreadyConfiguredPanelMatrix"
+            //set the panel objekt into the right row/collum in the 2D array
+            int x = 1;
+            for (int i = 0; i < Main.getyPanelCount(); i++) {
+                for (int j = 0; j < Main.getxPanelCount(); j++) {
+                    if (numberInt == x) {
+                        alreadyConfiguredPanelMatrix[j][i] = currant; // row / collum
+                        panelOffsetX = j;
+                        panelOffsetY = i;
+                    }
+                    x++;
+                }
+            }
+
+            // send config Message
+            // for P5 the panel (portrait) 0/0 is in the upper right corner
+            int panelOffsetXNew = (Main.getxPanelCount() - 1) - panelOffsetX;
+            SendConfigureMessages.makeConfigAndSendGreenCross(currant.getMac(), panelOffsetXNew * Main.getOnePanelSizeX(), panelOffsetY * Main.getOnePanelSizeY() );
+
+            //cli
+            alreadyConfiguredPanelsForCLI.add(currant.getPosition());
+            createCLI();
+            System.out.println("Offset Panel        : " + panelOffsetX + " / " + panelOffsetY);
+            System.out.println("Offset Panel (P5 H) : " + panelOffsetXNew + " / " + panelOffsetY);
 
             waitingList.remove(currant);
-            alreadyConfiguredPanels.add(currant.getPosition());
-            createCLI();
             System.exit(1);
         }
     }
