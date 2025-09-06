@@ -21,6 +21,12 @@ public class SendConfigureMessages {
         sendRequestForData130();
     }
 
+    public static void refresh(){
+        send160();
+        sendTrash();
+        sendRequestForData130();
+    }
+
     /**
      * In Software angeklickt
      */
@@ -114,7 +120,7 @@ public class SendConfigureMessages {
         message[1] = 36;
         message[2] = (byte) 120; //send config
         message[3] = (byte) 2; //fix
-        message[4] = 0; //fix
+        message[4] = 0; //fix // 0: querformat 100: hochformat
         message[5] = (byte) (Main.getGlobalPixelInX() / 16); //total screen width /16
         message[6] = (byte) (Main.getGlobalPixelInY() / 16); //total screen height /16
         message[7] = 1;//(byte) (Main.getxPanelCount() * Main.getyPanelCount()); //total numbers of modules connected

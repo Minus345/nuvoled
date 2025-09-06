@@ -66,9 +66,9 @@ public class ConfigManager {
                     row2 = String.join("", row2, b, "X", c);
                 } else {
                     // to display two-digit numbers correctly
-                    if(x > 9){
+                    if (x > 9) {
                         row2 = String.join("", row2, b, Integer.toString(x), d);
-                    }else {
+                    } else {
                         row2 = String.join("", row2, b, Integer.toString(x), c);
                     }
                 }
@@ -89,46 +89,91 @@ public class ConfigManager {
     private static void loopOverPanelsInList() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            Panel currant = waitingList.getFirst();
-            System.out.println("Selected Mac: " + Arrays.toString(currant.getMac()));
-            SendConfigureMessages.sendRedCross(currant.getMac());
-
-            System.out.println("Input position number:");
-            String number = scanner.nextLine();
-            //Fehlerbehandlung
-            int numberInt = Integer.parseInt(number);
-            currant.setConfigured(true);
-            currant.setPosition(numberInt);
-
-            int panelOffsetX = 0;
-            int panelOffsetY = 0;
-
-            //set the panel objekt into the right row/collum in the 2D array
-            int x = 1;
-            for (int i = 0; i < Main.getyPanelCount(); i++) {
-                for (int j = 0; j < Main.getxPanelCount(); j++) {
-                    if (numberInt == x) {
-                        alreadyConfiguredPanelMatrix[j][i] = currant; // row / collum
-                        panelOffsetX = j;
-                        panelOffsetY = i;
-                    }
-                    x++;
-                }
-            }
-
-            // send config Message
-            // for P5 the panel (portrait) 0/0 is in the upper right corner
-            int panelOffsetXNew = (Main.getxPanelCount() - 1) - panelOffsetX;
-            SendConfigureMessages.makeConfigAndSendGreenCross(currant.getMac(), panelOffsetXNew * Main.getOnePanelSizeX(), panelOffsetY * Main.getOnePanelSizeY() );
-
-            //cli
-            alreadyConfiguredPanelsForCLI.add(currant.getPosition());
-            createCLI();
-            System.out.println("Offset Panel        : " + panelOffsetX + " / " + panelOffsetY);
-            System.out.println("Offset Panel (P5 H) : " + panelOffsetXNew + " / " + panelOffsetY);
-
-            waitingList.remove(currant);
-            System.exit(1);
+            userInput(scanner);
         }
+    }
+
+    private static void configureOnePanel(Scanner scanner) {
+        Panel currant = waitingList.getFirst();
+        System.out.println("Selected Mac: " + Arrays.toString(currant.getMac()));
+        SendConfigureMessages.sendRedCross(currant.getMac());
+
+        System.out.println("Input position number:");
+        String line = scanner.nextLine();
+        int numberInt = -1;
+        try {
+            numberInt = Integer.parseInt(line);
+        } catch (NumberFormatException nfe) {
+            wrongInput();
+            return;
+        }
+        currant.setConfigured(true);
+        currant.setPosition(numberInt);
+
+        int panelOffsetX = 0;
+        int panelOffsetY = 0;
+
+        //set the panel objekt into the right row/collum in the 2D array
+        int x = 1;
+        for (int i = 0; i < Main.getyPanelCount(); i++) {
+            for (int j = 0; j < Main.getxPanelCount(); j++) {
+                if (numberInt == x) {
+                    alreadyConfiguredPanelMatrix[j][i] = currant; // row / collum
+                    panelOffsetX = j;
+                    panelOffsetY = i;
+                }
+                x++;
+            }
+        }
+
+        // send config Message
+        SendConfigureMessages.makeConfigAndSendGreenCross(currant.getMac(), panelOffsetX * Main.getOnePanelSizeX(), panelOffsetY * Main.getOnePanelSizeY());
+
+        //cli
+        alreadyConfiguredPanelsForCLI.add(currant.getPosition());
+        createCLI();
+        System.out.println("Offset Panel        : " + panelOffsetX + " / " + panelOffsetY);
+
+        waitingList.remove(currant);
+    }
+
+    /**
+     * All user Input here
+     *
+     * @param scanner
+     * @return
+     */
+
+    private static void userInput(Scanner scanner) {
+        System.out.println("Input: ...");
+        String line = scanner.nextLine();
+        switch (line) {
+            case "r" -> {
+                System.out.println("Refresh");
+                SendConfigureMessages.refresh();
+            }
+            case "e" -> {
+                System.out.println("Exit");
+                System.exit(0);
+            }
+            case "n" -> {
+                System.out.println("Next");
+                if (waitingList.isEmpty()) {
+                    System.out.println("No more panels in queue");
+                    userInput(scanner);
+                } else {
+                    configureOnePanel(scanner);
+                }
+
+            }
+            default -> {
+                wrongInput();
+                userInput(scanner);
+            }
+        }
+    }
+
+    private static void wrongInput() {
+        System.out.println("Wrong Input");
     }
 }
