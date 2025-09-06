@@ -2,7 +2,6 @@ package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
 import com.nuvoled.configurartion.ConfigManager;
-import com.nuvoled.configurartion.SendConfigureMessages;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
