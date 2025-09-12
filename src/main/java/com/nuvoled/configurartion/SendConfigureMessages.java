@@ -21,7 +21,7 @@ public class SendConfigureMessages {
         sendRequestForData130();
     }
 
-    public static void refresh(){
+    public static void refresh() {
         send160();
         sendTrash();
         sendRequestForData130();
@@ -140,13 +140,11 @@ public class SendConfigureMessages {
      * @param time im ms
      */
     public static void getPanelConnected(int time) {
-        byte[] receiveData = new byte[15];
-
-        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         long timeStart = System.currentTimeMillis();
-
-        while (System.currentTimeMillis() <= timeStart + time) {
+        while (System.currentTimeMillis() <= timeStart + time) { //
             System.out.println("Searching...");
+            byte[] receiveData = new byte[15];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
                 ManageNetworkConnection.getDatagramSocket().receive(receivePacket);
             } catch (Exception e) {
@@ -160,7 +158,7 @@ public class SendConfigureMessages {
             }
             System.out.println("ende");
             System.out.println("Adress: " + receivePacket.getAddress().getHostAddress());
- */
+*/
             if (receiveData[0] == 36 && receiveData[1] == 36 && receiveData[2] == 15) {
                 byte[] mac = new byte[4];
                 mac[0] = receiveData[3];
