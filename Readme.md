@@ -26,8 +26,15 @@ the [official configuration software](https://www.nuvoled.de/download/).**
 
 ## Usage
 
-`java -jar nuvoled.jar <path to config file>`  
+Normal Sender:  
+`java -jar nuvoled.jar <path to config file>`
+
+Configure your LED Wall:  
+`java -jar nuvoled.jar config <path to config file>`  
+
+Create Config file:  
 `java -jar nuvolde.jar create <path where you want your default config file>`
+
 
 
 ***

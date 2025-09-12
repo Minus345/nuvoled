@@ -168,7 +168,21 @@ public class SendConfigureMessages {
                 mac[2] = receiveData[5];
                 mac[3] = receiveData[6];
 
-                Panel panel = new P5(mac);
+                Panel panel = null;
+
+                switch (Main.getWichPanel()) {
+                    case "P4" -> {
+                        panel = new P4(mac);
+                    }
+                    case "P5" -> {
+                        panel = new P5(mac);
+                    }
+                    default -> {
+                        System.out.println("No Panel defined");
+                        System.exit(-1);
+                    }
+                }
+
                 if (!ConfigManager.lookIfAlreadyInList(panel)) {
                     ConfigManager.waitingListAdd(panel);
                     System.out.println("Panel Gefunden | Mac: " + mac[0] + mac[1] + mac[2] + mac[3] + " Version: " + (char) receiveData[7] + (char) receiveData[8] + (char) receiveData[9] + (char) receiveData[10]);
