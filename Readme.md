@@ -26,16 +26,19 @@ the [official configuration software](https://www.nuvoled.de/download/).**
 
 ## Usage
 
-Normal Sender:  
+### Normal Sender:  
 `java -jar nuvoled.jar <path to config file>`
 
-Configure your LED Wall:  
+### Configure your LED Wall:  
 `java -jar nuvoled.jar config <path to config file>`  
 
-Create Config file:  
+P5 panels can only be configured vertically (use rotation if needed)
+
+### Create Config file:  
 `java -jar nuvolde.jar create <path where you want your default config file>`
 
-
+Java Parameter to force IPv4:  
+`-Djava.net.preferIPv4Stack=true`
 
 ***
 

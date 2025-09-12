@@ -46,7 +46,23 @@ public class ManageNetworkConnection {
     public static void setDatagramSocket() {
         try {
             InetAddress address = findNetworkInterface();
-            datagramSocket = new DatagramSocket(Main.getPort(), address);
+            datagramSocket = new DatagramSocket(Main.getPort(),address); //,InetAddress.getByName("255.255.255.255")
+            System.out.println(datagramSocket.getLocalSocketAddress().toString());
+            datagramSocket.setBroadcast(true);
+        } catch (BindException e) {
+            System.out.println("Address already in use. Another application is already running on the same network card");
+            System.exit(-1);
+        } catch (SocketException e) {
+            System.out.println("Could not bind to Network Card");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+    public static void setDatagramSocketForListening(){
+        try {
+            datagramSocket = new DatagramSocket(Main.getPort());
+            System.out.println(datagramSocket.getLocalSocketAddress().toString());
             datagramSocket.setBroadcast(true);
         } catch (BindException e) {
             System.out.println("Address already in use. Another application is already running on the same network card");

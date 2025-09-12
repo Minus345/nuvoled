@@ -85,7 +85,7 @@ public class Main {
             new YamlReader(args[1]);
             wichPanel();
 
-            ManageNetworkConnection.setDatagramSocket();
+            ManageNetworkConnection.setDatagramSocketForListening();
             ConfigManager.start();
             System.exit(0);
         } else if (args[0].equals("create")) {
