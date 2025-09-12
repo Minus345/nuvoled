@@ -88,6 +88,7 @@ public class ConfigManager {
 
     private static void loopOverPanelsInList() {
         Scanner scanner = new Scanner(System.in);
+        //noinspection InfiniteLoopStatement
         while (true) {
             userInput(scanner);
         }
@@ -100,7 +101,7 @@ public class ConfigManager {
 
         System.out.println("Input position number:");
         String line = scanner.nextLine();
-        int numberInt = -1;
+        int numberInt;
         try {
             numberInt = Integer.parseInt(line);
         } catch (NumberFormatException nfe) {
@@ -126,8 +127,10 @@ public class ConfigManager {
             }
         }
 
+        currant.setOffsetX(panelOffsetX * Main.getOnePanelSizeX());
+        currant.setOffsetY(panelOffsetY * Main.getOnePanelSizeY());
         // send config Message
-        SendConfigureMessages.makeConfigAndSendGreenCross(currant.getMac(), panelOffsetX * Main.getOnePanelSizeX(), panelOffsetY * Main.getOnePanelSizeY());
+        SendConfigureMessages.makeConfigAndSendGreenCross(currant);
 
         //cli
         alreadyConfiguredPanelsForCLI.add(currant.getPosition());
@@ -145,12 +148,17 @@ public class ConfigManager {
      */
 
     private static void userInput(Scanner scanner) {
-        System.out.println("Input: ...");
+        System.out.println("Input: \"r\" - refresh, \"a\" - apply Configuration, \"e\" - exit, \"n\" - next");
         String line = scanner.nextLine();
         switch (line) {
             case "r" -> {
                 System.out.println("Refresh");
                 SendConfigureMessages.refresh();
+                SendConfigureMessages.getPanelConnected(1000);
+            }
+            case "a" ->{
+                System.out.println("Apply Configurations");
+                SendConfigureMessages.sendGlobalConfigMessage(alreadyConfiguredPanelMatrix);
             }
             case "e" -> {
                 System.out.println("Exit");

@@ -3,7 +3,6 @@ package com.nuvoled.configurartion;
 import com.nuvoled.Main;
 import com.nuvoled.sender.ManageNetworkConnection;
 
-import java.awt.*;
 import java.net.DatagramPacket;
 import java.util.HexFormat;
 
@@ -107,15 +106,16 @@ public class SendConfigureMessages {
         ManageNetworkConnection.send_data(message);
     }
 
-    public static void makeConfigAndSendGreenCross(byte[] mac, int offsetX, int offsetY) {
-        setConfig(mac, offsetX, offsetY);
+    public static void makeConfigAndSendGreenCross(Panel panel) {
+        sendConfigSinglePanel(panel);
         send160();
         sendTrash();
-        setConfig(mac, offsetX, offsetY);
+        sendConfigSinglePanel(panel);
     }
 
-    private static void setConfig(byte[] mac, int offsetX, int offsetY) {
+    private static void sendConfigSinglePanel(Panel panel) {
         byte[] message = new byte[15];
+        byte[] mac = panel.getMac();
         message[0] = 36;
         message[1] = 36;
         message[2] = (byte) 120; //send config
@@ -129,8 +129,47 @@ public class SendConfigureMessages {
         message[10] = mac[1]; //mac[1]
         message[11] = (byte) (Main.getOnePanelSizeX() / 16); //modul width /16
         message[12] = (byte) (Main.getOnePanelSizeY() / 16); //modul height /16
-        message[13] = (byte) (offsetX / 16); //offset x /16
-        message[14] = (byte) (offsetY / 16); //offset y /16
+        message[13] = (byte) (panel.getOffsetX() / 16); //offset x /16
+        message[14] = (byte) (panel.getOffsetY() / 16); //offset y /16
+        ManageNetworkConnection.send_data(message);
+    }
+
+    public static void sendGlobalConfigMessage(Panel[][] panels) {
+        sendConfigMessageToAll(panels);
+        send160();
+        sendTrash();
+        sendConfigMessageToAll(panels);
+    }
+
+    private static void sendConfigMessageToAll(Panel[][] panels) {
+        byte[] message = new byte[8 + (Main.getxPanelCount() * Main.getyPanelCount()) * 7];
+        message[0] = 36;
+        message[1] = 36;
+        message[2] = (byte) 120; //send config
+        message[3] = (byte) 2; //fix
+        message[4] = 0; //fix // 0: querformat 100: hochformat
+        message[5] = (byte) (Main.getGlobalPixelInX() / 16); //total screen width /16
+        message[6] = (byte) (Main.getGlobalPixelInY() / 16); //total screen height /16
+        message[7] = (byte) (Main.getxPanelCount() * Main.getyPanelCount()); //total numbers of modules connected
+
+        int messageCounter = 8;
+
+        for (int i = 0; i < Main.getyPanelCount(); i++) {
+            for (int j = 0; j < Main.getxPanelCount(); j++) {
+                Panel currant = panels[j][i]; //row/collum
+
+                message[messageCounter] = currant.getMac()[2]; //mac[2]
+                message[messageCounter + 1] = currant.getMac()[3]; //mac[3]
+                message[messageCounter + 2] = currant.getMac()[1]; //mac[1]
+                message[messageCounter + 3] = (byte) (Main.getOnePanelSizeX() / 16); //modul width /16
+                message[messageCounter + 4] = (byte) (Main.getOnePanelSizeY() / 16); //modul height /16
+                message[messageCounter + 5] = (byte) (currant.getOffsetX() / 16); //offset x /16
+                message[messageCounter + 6] = (byte) (currant.getOffsetY() / 16); //offset y /16
+
+                messageCounter = messageCounter + 7;
+            }
+        }
+
         ManageNetworkConnection.send_data(message);
     }
 
