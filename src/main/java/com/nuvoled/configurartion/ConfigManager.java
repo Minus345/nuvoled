@@ -10,6 +10,7 @@ public class ConfigManager {
 
     private static ArrayList<Panel> waitingList;
     private static Panel[][] alreadyConfiguredPanelMatrix;
+    @SuppressWarnings("FieldMayBeFinal")
     private static ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
 
     public static void start() {
@@ -48,6 +49,7 @@ public class ConfigManager {
 
     private static void createCLI() {
         System.out.println();
+        System.out.println("--------[CLI]--------");
         System.out.println("Global Config x/y: " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
         System.out.println();
 

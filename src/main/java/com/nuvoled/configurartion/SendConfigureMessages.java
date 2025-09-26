@@ -158,6 +158,11 @@ public class SendConfigureMessages {
             for (int j = 0; j < Main.getxPanelCount(); j++) {
                 Panel currant = panels[j][i]; //row/collum
 
+                if(currant == null){
+                    System.out.println("Not all panels defined");
+                    continue;
+                }
+
                 message[messageCounter] = currant.getMac()[2]; //mac[2]
                 message[messageCounter + 1] = currant.getMac()[3]; //mac[3]
                 message[messageCounter + 2] = currant.getMac()[1]; //mac[1]
@@ -180,8 +185,9 @@ public class SendConfigureMessages {
      */
     public static void getPanelConnected(int time) {
         long timeStart = System.currentTimeMillis();
-        while (System.currentTimeMillis() <= timeStart + time) { //
-            System.out.println("Searching...");
+        System.out.print("Searching");
+        while (System.currentTimeMillis() <= timeStart + time) {
+            System.out.print(".");
             byte[] receiveData = new byte[15];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
@@ -189,15 +195,7 @@ public class SendConfigureMessages {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-/*
-            System.out.print("RECEIVED: ");
 
-            for (byte receiveDatum : receiveData) {
-                System.out.print(receiveDatum + " ");
-            }
-            System.out.println("ende");
-            System.out.println("Adress: " + receivePacket.getAddress().getHostAddress());
-*/
             if (receiveData[0] == 36 && receiveData[1] == 36 && receiveData[2] == 15) {
                 byte[] mac = new byte[4];
                 mac[0] = receiveData[3];
@@ -208,12 +206,8 @@ public class SendConfigureMessages {
                 Panel panel = null;
 
                 switch (Main.getWichPanel()) {
-                    case "P4" -> {
-                        panel = new P4(mac);
-                    }
-                    case "P5" -> {
-                        panel = new P5(mac);
-                    }
+                    case "P4" -> panel = new P4(mac);
+                    case "P5" -> panel = new P5(mac);
                     default -> {
                         System.out.println("No Panel defined");
                         System.exit(-1);
@@ -222,9 +216,12 @@ public class SendConfigureMessages {
 
                 if (!ConfigManager.lookIfAlreadyInList(panel)) {
                     ConfigManager.waitingListAdd(panel);
+                    System.out.println();
                     System.out.println("Panel Gefunden | Mac: " + mac[0] + mac[1] + mac[2] + mac[3] + " Version: " + (char) receiveData[7] + (char) receiveData[8] + (char) receiveData[9] + (char) receiveData[10]);
+                    System.out.print("Searching");
                 }
             }
         }
+        System.out.println();
     }
 }
