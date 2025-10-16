@@ -11,9 +11,6 @@ Also supports sending video over the network using the Newtek NDI® SDK.
 For more information about NDI®, see:  
 http://NDI.NewTek.com/
 
-**You need to configure your LED panels first in
-the [official configuration software](https://www.nuvoled.de/download/).**
-
 - **[Java 24.0.2 required](https://www.oracle.com/de/java/technologies/downloads/)**
     - updated java version, because of incompatibility with wayland on ubuntu
 - Tested on:
@@ -25,20 +22,17 @@ the [official configuration software](https://www.nuvoled.de/download/).**
 ***
 
 ## Usage
+### 1. Create Config file:
+`java -jar nuvolde.jar create <path where you want your default config file>`
 
-### Normal Sender:
-
-`java -jar nuvoled.jar <path to config file>`
-
-### Configure your LED Wall:
-
+### 2. Configure your LED Wall:
 `java -jar nuvoled.jar config <path to config file>`
 
 P5 panels can only be configured vertically (use rotation if needed)
 
-### Create Config file:
+### 3. Normal Sender:  
+`java -jar nuvoled.jar <path to config file>`
 
-`java -jar nuvolde.jar create <path where you want your default config file>`
 
 Java Parameter to force IPv4:  
 `-Djava.net.preferIPv4Stack=true`
@@ -109,12 +103,14 @@ If you use **rotation**:
 1. [x] Add config file
 2. [x] Testing P4
 3. [x] Test ArtNet
-4. [ ] add network interface configurations
+4. [x] add network interface configurations
 5. [x] rewrite network interface (refactoring old code - remove Mac support)
-6. [ ] add 180 degree rotation
-7. [ ] RGB565 fix array length (should be shorter)
-8. [ ] make NID more configurable
-9. [ ] Network Mapper: sends data over normal Network to a Node; sends it over to the display in udp broadcast
+6. [x] add initial configuration for panels
+7. [ ] save currant configured panels to file, so you can load the config for your panels
+8. [ ] add 180 degree rotation
+9. [ ] RGB565 fix array length (should be shorter)
+10. [ ] make NID more configurable
+11. [ ] Network Mapper: sends data over normal Network to a Node; sends it over to the display in udp broadcast
 
 ***
 

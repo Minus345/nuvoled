@@ -158,7 +158,7 @@ public class ConfigManager {
                 SendConfigureMessages.refresh();
                 SendConfigureMessages.getPanelConnected(1000);
             }
-            case "a" ->{
+            case "a" -> {
                 System.out.println("Apply Configurations");
                 SendConfigureMessages.sendGlobalConfigMessage(alreadyConfiguredPanelMatrix);
             }
@@ -176,6 +176,10 @@ public class ConfigManager {
                 }
 
             }
+            case "w" -> {
+                System.out.println("Write config form panels to file");
+                WritePanelConfigYaml.write();
+            }
             default -> {
                 wrongInput();
                 userInput(scanner);
@@ -185,5 +189,9 @@ public class ConfigManager {
 
     private static void wrongInput() {
         System.out.println("Wrong Input");
+    }
+
+    public static Panel[][] getAlreadyConfiguredPanelMatrix() {
+        return alreadyConfiguredPanelMatrix;
     }
 }
