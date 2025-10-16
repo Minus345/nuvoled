@@ -11,12 +11,24 @@ import java.net.SocketException;
 import java.util.Arrays;
 
 public class Sender {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        InetAddress address = InetAddress.getByName("255.255.255.255");
+        System.out.println(address);
+        DatagramSocket datagramSocket = new DatagramSocket();
+        datagramSocket.setBroadcast(true);
+        for (int i = 0; i < Integer.parseInt(args[0]); i++) {
+            DatagramPacket packet = new DatagramPacket(getMessage(i), getMessage(i).length, address, Main.getPort());
+            datagramSocket.send(packet);
+            Thread.sleep(100);
+        }
+    }
+
+    private static byte[] getMessage(int i){
         byte[] mac = new byte[4];
         mac[0] = 0;
         mac[1] = 0;
         mac[2] = 0;
-        mac[3] = Byte.parseByte(args[0]);
+        mac[3] = Byte.parseByte(String.valueOf(i));
         System.out.println(Arrays.toString(mac));
         byte[] message = new byte[11];
         message[0] = 36;
@@ -31,13 +43,6 @@ public class Sender {
         message[9] = 'S';
         message[10] = 'T';
 
-        InetAddress address = InetAddress.getByName("255.255.255.255");
-
-        System.out.println(address);
-
-        DatagramSocket datagramSocket = new DatagramSocket();
-        datagramSocket.setBroadcast(true);
-        DatagramPacket packet = new DatagramPacket(message, message.length, address, Main.getPort());
-        datagramSocket.send(packet);
+        return message;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class ConfigManager {
 
     private static ArrayList<Panel> waitingList;
-    private static Panel[][] alreadyConfiguredPanelMatrix;
+    private static Storage storage;
     @SuppressWarnings("FieldMayBeFinal")
     private static ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
 
@@ -22,7 +22,7 @@ public class ConfigManager {
         SendConfigureMessages.reset();
         SendConfigureMessages.getPanelConnected(1000);
 
-        alreadyConfiguredPanelMatrix = new Panel[Main.getxPanelCount()][Main.getyPanelCount()];
+        storage = new Storage();
 
         createCLI();
         loopOverPanelsInList();
@@ -121,7 +121,7 @@ public class ConfigManager {
         for (int i = 0; i < Main.getyPanelCount(); i++) {
             for (int j = 0; j < Main.getxPanelCount(); j++) {
                 if (numberInt == x) {
-                    alreadyConfiguredPanelMatrix[j][i] = currant; // row / collum
+                    storage.getAlreadyConfiguredPanelMatrix()[j][i] = currant; // row / collum
                     panelOffsetX = j;
                     panelOffsetY = i;
                 }
@@ -150,7 +150,7 @@ public class ConfigManager {
      */
 
     private static void userInput(Scanner scanner) {
-        System.out.println("Input: \"r\" - refresh, \"a\" - apply Configuration, \"e\" - exit, \"n\" - next");
+        System.out.println("Input: \"r\" - refresh, \"a\" - apply Configuration, \"e\" - exit, \"n\" - next, \"s\" - save");
         String line = scanner.nextLine();
         switch (line) {
             case "r" -> {
@@ -160,7 +160,7 @@ public class ConfigManager {
             }
             case "a" -> {
                 System.out.println("Apply Configurations");
-                SendConfigureMessages.sendGlobalConfigMessage(alreadyConfiguredPanelMatrix);
+                SendConfigureMessages.sendGlobalConfigMessage(storage.getAlreadyConfiguredPanelMatrix());
             }
             case "e" -> {
                 System.out.println("Exit");
@@ -176,9 +176,9 @@ public class ConfigManager {
                 }
 
             }
-            case "w" -> {
+            case "s" -> {
                 System.out.println("Write config form panels to file");
-                WritePanelConfigYaml.write();
+                PanelConfigFileManager.write();
             }
             default -> {
                 wrongInput();
@@ -191,7 +191,7 @@ public class ConfigManager {
         System.out.println("Wrong Input");
     }
 
-    public static Panel[][] getAlreadyConfiguredPanelMatrix() {
-        return alreadyConfiguredPanelMatrix;
+    public static Storage getStorage() {
+        return storage;
     }
 }
