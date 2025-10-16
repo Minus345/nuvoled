@@ -74,6 +74,7 @@ public class YamlWriter {
         data.put("sleep", 0);
         data.put("offSet", 0.0);
         data.put("showFps", false);
+        data.put("timeout", 1000);
 
         //ndi
         data.put("mode", "screen");

@@ -58,12 +58,16 @@ public class ManageNetworkConnection {
             System.exit(-1);
         }
     }
-
-    public static void setDatagramSocketForListening(){
+    /**
+     *  Set up the datagram socket for sending and receiving.
+     *  It will only bind to the port, because the panels send udp broadcast wich we have to receive from anywhere
+     */
+    public static void setDatagramSocketForListeningAndSending(){
         try {
             datagramSocket = new DatagramSocket(Main.getPort());
             System.out.println(datagramSocket.getLocalSocketAddress().toString());
             datagramSocket.setBroadcast(true);
+            datagramSocket.setSoTimeout(Main.getTimeout());
         } catch (BindException e) {
             System.out.println("Address already in use. Another application is already running on the same network card");
             System.exit(-1);

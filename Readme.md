@@ -22,17 +22,20 @@ http://NDI.NewTek.com/
 ***
 
 ## Usage
+
 ### 1. Create Config file:
+
 `java -jar nuvolde.jar create <path where you want your default config file>`
 
 ### 2. Configure your LED Wall:
+
 `java -jar nuvoled.jar config <path to config file>`
 
 P5 panels can only be configured vertically (use rotation if needed)
 
-### 3. Normal Sender:  
-`java -jar nuvoled.jar <path to config file>`
+### 3. Normal Sender:
 
+`java -jar nuvoled.jar <path to config file>`
 
 Java Parameter to force IPv4:  
 `-Djava.net.preferIPv4Stack=true`
@@ -85,6 +88,7 @@ If you use **rotation**:
 | sleep           | int            | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |         |
 | offSet          | float          | (currently not in use)                                                                                                  | 0.0           |
 | showFps         | boolean        | shows the fps that are send out, in the terminal                                                                        | false         |
+| timeout         | int            | how many milliseconds the programm should wait in the config CLI to listen for panels                                   | 1000          |         |
 | mode            | "screen"/"ndi" | "ndi" enables nid mode                                                                                                  | screen        |
 | artnetEnabled   | boolean        | enables [ArtNet](https://art-net.org.uk/), to control the brightness with one channel                                   | false         |
 | artnetDebug     | boolean        | enables debug information for ArtNet                                                                                    | false         |
