@@ -47,6 +47,7 @@ public class YamlReader {
             Main.setSleep((int) settings.get("sleep"));
             Main.setOffSet((float) ((double) settings.get("offSet")));
             Main.setShowFps((boolean) settings.get("showFps"));
+            Main.setTimeout((int) settings.get("timeout"));
 
             //ndi
             Main.setMode((String) settings.get("mode"));

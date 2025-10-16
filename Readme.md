@@ -26,15 +26,18 @@ the [official configuration software](https://www.nuvoled.de/download/).**
 
 ## Usage
 
-### Normal Sender:  
+### Normal Sender:
+
 `java -jar nuvoled.jar <path to config file>`
 
-### Configure your LED Wall:  
-`java -jar nuvoled.jar config <path to config file>`  
+### Configure your LED Wall:
+
+`java -jar nuvoled.jar config <path to config file>`
 
 P5 panels can only be configured vertically (use rotation if needed)
 
-### Create Config file:  
+### Create Config file:
+
 `java -jar nuvolde.jar create <path where you want your default config file>`
 
 Java Parameter to force IPv4:  
@@ -86,6 +89,7 @@ If you use **rotation**:
 | rgb565          | boolean        | enables rgb565 mode: less colour accurate, more efficient -> you can have more panels with higher framerate connected   | false         |
 | rotation        | 0, 90, 270     | rotates the image 90 or 270 degree -> see _Rotation Chapter_                                                            | 0             |
 | sleep           | int            | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |         |
+| timeout         | int            | how many milliseconds the programm should wait in the config CLI to listen for panels                                   | 1000          |         |
 | offSet          | float          | (currently not in use)                                                                                                  | 0.0           |
 | showFps         | boolean        | shows the fps that are send out, in the terminal                                                                        | false         |
 | mode            | "screen"/"ndi" | "ndi" enables nid mode                                                                                                  | screen        |

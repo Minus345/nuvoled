@@ -27,6 +27,7 @@ public class Main {
     private static float offSet = 0F;
     private static int rotation = 0;
     private static int sleep = 0;
+    private static int timeout = 0;
 
     //ndi
     private static String mode = "screen";
@@ -85,7 +86,7 @@ public class Main {
             new YamlReader(args[1]);
             wichPanel();
 
-            ManageNetworkConnection.setDatagramSocketForListening();
+            ManageNetworkConnection.setDatagramSocketForListeningAndSending();
             ConfigManager.start();
             System.exit(0);
         } else if (args[0].equals("create")) {
@@ -376,5 +377,13 @@ public class Main {
 
     public static int getOnePanelSizeY() {
         return onePanelSizeY;
+    }
+
+    public static int getTimeout() {
+        return timeout;
+    }
+
+    public static void setTimeout(int timeout) {
+        Main.timeout = timeout;
     }
 }

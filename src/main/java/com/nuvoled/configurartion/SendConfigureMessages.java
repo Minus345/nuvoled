@@ -4,6 +4,7 @@ import com.nuvoled.Main;
 import com.nuvoled.sender.ManageNetworkConnection;
 
 import java.net.DatagramPacket;
+import java.net.SocketTimeoutException;
 import java.util.HexFormat;
 
 public class SendConfigureMessages {
@@ -158,7 +159,7 @@ public class SendConfigureMessages {
             for (int j = 0; j < Main.getxPanelCount(); j++) {
                 Panel currant = panels[j][i]; //row/collum
 
-                if(currant == null){
+                if (currant == null) {
                     System.out.println("Not all panels defined");
                     continue;
                 }
@@ -192,6 +193,8 @@ public class SendConfigureMessages {
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             try {
                 ManageNetworkConnection.getDatagramSocket().receive(receivePacket);
+            } catch (SocketTimeoutException e) {
+                System.out.println("Timeout. No Panel found");
             } catch (Exception e) {
                 e.printStackTrace();
             }
