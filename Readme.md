@@ -25,7 +25,7 @@ http://NDI.NewTek.com/
 
 ### 1. Create Config file:
 
-`java -jar nuvolde.jar create <path where you want your default config file>`
+`java -jar nuvolde.jar create [<path where you want your default config file>]`
 
 ### 2. Configure your LED Wall:
 
@@ -33,9 +33,13 @@ http://NDI.NewTek.com/
 
 P5 panels can only be configured vertically (use rotation if needed)
 
+### Or load your panel-config file
+
+`java -jar nuvoled.jar load <path to config file> <path to panel-config file>` 
+
 ### 3. Normal Sender:
 
-`java -jar nuvoled.jar <path to config file>`
+`java -jar nuvoled.jar start <path to config file>`
 
 Java Parameter to force IPv4:  
 `-Djava.net.preferIPv4Stack=true`

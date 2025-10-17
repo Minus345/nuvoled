@@ -55,7 +55,7 @@ public class YamlWriter {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println("Now you can edit the config file ( " + path + " ) and start the application with your configurations.\nTo start the application with a config file: java -jar nuvoled.jar <path>");
+        System.out.println("Now you can edit the config file ( " + path + " ) and start the application with your configurations.\nTo start the application with a config file: java -jar start nuvoled.jar <path>");
         System.exit(0);
     }
 
