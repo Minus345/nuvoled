@@ -5,4 +5,8 @@ public class P5 extends Panel {
         super(mac, 128, 96, "P5");
     }
 
+    //for yaml file reading
+    public P5() {
+        super();
+    }
 }

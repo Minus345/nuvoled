@@ -46,7 +46,7 @@ public class ManageNetworkConnection {
     public static void setDatagramSocket() {
         try {
             InetAddress address = findNetworkInterface();
-            datagramSocket = new DatagramSocket(Main.getPort(),address); //,InetAddress.getByName("255.255.255.255")
+            datagramSocket = new DatagramSocket(Main.getPort(), address); //,InetAddress.getByName("255.255.255.255")
             System.out.println(datagramSocket.getLocalSocketAddress().toString());
             datagramSocket.setBroadcast(true);
         } catch (BindException e) {
@@ -58,11 +58,12 @@ public class ManageNetworkConnection {
             System.exit(-1);
         }
     }
+
     /**
-     *  Set up the datagram socket for sending and receiving.
-     *  It will only bind to the port, because the panels send udp broadcast wich we have to receive from anywhere
+     * Set up the datagram socket for sending and receiving.
+     * It will only bind to the port, because the panels send udp broadcast wich we have to receive from anywhere
      */
-    public static void setDatagramSocketForListeningAndSending(){
+    public static void setDatagramSocketForListeningAndSending() {
         try {
             datagramSocket = new DatagramSocket(Main.getPort());
             System.out.println(datagramSocket.getLocalSocketAddress().toString());
@@ -110,6 +111,10 @@ public class ManageNetworkConnection {
             //resets frame counter
             Main.setCourantFrame((byte) 0);
         }
+    }
+
+    public static void closeSocket() {
+        datagramSocket.close();
     }
 
     public static DatagramSocket getDatagramSocket() {

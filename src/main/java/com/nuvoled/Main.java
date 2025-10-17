@@ -1,7 +1,8 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
-import com.nuvoled.configurartion.ConfigManager;
+import com.nuvoled.configurartion.*;
+import com.nuvoled.configurartion.Panel;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
@@ -83,6 +84,7 @@ public class Main {
                 //creates yaml file then terminates
                 //create file where user wants
                 new YamlWriter(args[1]);
+                System.exit(0);
             }
             case "config" -> {
                 System.out.println("---config---");
@@ -92,16 +94,25 @@ public class Main {
 
                 ManageNetworkConnection.setDatagramSocketForListeningAndSending();
                 ConfigManager.start();
+
+                ManageNetworkConnection.closeSocket();
                 System.exit(0);
             }
             case "load" -> {
                 System.out.println("---load---");
+                new YamlReader(args[1]);
+                wichPanel();
 
+                ManageNetworkConnection.setDatagramSocketForListeningAndSending();
+                SendConfigureMessages.reset();
+
+                SendConfigureMessages.sendGlobalConfigMessage(PanelConfigFileManager.read().getAlreadyConfiguredPanelMatrix());
+
+                ManageNetworkConnection.closeSocket();
                 System.exit(0);
             }
             case "start" -> {
                 System.out.println("---start---");
-                //reds the config file
                 new YamlReader(args[1]);
                 wichPanel();
 

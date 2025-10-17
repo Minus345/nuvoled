@@ -194,4 +194,8 @@ public class ConfigManager {
     public static Storage getStorage() {
         return storage;
     }
+
+    public static void setStorage(Storage storage) {
+        ConfigManager.storage = storage;
+    }
 }
