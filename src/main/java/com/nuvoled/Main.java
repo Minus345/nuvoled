@@ -2,7 +2,6 @@ package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
 import com.nuvoled.configurartion.*;
-import com.nuvoled.configurartion.Panel;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
@@ -106,7 +105,7 @@ public class Main {
                 ManageNetworkConnection.setDatagramSocketForListeningAndSending();
                 SendConfigureMessages.reset();
 
-                SendConfigureMessages.sendGlobalConfigMessage(PanelConfigFileManager.read().getAlreadyConfiguredPanelMatrix());
+                SendConfigureMessages.sendGlobalConfigMessage(PanelConfigFileManager.read(args[2]).getAlreadyConfiguredPanelMatrix());
 
                 ManageNetworkConnection.closeSocket();
                 System.exit(0);

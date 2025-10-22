@@ -178,7 +178,8 @@ public class ConfigManager {
             }
             case "s" -> {
                 System.out.println("Write config form panels to file");
-                PanelConfigFileManager.write();
+                System.out.println("Input Path:");
+                PanelConfigFileManager.write(scanner.nextLine());
             }
             default -> {
                 wrongInput();
@@ -193,9 +194,5 @@ public class ConfigManager {
 
     public static Storage getStorage() {
         return storage;
-    }
-
-    public static void setStorage(Storage storage) {
-        ConfigManager.storage = storage;
     }
 }

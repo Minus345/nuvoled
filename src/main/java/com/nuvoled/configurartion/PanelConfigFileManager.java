@@ -6,12 +6,11 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.inspector.TagInspector;
 
 import java.io.*;
-import java.util.Set;
 
 public class PanelConfigFileManager {
-    public static void write() {
+    public static void write(String path) {
         try {
-            File file = new File("panelConfig.yaml");
+            File file = new File(path);
             FileWriter writer = new FileWriter(file);
             Yaml yaml = new Yaml();
             yaml.dump(ConfigManager.getStorage(), writer);
@@ -21,18 +20,16 @@ public class PanelConfigFileManager {
         }
     }
 
-    public static Storage read() {
+    public static Storage read(String path) {
         try {
-            InputStream input = new FileInputStream("panelConfig.yaml");
+            InputStream input = new FileInputStream(path);
             var loaderoptions = new LoaderOptions();
             TagInspector taginspector = tag -> true;
-
             loaderoptions.setTagInspector(taginspector);
             Yaml yaml = new Yaml(new Constructor(Storage.class, loaderoptions));
-            Storage storage = yaml.load(input);
-            return storage;
+            return yaml.load(input);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("File Not Found");
             System.exit(-1);
             return null;
         }
