@@ -16,23 +16,31 @@ http://NDI.NewTek.com/
 - Tested on:
     - Windows
     - Raspberry PI
+        - currantly not working with wayland -> you have to change to x11 via the `raaspi-config`
     - Ubuntu   
       See `OS specific settings` further below
 
 ***
 
 ## Usage
+
 ### 1. Create Config file:
-`java -jar nuvolde.jar create <path where you want your default config file>`
+
+`java -jar nuvolde.jar create [<path where you want your default config file>]`
 
 ### 2. Configure your LED Wall:
+
 `java -jar nuvoled.jar config <path to config file>`
 
 P5 panels can only be configured vertically (use rotation if needed)
 
-### 3. Normal Sender:  
-`java -jar nuvoled.jar <path to config file>`
+### Or load your panel-config file
 
+`java -jar nuvoled.jar load <path to config file> <path to panel-config file>`
+
+### 3. Normal Sender:
+
+`java -jar nuvoled.jar start <path to config file>`
 
 Java Parameter to force IPv4:  
 `-Djava.net.preferIPv4Stack=true`
@@ -85,6 +93,7 @@ If you use **rotation**:
 | sleep           | int            | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |         |
 | offSet          | float          | (currently not in use)                                                                                                  | 0.0           |
 | showFps         | boolean        | shows the fps that are send out, in the terminal                                                                        | false         |
+| timeout         | int            | how many milliseconds the programm should wait in the config CLI to listen for panels                                   | 1000          |         |
 | mode            | "screen"/"ndi" | "ndi" enables nid mode                                                                                                  | screen        |
 | artnetEnabled   | boolean        | enables [ArtNet](https://art-net.org.uk/), to control the brightness with one channel                                   | false         |
 | artnetDebug     | boolean        | enables debug information for ArtNet                                                                                    | false         |
@@ -105,11 +114,16 @@ If you use **rotation**:
 4. [x] add network interface configurations
 5. [x] rewrite network interface (refactoring old code - remove Mac support)
 6. [x] add initial configuration for panels
-7. [ ] save currant configured panels to file, so you can load the config for your panels
-8. [ ] add 180 degree rotation
-9. [ ] RGB565 fix array length (should be shorter)
-10. [ ] make NID more configurable
-11. [ ] Network Mapper: sends data over normal Network to a Node; sends it over to the display in udp broadcast
+7. [x] save currant configured panels to file, so you can load the config for your panels
+8. [ ] Update to java 15
+9. [ ] fix raspberry wayland
+10. [ ] command line arg phraser user error handling
+11. [ ] ME: test Switch VLan with config software -> enable broadcast?
+12. [ ] remove and refactor unnecessary features
+13. [ ] add test
+14. [ ] add 180 degree rotation
+15. [ ] RGB565 fix array length (should be shorter)
+16. [ ] make NID more configurable
 
 ***
 
@@ -136,7 +150,7 @@ https://docs.ndi.video/all/using-ndi/ndi-for-video/digital-video-basics
 
 ### Linux (Ubuntu)
 
-you have to manually configure the network card, to be a self-assigned network (`169.254.255.255`)
+you have to manually configure the network card, to be a local linke network (`169.254.255.255`)
 
 you need to set the sleep  
 `-s 60` to set the delay between two frames

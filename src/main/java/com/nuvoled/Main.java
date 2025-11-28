@@ -1,7 +1,7 @@
 package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
-import com.nuvoled.configurartion.ConfigManager;
+import com.nuvoled.configurartion.*;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
@@ -27,6 +27,7 @@ public class Main {
     private static float offSet = 0F;
     private static int rotation = 0;
     private static int sleep = 0;
+    private static int timeout = 0;
 
     //ndi
     private static String mode = "screen";
@@ -68,32 +69,58 @@ public class Main {
                                                \
                 """);
 
-        String defaultMessage = "To crate a config file type: java -jar nuvoled.jar create <path>\nTo start the application with a config file: java -jar nuvoled.jar <path>";
+        String defaultMessage = "See github";
 
-        //parsing the command line arguments
-        if (args.length == 0 || args.length > 2) {
+        if (args.length < 2 || args.length > 3) {
             System.out.println(defaultMessage);
             System.exit(-1);
-        } else if (args.length == 1) {
-            //reds the config file
-            new YamlReader(args[0]);
-            wichPanel();
+        }
 
-            ManageNetworkConnection.setDatagramSocket();
-        } else if (args[0].equals("config")) {
-            //starts the configuration progress for the LED wall the terminates
-            new YamlReader(args[1]);
-            wichPanel();
+        //start parameters
+        switch (args[0]) {
+            case "create" -> {
+                System.out.println("---create---");
+                //creates yaml file then terminates
+                //create file where user wants
+                new YamlWriter(args[1]);
+                System.exit(0);
+            }
+            case "config" -> {
+                System.out.println("---config---");
+                //starts the configuration progress for the LED wall the terminates
+                new YamlReader(args[1]);
+                wichPanel();
 
-            ManageNetworkConnection.setDatagramSocketForListening();
-            ConfigManager.start();
-            System.exit(0);
-        } else if (args[0].equals("create")) {
-            //creates yaml file then terminates
-            new YamlWriter(args[1]);
-        } else {
-            System.out.println(defaultMessage);
-            System.exit(-1);
+                ManageNetworkConnection.setDatagramSocketForListeningAndSending();
+                ConfigManager.start();
+
+                ManageNetworkConnection.closeSocket();
+                System.exit(0);
+            }
+            case "load" -> {
+                System.out.println("---load---");
+                new YamlReader(args[1]);
+                wichPanel();
+
+                ManageNetworkConnection.setDatagramSocketForListeningAndSending();
+                SendConfigureMessages.reset();
+
+                SendConfigureMessages.sendGlobalConfigMessage(PanelConfigFileManager.read(args[2]).getAlreadyConfiguredPanelMatrix());
+
+                ManageNetworkConnection.closeSocket();
+                System.exit(0);
+            }
+            case "start" -> {
+                System.out.println("---start---");
+                new YamlReader(args[1]);
+                wichPanel();
+
+                ManageNetworkConnection.setDatagramSocket();
+            }
+            case null, default -> {
+                System.out.println(defaultMessage);
+                System.exit(-1);
+            }
         }
 
         if (rotation != 0) {
@@ -165,7 +192,7 @@ public class Main {
 
     }
 
-    private static void wichPanel(){
+    private static void wichPanel() {
         switch (wichPanel) {
             case "P4" -> {
                 onePanelSizeX = 128;
@@ -376,5 +403,13 @@ public class Main {
 
     public static int getOnePanelSizeY() {
         return onePanelSizeY;
+    }
+
+    public static int getTimeout() {
+        return timeout;
+    }
+
+    public static void setTimeout(int timeout) {
+        Main.timeout = timeout;
     }
 }

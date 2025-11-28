@@ -17,6 +17,10 @@ public class Panel {
         this.version = version;
     }
 
+    //for yaml file reading
+    public Panel() {
+    }
+
     public byte[] getMac() {
         return mac;
     }
@@ -63,5 +67,21 @@ public class Panel {
 
     public void setOffsetY(int offsetY) {
         this.offsetY = offsetY;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setSizeX(int sizeX) {
+        this.sizeX = sizeX;
+    }
+
+    public void setSizeY(int sizeY) {
+        this.sizeY = sizeY;
+    }
+
+    public void setMac(byte[] mac) {
+        this.mac = mac;
     }
 }
