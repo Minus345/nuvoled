@@ -118,9 +118,9 @@ If you use **rotation**:
 8. [ ] Update to java 15
 9. [ ] fix raspberry wayland
 10. [ ] command line arg phraser user error handling
-11. [ ] ME: test Switch VLan with config software -> enable broadcast?
+11. [ ] ME: Testing Switch VLan with config software -> enable broadcast?
 12. [ ] remove and refactor unnecessary features
-13. [ ] add test
+13. [ ] add Testing
 14. [ ] add 180 degree rotation
 15. [ ] RGB565 fix array length (should be shorter)
 16. [ ] make NID more configurable

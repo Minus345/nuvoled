@@ -6,6 +6,7 @@ import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.ManageNetworkConnection;
+import com.nuvoled.util.Rgb565;
 import com.nuvoled.yaml.YamlReader;
 import com.nuvoled.yaml.YamlWriter;
 
@@ -132,11 +133,6 @@ public class Main {
         }
         System.out.println();
 
-        if (Main.isArtnetEnabled()) {
-            Main.setArtnet(new ArtNetClient());
-            artnet.start();
-        }
-
 
         System.out.println("Panel                               : " + Main.getWichPanel());
         System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
@@ -167,6 +163,21 @@ public class Main {
         int y = getyPosition() + screenBounds.y;
         rectangle.setLocation(x, y);
 
+        // setup colour mode
+        int maxPackets = 0;
+        switch (Main.getColorMode()) {
+            case 10: //rgb:
+                maxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+                break;
+            case 30: //rgb565:
+                maxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+                break;
+            default:
+                System.out.println("Error: Colour mode " + Main.getColorMode() + " not supported");
+                System.exit(1);
+        }
+
+        // setup rotation
         switch (Main.getRotation()) {
             case 90, 270 -> {
                 int buf = Main.globalPixelInX;
@@ -180,13 +191,37 @@ public class Main {
         }
         rectangle.setSize(globalPixelInX, globalPixelInY);
 
-        //ManageNetworkConnection.setDatagramSocket();
+        int rgbLength = globalPixelInX * globalPixelInY * 3;
 
         //noinspection InfiniteLoopStatement
         while (true) {
             Fps.fpsStart();
+
+            //get picture form screen
             BufferedImage image = robot.createScreenCapture(rectangle);
-            PictureSender.send(image);
+
+            BufferedImage imageWithBrightness = PictureSender.applyFilter(image, brightness, offSet);
+            byte[] rgbPixelData = PictureSender.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
+            rgbPixelData = PictureSender.rotateRgbData(rgbPixelData, rotation);
+
+            //if mode = rgb565
+            if (colorMode == 30) {
+                rgbPixelData = Rgb565.getLedRgb565Data(rgbPixelData);
+            }
+
+            //send the rgb data
+            PictureSender.packageAndSendPixels(rgbPixelData, maxPackets);
+
+            //sleep
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            //send sendSynchronized Message
+            ManageNetworkConnection.sendSyncro();
+
             Fps.fpsEnd();
         }
 
