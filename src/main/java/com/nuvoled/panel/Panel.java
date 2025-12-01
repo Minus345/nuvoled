@@ -1,4 +1,4 @@
-package com.nuvoled.configurartion;
+package com.nuvoled.panel;
 
 public class Panel {
     private String version;

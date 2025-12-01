@@ -1,4 +1,4 @@
-package com.nuvoled.configurartion;
+package com.nuvoled.panel;
 
 public class P5 extends Panel {
     public P5(byte[] mac) {

@@ -1,6 +1,9 @@
 package com.nuvoled.configurartion;
 
 import com.nuvoled.Main;
+import com.nuvoled.panel.P4;
+import com.nuvoled.panel.P5;
+import com.nuvoled.panel.Panel;
 import com.nuvoled.sender.ManageNetworkConnection;
 
 import java.net.DatagramPacket;
@@ -128,8 +131,8 @@ public class SendConfigureMessages {
         message[8] = mac[2]; //mac[2]
         message[9] = mac[3]; //mac[3]
         message[10] = mac[1]; //mac[1]
-        message[11] = (byte) (Main.getOnePanelSizeX() / 16); //modul width /16
-        message[12] = (byte) (Main.getOnePanelSizeY() / 16); //modul height /16
+        message[11] = (byte) (Main.getPanelType().getSizeX() / 16); //modul width /16
+        message[12] = (byte) (Main.getPanelType().getSizeY() / 16); //modul height /16
         message[13] = (byte) (panel.getOffsetX() / 16); //offset x /16
         message[14] = (byte) (panel.getOffsetY() / 16); //offset y /16
         ManageNetworkConnection.send_data(message);
@@ -167,8 +170,8 @@ public class SendConfigureMessages {
                 message[messageCounter] = currant.getMac()[2]; //mac[2]
                 message[messageCounter + 1] = currant.getMac()[3]; //mac[3]
                 message[messageCounter + 2] = currant.getMac()[1]; //mac[1]
-                message[messageCounter + 3] = (byte) (Main.getOnePanelSizeX() / 16); //modul width /16
-                message[messageCounter + 4] = (byte) (Main.getOnePanelSizeY() / 16); //modul height /16
+                message[messageCounter + 3] = (byte) (Main.getPanelType().getSizeX() / 16); //modul width /16
+                message[messageCounter + 4] = (byte) (Main.getPanelType().getSizeY() / 16); //modul height /16
                 message[messageCounter + 5] = (byte) (currant.getOffsetX() / 16); //offset x /16
                 message[messageCounter + 6] = (byte) (currant.getOffsetY() / 16); //offset y /16
 
@@ -208,6 +211,7 @@ public class SendConfigureMessages {
 
                 Panel panel = null;
 
+                //TODO: an Main.getPanel type anpassen
                 switch (Main.getWichPanel()) {
                     case "P4" -> panel = new P4(mac);
                     case "P5" -> panel = new P5(mac);

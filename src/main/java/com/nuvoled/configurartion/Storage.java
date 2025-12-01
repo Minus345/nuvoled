@@ -1,8 +1,7 @@
 package com.nuvoled.configurartion;
 
 import com.nuvoled.Main;
-
-import java.lang.reflect.Array;
+import com.nuvoled.panel.Panel;
 
 public class Storage {
     private  Panel[][] alreadyConfiguredPanelMatrix;

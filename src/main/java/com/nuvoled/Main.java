@@ -2,6 +2,9 @@ package com.nuvoled;
 
 import ch.bildspur.artnet.ArtNetClient;
 import com.nuvoled.configurartion.*;
+import com.nuvoled.panel.P4;
+import com.nuvoled.panel.P5;
+import com.nuvoled.panel.Panel;
 import com.nuvoled.util.Fps;
 import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
@@ -46,6 +49,7 @@ public class Main {
      * "P4" / "P5"
      */
     private static String wichPanel;
+    private static Panel panelType;
     /**
      * 10/rgb 20/jpg 30/rgb565
      */
@@ -58,8 +62,6 @@ public class Main {
     private static int screenNumber = 0;
     private static int xPosition = 0;
     private static int yPosition = 0;
-    private static int onePanelSizeX = 0;
-    private static int onePanelSizeY = 0;
 
     public static void main(String[] args) throws IOException, AWTException, InterruptedException {
         System.out.println("""
@@ -136,7 +138,7 @@ public class Main {
 
         System.out.println("Panel                               : " + Main.getWichPanel());
         System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
-        System.out.println("x/y Panel Size                      : " + Main.getOnePanelSizeX() + "/" + Main.getGlobalPixelInY());
+        System.out.println("x/y Panel Size                      : " + panelType.getSizeX() + "/" + panelType.getSizeY());
         System.out.println("x/y Pixels                          : " + Main.getGlobalPixelInX() + "/" + Main.getGlobalPixelInY());
         System.out.println("rotation Degree                     : " + Main.getRotation());
         System.out.println("mode                                : " + Main.getMode());
@@ -230,12 +232,10 @@ public class Main {
     private static void wichPanel() {
         switch (wichPanel) {
             case "P4" -> {
-                onePanelSizeX = 128;
-                onePanelSizeY = 128;
+                panelType = new P4();
             }
             case "P5" -> {
-                onePanelSizeX = 128;
-                onePanelSizeY = 96;
+                panelType = new P5();
             }
             default -> {
                 System.out.println("No Panel defined");
@@ -243,8 +243,8 @@ public class Main {
             }
         }
 
-        globalPixelInX = xPanelCount * onePanelSizeX; //Anzahl Panel X * 128 pixel
-        globalPixelInY = yPanelCount * onePanelSizeY; //Anzahl Panel Y * 128 pixel
+        globalPixelInX = xPanelCount * panelType.getSizeX(); //Anzahl Panel X * 128 pixel
+        globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
     }
 
     public static ArtNetClient getArtnet() {
@@ -432,19 +432,19 @@ public class Main {
         Main.yPosition = yPosition;
     }
 
-    public static int getOnePanelSizeX() {
-        return onePanelSizeX;
-    }
-
-    public static int getOnePanelSizeY() {
-        return onePanelSizeY;
-    }
-
     public static int getTimeout() {
         return timeout;
     }
 
     public static void setTimeout(int timeout) {
         Main.timeout = timeout;
+    }
+
+    public static Panel getPanelType() {
+        return panelType;
+    }
+
+    public static void setPanelType(Panel panelType) {
+        Main.panelType = panelType;
     }
 }

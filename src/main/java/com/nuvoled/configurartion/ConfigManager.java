@@ -1,6 +1,7 @@
 package com.nuvoled.configurartion;
 
 import com.nuvoled.Main;
+import com.nuvoled.panel.Panel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,8 +130,8 @@ public class ConfigManager {
             }
         }
 
-        currant.setOffsetX(panelOffsetX * Main.getOnePanelSizeX());
-        currant.setOffsetY(panelOffsetY * Main.getOnePanelSizeY());
+        currant.setOffsetX(panelOffsetX * Main.getPanelType().getSizeX());
+        currant.setOffsetY(panelOffsetY * Main.getPanelType().getSizeY());
         // send config Message
         SendConfigureMessages.makeConfigAndSendGreenCross(currant);
 
