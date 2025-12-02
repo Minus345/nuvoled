@@ -52,13 +52,6 @@ public class YamlReader {
             //ndi
             Main.setMode((String) settings.get("mode"));
 
-            //art-net
-            Main.setArtnetEnabled((boolean) settings.get("artnetEnabled"));
-            Main.setArtnetDebug((boolean) settings.get("artnetDebug"));
-            Main.setSubnet((int) settings.get("artnetSubnet"));
-            Main.setUniversum((int) settings.get("artnetUniversum"));
-            Main.setChannel((int) settings.get("artnetChannel"));
-
             //panel specific
             Main.setScreenNumber((int) settings.get("screenNumber"));
             Main.setxPosition((int) settings.get("PositionX"));

@@ -1,6 +1,5 @@
 package com.nuvoled;
 
-import ch.bildspur.artnet.ArtNetClient;
 import com.nuvoled.configurartion.*;
 import com.nuvoled.panel.P4;
 import com.nuvoled.panel.P5;
@@ -35,14 +34,6 @@ public class Main {
 
     //ndi
     private static String mode = "screen";
-
-    //art-net
-    private static ArtNetClient artnet;
-    private static boolean artnetEnabled = false;
-    private static boolean artnetDebug = false;
-    private static int subnet = 0;
-    private static int universum = 0;
-    private static int channel = 0;
 
     //panel settings
     /**
@@ -247,41 +238,8 @@ public class Main {
         globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
     }
 
-    public static ArtNetClient getArtnet() {
-        return artnet;
-    }
-
-    public static void setArtnet(ArtNetClient artnet) {
-        Main.artnet = artnet;
-    }
-
-    public static boolean isArtnetDebug() {
-        return artnetDebug;
-    }
-
-    public static void setArtnetDebug(boolean artnetDebug) {
-        Main.artnetDebug = artnetDebug;
-    }
-
-    public static boolean isArtnetEnabled() {
-        return artnetEnabled;
-    }
-
-    public static void setArtnetEnabled(boolean artnetEnabled) {
-        Main.artnetEnabled = artnetEnabled;
-    }
-
     public static String getBroadcastIpAddress() {
         return broadcastIpAddress;
-    }
-
-
-    public static int getChannel() {
-        return channel;
-    }
-
-    public static void setChannel(int channel) {
-        Main.channel = channel;
     }
 
     public static int getColorMode() {
@@ -374,22 +332,6 @@ public class Main {
 
     public static void setSleep(int sleep) {
         Main.sleep = sleep;
-    }
-
-    public static int getSubnet() {
-        return subnet;
-    }
-
-    public static void setSubnet(int subnet) {
-        Main.subnet = subnet;
-    }
-
-    public static int getUniversum() {
-        return universum;
-    }
-
-    public static void setUniversum(int universum) {
-        Main.universum = universum;
     }
 
     public static String getWichPanel() {

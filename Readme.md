@@ -94,12 +94,7 @@ If you use **rotation**:
 | offSet          | float          | (currently not in use)                                                                                                  | 0.0           |
 | showFps         | boolean        | shows the fps that are send out, in the terminal                                                                        | false         |
 | timeout         | int            | how many milliseconds the programm should wait in the config CLI to listen for panels                                   | 1000          |         |
-| mode            | "screen"/"ndi" | "ndi" enables nid mode                                                                                                  | screen        |
-| artnetEnabled   | boolean        | enables [ArtNet](https://art-net.org.uk/), to control the brightness with one channel                                   | false         |
-| artnetDebug     | boolean        | enables debug information for ArtNet                                                                                    | false         |
-| artnetSubnet    | [1 - 16]       | sets Subnet                                                                                                             | 0             |
-| artnetUniversum | [1 - 16]       | sets Univers                                                                                                            | 0             |
-| artnetChannel   | [1 - 255]      | sets Channel                                                                                                            | 0             |
+| mode            | "screen"/"ndi" | "ndi" enables nid mode                                                                                                  | screen        |             |
 | screenNumber    | int            | when your machine has more than one screen, you can specify your screen, you want to share                              | 0             |
 | PositionX       | int            | coordinates where to start the screen capture                                                                           | 0             |
 | PositionY       | int            | coordinates where to start the screen capture                                                                           | 0             |
@@ -119,7 +114,7 @@ If you use **rotation**:
 9. [ ] fix raspberry wayland
 10. [ ] command line arg phraser user error handling
 11. [ ] ME: Testing Switch VLan with config software -> enable broadcast?
-12. [ ] remove and refactor unnecessary features
+12. [x] remove and refactor unnecessary features
 13. [ ] add Testing
 14. [ ] add 180 degree rotation
 15. [ ] RGB565 fix array length (should be shorter)

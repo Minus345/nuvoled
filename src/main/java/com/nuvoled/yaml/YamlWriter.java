@@ -79,13 +79,6 @@ public class YamlWriter {
         //ndi
         data.put("mode", "screen");
 
-        //art-net
-        data.put("artnetEnabled", false);
-        data.put("artnetDebug", false);
-        data.put("artnetSubnet", 0);
-        data.put("artnetUniversum", 0);
-        data.put("artnetChannel", 0);
-
         //panel specific
         data.put("screenNumber", 0);
         data.put("PositionX", 0);
