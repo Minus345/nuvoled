@@ -61,5 +61,8 @@ public class YamlReader {
             e.printStackTrace();
             System.exit(-1);
         }
+
+        //TODO: robust coden: hier allen user input überprüfen ob er überhaupt passt
+
     }
 }

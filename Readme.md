@@ -26,7 +26,7 @@ http://NDI.NewTek.com/
 
 ### 1. Create Config file:
 
-`java -jar nuvolde.jar create [<path where you want your default config file>]`
+`java -jar nuvoled.jar create [<path where you want your default config file>]`
 
 ### 2. Configure your LED Wall:
 
@@ -112,7 +112,7 @@ If you use **rotation**:
 7. [x] save currant configured panels to file, so you can load the config for your panels
 8. [ ] Update to java 15
 9. [ ] fix raspberry wayland
-10. [ ] command line arg phraser user error handling
+10. [x] command line arg phraser user error handling
 11. [ ] ME: Testing Switch VLan with config software -> enable broadcast?
 12. [x] remove and refactor unnecessary features
 13. [ ] add Testing

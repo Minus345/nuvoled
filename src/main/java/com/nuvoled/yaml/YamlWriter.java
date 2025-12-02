@@ -17,44 +17,62 @@ public class YamlWriter {
      * @param path path where the config file should be created
      */
     public YamlWriter(String path) {
+
+        //create empty file in path
+        String os = System.getProperty("os.name");
+        File file;
+        if (os.startsWith("Windows")) {
+            file = new File(path + "\\config.yaml");
+        } else {
+            file = new File(path + "/config.yaml");
+        }
+
+        //try to create new file
+        boolean createNewFile = false;
         try {
-            //create empty file in path
-            String os = System.getProperty("os.name");
-            File file;
-            if (os.startsWith("Windows")) {
-                file = new File(path + "\\config.yaml");
-            } else {
-                file = new File(path + "/config.yaml");
+            createNewFile = file.createNewFile();
+        } catch (IOException e) {
+            System.out.println("An error occurred, while creating config file ( " + file.getPath() + " ) : " + e.getMessage());
+            System.exit(1);
+        }
+
+        if (createNewFile) {
+            System.out.println("File created: " + file.getName());
+        } else {
+            System.out.println("File already exists. Do you want to override it? \nEnter: [Y/n]");
+            Scanner scanner = new Scanner(System.in);
+            String yesno = scanner.nextLine();
+            if (!yesno.equals("Y")) {
+                System.exit(0);
             }
+            System.out.println("Overriding config file...");
+        }
 
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-            } else {
-                System.out.println("File already exists. Do you want to override it? \nEnter: [Y/n]");
-                Scanner scanner = new Scanner(System.in);
-                String yesno = scanner.nextLine();
-                if (!yesno.equals("Y")) {
-                    System.exit(0);
-                }
-                System.out.println("Overriding config file...");
-            }
 
-            //write to file
-            FileWriter writer = new FileWriter(file);
+        //write to file
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file);
+        } catch (IOException e) {
+            System.out.println("An error occurred, while opening the config file ( " + file.getPath() + " ) : " + e.getMessage());
+            System.exit(1);
+        }
 
-            //configure SnakeYAML
-            DumperOptions options = new DumperOptions();
-            options.setPrettyFlow(true);
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        //configure SnakeYAML
+        DumperOptions options = new DumperOptions();
+        options.setPrettyFlow(true);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-            Yaml yaml = new Yaml(options);
-            yaml.dump(createYamlData(), writer);
+        Yaml yaml = new Yaml(options);
+        yaml.dump(createYamlData(), writer);
+
+        try {
             writer.close();
         } catch (IOException e) {
-            System.out.println("An error occurred, while creating config file");
-            e.printStackTrace();
-            System.exit(-1);
+            System.out.println("An error occurred, while closing the config file ( " + file.getPath() + " ) : " + e.getMessage());
+            System.exit(1);
         }
+
         System.out.println("Now you can edit the config file ( " + path + " ) and start the application with your configurations.\nTo start the application with a config file: java -jar start nuvoled.jar <path>");
         System.exit(0);
     }

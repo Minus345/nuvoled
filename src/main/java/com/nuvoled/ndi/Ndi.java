@@ -39,9 +39,10 @@ public class Ndi {
 
         System.out.println("Running");
         while (true) {
-            Fps.fpsStart();
+            //TODO fix parameters
+            Fps.fpsStart(false);
             sendNDI();
-            Fps.fpsEnd();
+            Fps.fpsEnd(false);
         }
     }
 

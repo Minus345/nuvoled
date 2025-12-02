@@ -39,6 +39,7 @@ public class Main {
     /**
      * "P4" / "P5"
      */
+    //TODO: merge into one variable
     private static String wichPanel;
     private static Panel panelType;
     /**
@@ -63,17 +64,21 @@ public class Main {
                                                \
                 """);
 
-        String defaultMessage = "See github";
 
         if (args.length < 2 || args.length > 3) {
-            System.out.println(defaultMessage);
-            System.exit(-1);
+            exitSetup();
         }
 
         //start parameters
         switch (args[0]) {
             case "create" -> {
                 System.out.println("---create---");
+                if (args.length != 2) {
+                    exitSetup();
+                }
+                if (args[1] == null) {
+                    exitSetup();
+                }
                 //creates yaml file then terminates
                 //create file where user wants
                 new YamlWriter(args[1]);
@@ -82,8 +87,14 @@ public class Main {
             case "config" -> {
                 System.out.println("---config---");
                 //starts the configuration progress for the LED wall the terminates
-                new YamlReader(args[1]);
-                wichPanel();
+                if (args.length != 2) {
+                    exitSetup();
+                }
+                if (args[1] == null) {
+                    exitSetup();
+                }
+
+                startSetupReadConfig(args[1]);
 
                 ManageNetworkConnection.setDatagramSocketForListeningAndSending();
                 ConfigManager.start();
@@ -93,9 +104,14 @@ public class Main {
             }
             case "load" -> {
                 System.out.println("---load---");
-                new YamlReader(args[1]);
-                wichPanel();
+                if (args.length != 3) {
+                    exitSetup();
+                }
+                if (args[1] == null || args[2] == null) {
+                    exitSetup();
+                }
 
+                startSetupReadConfig(args[1]);
                 ManageNetworkConnection.setDatagramSocketForListeningAndSending();
                 SendConfigureMessages.reset();
 
@@ -106,15 +122,18 @@ public class Main {
             }
             case "start" -> {
                 System.out.println("---start---");
-                new YamlReader(args[1]);
-                wichPanel();
+                if (args.length != 2) {
+                    exitSetup();
+                }
+                if (args[1] == null) {
+                    exitSetup();
+                }
+
+                startSetupReadConfig(args[1]);
 
                 ManageNetworkConnection.setDatagramSocket();
             }
-            case null, default -> {
-                System.out.println(defaultMessage);
-                System.exit(-1);
-            }
+            case null, default -> exitSetup();
         }
 
         if (rotation != 0) {
@@ -127,19 +146,19 @@ public class Main {
         System.out.println();
 
 
-        System.out.println("Panel                               : " + Main.getWichPanel());
-        System.out.println("x/y Panel Count                     : " + Main.getxPanelCount() + "/" + Main.getyPanelCount());
+        System.out.println("Panel                               : " + wichPanel);
+        System.out.println("x/y Panel Count                     : " + xPanelCount + "/" + yPanelCount);
         System.out.println("x/y Panel Size                      : " + panelType.getSizeX() + "/" + panelType.getSizeY());
-        System.out.println("x/y Pixels                          : " + Main.getGlobalPixelInX() + "/" + Main.getGlobalPixelInY());
-        System.out.println("rotation Degree                     : " + Main.getRotation());
-        System.out.println("mode                                : " + Main.getMode());
-        System.out.println("Screen Number                       : " + Main.getScreenNumber());
-        System.out.println("x/y Start Position                  : " + Main.getxPosition() + "/" + Main.getyPosition());
-        System.out.println("broadcastIpAddress                  : " + Main.getBroadcastIpAddress());
-        System.out.println("scaleFactor (Brightness)            : " + Main.getBrightness());
-        System.out.println("offset (Contrast)                   : " + Main.getOffSet());
-        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + Main.getColorMode());
-        System.out.println("sleep time                          : " + Main.getSleep());
+        System.out.println("x/y Pixels                          : " + globalPixelInX + "/" + globalPixelInY);
+        System.out.println("rotation Degree                     : " + rotation);
+        System.out.println("mode                                : " + mode);
+        System.out.println("Screen Number                       : " + screenNumber);
+        System.out.println("x/y Start Position                  : " + xPosition + "/" + yPosition);
+        System.out.println("broadcastIpAddress                  : " + broadcastIpAddress);
+        System.out.println("scaleFactor (Brightness)            : " + brightness);
+        System.out.println("offset (Contrast)                   : " + offSet);
+        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
+        System.out.println("sleep time                          : " + sleep);
 
         switch (mode) {
             case "screen" -> captureFromScreen();
@@ -152,30 +171,32 @@ public class Main {
         Robot robot = new Robot(screens[getScreenNumber()]);
         Rectangle rectangle = new Rectangle();
         Rectangle screenBounds = screens[getScreenNumber()].getDefaultConfiguration().getBounds();
-        int x = getxPosition() + screenBounds.x;
-        int y = getyPosition() + screenBounds.y;
+        int x = xPosition + screenBounds.x;
+        int y = yPosition + screenBounds.y;
         rectangle.setLocation(x, y);
 
         // setup colour mode
         int maxPackets = 0;
-        switch (Main.getColorMode()) {
+        switch (colorMode) {
             case 10: //rgb:
-                maxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+                maxPackets = ((globalPixelInX * globalPixelInY * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
                 break;
             case 30: //rgb565:
-                maxPackets = ((Main.getGlobalPixelInX() * Main.getGlobalPixelInY() * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
+                maxPackets = ((globalPixelInX * globalPixelInY * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
                 break;
             default:
-                System.out.println("Error: Colour mode " + Main.getColorMode() + " not supported");
+                System.out.println("Error: Colour mode " + colorMode + " not supported");
                 System.exit(1);
         }
 
         // setup rotation
-        switch (Main.getRotation()) {
+        switch (rotation) {
             case 90, 270 -> {
-                int buf = Main.globalPixelInX;
-                Main.globalPixelInX = Main.getGlobalPixelInY();
-                Main.globalPixelInY = buf;
+                //switch x and y
+                int buf = globalPixelInX;
+                //noinspection SuspiciousNameCombination
+                globalPixelInX = globalPixelInY;
+                globalPixelInY = buf;
             }
             case 180 -> {
                 System.out.println("not Supported");
@@ -188,7 +209,7 @@ public class Main {
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            Fps.fpsStart();
+            Fps.fpsStart(showFps);
 
             //get picture form screen
             BufferedImage image = robot.createScreenCapture(rectangle);
@@ -206,28 +227,49 @@ public class Main {
             PictureSender.packageAndSendPixels(rgbPixelData, maxPackets);
 
             //sleep
-            try {
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            if (sleep > 0) {
+                try {
+                    //noinspection BusyWait
+                    Thread.sleep(sleep);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             //send sendSynchronized Message
             ManageNetworkConnection.sendSyncro();
 
-            Fps.fpsEnd();
+            Fps.fpsEnd(showFps);
         }
+
+    }
+
+    private static void startSetupReadConfig(String pathToConfigFile) {
+        new YamlReader(pathToConfigFile);
+        wichPanel();
+    }
+
+    private static void exitSetup() {
+        String defaultMessage = """
+                Usage
+                1. Create Config file:
+                `java -jar nuvoled.jar create [<path where you want your default config file>]`
+                2. Configure your LED Wall:
+                `java -jar nuvoled.jar config <path to config file>`
+                `java -jar nuvoled.jar load <path to config file> <path to panel-config file>`
+                3. Normal Sender:
+                `java -jar nuvoled.jar start <path to config file>`
+                further information on github: https://github.com/Minus345/nuvoled""";
+
+        System.out.println(defaultMessage);
+        System.exit(1);
 
     }
 
     private static void wichPanel() {
         switch (wichPanel) {
-            case "P4" -> {
-                panelType = new P4();
-            }
-            case "P5" -> {
-                panelType = new P5();
-            }
+            case "P4" -> panelType = new P4();
+            case "P5" -> panelType = new P5();
             default -> {
                 System.out.println("No Panel defined");
                 System.exit(-1);
@@ -258,16 +300,9 @@ public class Main {
         Main.courantFrame = courantFrame;
     }
 
-    public static String getMode() {
-        return mode;
-    }
 
     public static void setMode(String mode) {
         Main.mode = mode;
-    }
-
-    public static Float getOffSet() {
-        return offSet;
     }
 
     public static void setOffSet(Float offSet) {
@@ -302,10 +337,6 @@ public class Main {
         Main.rotation = rotation;
     }
 
-    public static Float getBrightness() {
-        return brightness;
-    }
-
     public static void setBrightness(Float brightness) {
         Main.brightness = brightness;
     }
@@ -318,9 +349,6 @@ public class Main {
         Main.screenNumber = screenNumber;
     }
 
-    public static boolean isShowFps() {
-        return showFps;
-    }
 
     public static void setShowFps(boolean showFps) {
         Main.showFps = showFps;
@@ -350,10 +378,6 @@ public class Main {
         Main.xPanelCount = xPanelCount;
     }
 
-    public static int getxPosition() {
-        return xPosition;
-    }
-
     public static void setxPosition(int xPosition) {
         Main.xPosition = xPosition;
     }
@@ -364,10 +388,6 @@ public class Main {
 
     public static void setyPanelCount(int yPanelCount) {
         Main.yPanelCount = yPanelCount;
-    }
-
-    public static int getyPosition() {
-        return yPosition;
     }
 
     public static void setyPosition(int yPosition) {
@@ -384,9 +404,5 @@ public class Main {
 
     public static Panel getPanelType() {
         return panelType;
-    }
-
-    public static void setPanelType(Panel panelType) {
-        Main.panelType = panelType;
     }
 }
