@@ -118,7 +118,9 @@ If you use **rotation**:
 13. [ ] add Testing
 14. [ ] add 180 degree rotation
 15. [ ] RGB565 fix array length (should be shorter)
-16. [ ] make NID more configurable
+16. [ ] replace ndi with obs virtual cam -> https://www.baeldung.com/java-capture-image-from-webcam
+Display the resolution to set up in obs at startup (with rotation)
+17. [ ] make ethernet interface configurable thought config file
 
 ***
 
