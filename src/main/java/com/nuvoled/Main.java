@@ -9,6 +9,7 @@ import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.ManageNetworkConnection;
 import com.nuvoled.util.Rgb565;
+import com.nuvoled.util.rotation.Rotation;
 import com.nuvoled.yaml.YamlReader;
 import com.nuvoled.yaml.YamlWriter;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class Main {
 
     //not changed
+    private static ManageNetworkConnection manageNetworkConnection;
     private static final int port = 2000;
     private static byte courantFrame = 2;
     private static final String broadcastIpAddress = "169.254.255.255";
@@ -69,6 +71,8 @@ public class Main {
             exitSetup();
         }
 
+        manageNetworkConnection = new ManageNetworkConnection(port,broadcastIpAddress);
+
         //start parameters
         switch (args[0]) {
             case "create" -> {
@@ -96,10 +100,10 @@ public class Main {
 
                 startSetupReadConfig(args[1]);
 
-                ManageNetworkConnection.setDatagramSocketForListeningAndSending();
-                ConfigManager.start();
+                manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
+                ConfigManager.start(manageNetworkConnection);
 
-                ManageNetworkConnection.closeSocket();
+                manageNetworkConnection.closeSocket();
                 System.exit(0);
             }
             case "load" -> {
@@ -112,12 +116,12 @@ public class Main {
                 }
 
                 startSetupReadConfig(args[1]);
-                ManageNetworkConnection.setDatagramSocketForListeningAndSending();
-                SendConfigureMessages.reset();
+                manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
+                SendConfigureMessages.reset(manageNetworkConnection);
 
-                SendConfigureMessages.sendGlobalConfigMessage(PanelConfigFileManager.read(args[2]).getAlreadyConfiguredPanelMatrix());
+                SendConfigureMessages.sendGlobalConfigMessage(manageNetworkConnection, PanelConfigFileManager.read(args[2]).getAlreadyConfiguredPanelMatrix());
 
-                ManageNetworkConnection.closeSocket();
+                manageNetworkConnection.closeSocket();
                 System.exit(0);
             }
             case "start" -> {
@@ -131,7 +135,7 @@ public class Main {
 
                 startSetupReadConfig(args[1]);
 
-                ManageNetworkConnection.setDatagramSocket();
+                manageNetworkConnection.setDatagramSocket();
             }
             case null, default -> exitSetup();
         }
@@ -167,6 +171,7 @@ public class Main {
     }
 
     public static void captureFromScreen() throws AWTException {
+        //setup screen capture
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         Robot robot = new Robot(screens[getScreenNumber()]);
         Rectangle rectangle = new Rectangle();
@@ -216,7 +221,7 @@ public class Main {
 
             BufferedImage imageWithBrightness = PictureSender.applyFilter(image, brightness, offSet);
             byte[] rgbPixelData = PictureSender.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
-            rgbPixelData = PictureSender.rotateRgbData(rgbPixelData, rotation);
+            rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation);
 
             //if mode = rgb565
             if (colorMode == 30) {
@@ -224,7 +229,7 @@ public class Main {
             }
 
             //send the rgb data
-            PictureSender.packageAndSendPixels(rgbPixelData, maxPackets);
+            PictureSender.packageAndSendPixels(rgbPixelData, maxPackets,manageNetworkConnection);
 
             //sleep
             if (sleep > 0) {
@@ -237,7 +242,7 @@ public class Main {
             }
 
             //send sendSynchronized Message
-            ManageNetworkConnection.sendSyncro();
+            manageNetworkConnection.sendSyncro();
 
             Fps.fpsEnd(showFps);
         }
@@ -280,10 +285,6 @@ public class Main {
         globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
     }
 
-    public static String getBroadcastIpAddress() {
-        return broadcastIpAddress;
-    }
-
     public static int getColorMode() {
         return colorMode;
     }
@@ -299,7 +300,6 @@ public class Main {
     public static void setCourantFrame(byte courantFrame) {
         Main.courantFrame = courantFrame;
     }
-
 
     public static void setMode(String mode) {
         Main.mode = mode;
@@ -349,7 +349,6 @@ public class Main {
         Main.screenNumber = screenNumber;
     }
 
-
     public static void setShowFps(boolean showFps) {
         Main.showFps = showFps;
     }
@@ -392,10 +391,6 @@ public class Main {
 
     public static void setyPosition(int yPosition) {
         Main.yPosition = yPosition;
-    }
-
-    public static int getTimeout() {
-        return timeout;
     }
 
     public static void setTimeout(int timeout) {

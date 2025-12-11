@@ -7,14 +7,60 @@ import java.net.*;
 import java.util.Enumeration;
 
 public class ManageNetworkConnection {
-    private static DatagramSocket datagramSocket;
+    private DatagramSocket datagramSocket;
+    private int port;
+    private String broadcastIpaddr;
+
+    public ManageNetworkConnection(int port, String broadcastIpaddr) {
+        this.port = port;
+        this.broadcastIpaddr = broadcastIpaddr;
+    }
+
+    /**
+     * creates DatagrammSocket for broadcasting out messages
+     */
+    public void setDatagramSocket() {
+        try {
+            InetAddress address = findNetworkInterface();
+            datagramSocket = new DatagramSocket(port, address); //,InetAddress.getByName("255.255.255.255")
+            System.out.println(datagramSocket.getLocalSocketAddress().toString());
+            datagramSocket.setBroadcast(true);
+        } catch (BindException e) {
+            System.out.println("Address already in use. Another application is already running on the same network card");
+            System.exit(-1);
+        } catch (SocketException e) {
+            System.out.println("Could not bind to Network Card");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+    /**
+     * Set up the datagram socket for sending and receiving.
+     * It will only bind to the port, because the panels send udp broadcast wich we have to receive from anywhere
+     */
+    public void setDatagramSocketForListeningAndSending(int timeOut) {
+        try {
+            datagramSocket = new DatagramSocket(port);
+            System.out.println(datagramSocket.getLocalSocketAddress().toString());
+            datagramSocket.setBroadcast(true);
+            datagramSocket.setSoTimeout(timeOut);
+        } catch (BindException e) {
+            System.out.println("Address already in use. Another application is already running on the same network card");
+            System.exit(-1);
+        } catch (SocketException e) {
+            System.out.println("Could not bind to Network Card");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
 
     /**
      * finds the network interface with address: "169.254.255.255"
      *
      * @return
      */
-    private static InetAddress findNetworkInterface() {
+    private InetAddress findNetworkInterface() {
         try {
             System.out.println("Full list of Network Interfaces:");
             for (Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces(); networkInterfaceEnumeration.hasMoreElements(); ) {
@@ -40,58 +86,20 @@ public class ManageNetworkConnection {
         return null;
     }
 
-    /**
-     * creates DatagrammSocket for broadcasting out messages
-     */
-    public static void setDatagramSocket() {
+    public void send_data(byte[] message) {
         try {
-            InetAddress address = findNetworkInterface();
-            datagramSocket = new DatagramSocket(Main.getPort(), address); //,InetAddress.getByName("255.255.255.255")
-            System.out.println(datagramSocket.getLocalSocketAddress().toString());
-            datagramSocket.setBroadcast(true);
-        } catch (BindException e) {
-            System.out.println("Address already in use. Another application is already running on the same network card");
-            System.exit(-1);
-        } catch (SocketException e) {
-            System.out.println("Could not bind to Network Card");
-            e.printStackTrace();
-            System.exit(-1);
-        }
-    }
-
-    /**
-     * Set up the datagram socket for sending and receiving.
-     * It will only bind to the port, because the panels send udp broadcast wich we have to receive from anywhere
-     */
-    public static void setDatagramSocketForListeningAndSending() {
-        try {
-            datagramSocket = new DatagramSocket(Main.getPort());
-            System.out.println(datagramSocket.getLocalSocketAddress().toString());
-            datagramSocket.setBroadcast(true);
-            datagramSocket.setSoTimeout(Main.getTimeout());
-        } catch (BindException e) {
-            System.out.println("Address already in use. Another application is already running on the same network card");
-            System.exit(-1);
-        } catch (SocketException e) {
-            System.out.println("Could not bind to Network Card");
-            e.printStackTrace();
-            System.exit(-1);
-        }
-    }
-
-    public static void send_data(byte[] message) {
-        try {
-            DatagramPacket packet = new DatagramPacket(message, message.length, InetAddress.getByName(Main.getBroadcastIpAddress()), Main.getPort());
+            DatagramPacket packet = new DatagramPacket(message, message.length, InetAddress.getByName(broadcastIpaddr), port);
             datagramSocket.send(packet);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    //TODO: make Main.CurrantFram hier raus
     /**
      * sends the Syncro message after all pixels of the frame were send out
      */
-    public static void sendSyncro() {
+    public void sendSyncro() {
         try {
             int port = 2000;
             byte[] FrameFinish = new byte[4];
@@ -100,7 +108,7 @@ public class ManageNetworkConnection {
             FrameFinish[2] = 100;
             FrameFinish[3] = (byte) (Main.getCourantFrame() - 1); //currant frame
 
-            DatagramPacket packet = new DatagramPacket(FrameFinish, FrameFinish.length, InetAddress.getByName(Main.getBroadcastIpAddress()), port);
+            DatagramPacket packet = new DatagramPacket(FrameFinish, FrameFinish.length, InetAddress.getByName(broadcastIpaddr), port);
             datagramSocket.send(packet);
 
             Main.setCourantFrame((byte) (Main.getCourantFrame() + 1));
@@ -113,11 +121,11 @@ public class ManageNetworkConnection {
         }
     }
 
-    public static void closeSocket() {
+    public void closeSocket() {
         datagramSocket.close();
     }
 
-    public static DatagramSocket getDatagramSocket() {
+    public DatagramSocket getDatagramSocket() {
         return datagramSocket;
     }
 }

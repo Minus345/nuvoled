@@ -1,6 +1,30 @@
 package com.nuvoled.util.rotation;
 
+import com.nuvoled.Main;
+
 public class Rotation {
+
+    /**
+     * rotates the given picture (rgb Array) by rotation degrees
+     *
+     * @param rgb      input array
+     * @param rotation rotation degree (90, 180, 270)
+     * @return rotated picture as rgb array
+     */
+    public static byte[] rotateRgbData(byte[] rgb, int rotation) {
+        switch (rotation) {
+            case 90 -> rgb = rotate90(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
+            case 180 -> //noinspection DataFlowIssue -> not imlemented
+                    rgb = rotate180(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
+            case 270 -> rgb = rotate270(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
+            default -> {
+                System.out.println("Error: " + rotation + " degrees of rotation is not supported");
+                System.exit(1);
+            }
+        }
+        return rgb;
+    }
+
     public static byte[] rotate90(byte[] rgb, int ndiPixelX, int ndiPixelY) {
         Point[][] notRotated = decodePointTo2DArray(decodeToPoints(rgb), ndiPixelX, ndiPixelY);
         Point[][] rotated = new Point[ndiPixelX][ndiPixelY];

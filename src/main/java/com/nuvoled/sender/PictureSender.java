@@ -1,7 +1,6 @@
 package com.nuvoled.sender;
 
 import com.nuvoled.Main;
-import com.nuvoled.util.rotation.Rotation;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -10,7 +9,7 @@ public class PictureSender {
 
     private static final int SINGLE_PACKET_LENGTH = 1450;
 
-    public static void packageAndSendPixels(byte[] rgb, int maxPackets) {
+    public static void packageAndSendPixels(byte[] rgb, int maxPackets, ManageNetworkConnection manageNetworkConnection) {
         int pixel = 0;
         //splits up the array int SINGLE_PACKET_LENGTH byte long messages
         for (int counter = 0; counter <= maxPackets; counter++) {
@@ -44,7 +43,7 @@ public class PictureSender {
                 }
                 pixel++;
             }
-            ManageNetworkConnection.send_data(message);
+            manageNetworkConnection.send_data(message);
         }
     }
 
@@ -83,27 +82,6 @@ public class PictureSender {
                 rgbCounterNumber++;
                 rgb[rgbCounterNumber] = (byte) red;
                 rgbCounterNumber++;
-            }
-        }
-        return rgb;
-    }
-
-    /**
-     * rotates the given picture (rgb Array) by rotation degrees
-     *
-     * @param rgb      input array
-     * @param rotation rotation degree (90, 180, 270)
-     * @return rotated picture as rgb array
-     */
-    public static byte[] rotateRgbData(byte[] rgb, int rotation) {
-        switch (rotation) {
-            case 90 -> rgb = Rotation.rotate90(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
-            case 180 -> //noinspection DataFlowIssue -> not imlemented
-                    rgb = Rotation.rotate180(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
-            case 270 -> rgb = Rotation.rotate270(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
-            default -> {
-                System.out.println("Error: " + rotation + " degrees of rotation is not supported");
-                System.exit(1);
             }
         }
         return rgb;

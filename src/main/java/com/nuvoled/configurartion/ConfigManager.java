@@ -2,6 +2,7 @@ package com.nuvoled.configurartion;
 
 import com.nuvoled.Main;
 import com.nuvoled.panel.Panel;
+import com.nuvoled.sender.ManageNetworkConnection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,15 +14,17 @@ public class ConfigManager {
     private static Storage storage;
     @SuppressWarnings("FieldMayBeFinal")
     private static ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
+    private static ManageNetworkConnection manageNetworkConnection;
 
-    public static void start() {
+    public static void start(ManageNetworkConnection manageNetworkConnection) {
+        ConfigManager.manageNetworkConnection = manageNetworkConnection;
         System.out.println();
         System.out.println("Nuvoled Panel Configurator");
 
         waitingList = new ArrayList<>();
 
-        SendConfigureMessages.reset();
-        SendConfigureMessages.getPanelConnected(1000);
+        SendConfigureMessages.reset(manageNetworkConnection);
+        SendConfigureMessages.getPanelConnected(manageNetworkConnection, 1000);
 
         storage = new Storage();
 
@@ -100,7 +103,7 @@ public class ConfigManager {
     private static void configureOnePanel(Scanner scanner) {
         Panel currant = waitingList.getFirst();
         System.out.println("Selected Mac: " + Arrays.toString(currant.getMac()));
-        SendConfigureMessages.sendRedCross(currant.getMac());
+        SendConfigureMessages.sendRedCross(manageNetworkConnection, currant.getMac());
 
         System.out.println("Input position number:");
         String line = scanner.nextLine();
@@ -133,7 +136,7 @@ public class ConfigManager {
         currant.setOffsetX(panelOffsetX * Main.getPanelType().getSizeX());
         currant.setOffsetY(panelOffsetY * Main.getPanelType().getSizeY());
         // send config Message
-        SendConfigureMessages.makeConfigAndSendGreenCross(currant);
+        SendConfigureMessages.makeConfigAndSendGreenCross(manageNetworkConnection, currant);
 
         //cli
         alreadyConfiguredPanelsForCLI.add(currant.getPosition());
@@ -156,12 +159,12 @@ public class ConfigManager {
         switch (line) {
             case "r" -> {
                 System.out.println("Refresh");
-                SendConfigureMessages.refresh();
-                SendConfigureMessages.getPanelConnected(1000);
+                SendConfigureMessages.refresh(manageNetworkConnection);
+                SendConfigureMessages.getPanelConnected(manageNetworkConnection, 1000);
             }
             case "a" -> {
                 System.out.println("Apply Configurations");
-                SendConfigureMessages.sendGlobalConfigMessage(storage.getAlreadyConfiguredPanelMatrix());
+                SendConfigureMessages.sendGlobalConfigMessage(manageNetworkConnection, storage.getAlreadyConfiguredPanelMatrix());
             }
             case "e" -> {
                 System.out.println("Exit");
