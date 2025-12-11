@@ -7,6 +7,6 @@ public class P5 extends Panel {
 
     //for yaml file reading
     public P5() {
-        super();
+        super(null, 128, 96, "P5");
     }
 }

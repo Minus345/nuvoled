@@ -69,7 +69,7 @@ public class Main {
             exitSetup();
         }
 
-        manageNetworkConnection = new ManageNetworkConnection(port,broadcastIpAddress);
+        manageNetworkConnection = new ManageNetworkConnection(port, broadcastIpAddress);
 
         //start parameters
         switch (args[0]) {
@@ -161,12 +161,10 @@ public class Main {
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
         System.out.println("sleep time                          : " + sleep);
 
-        switch (mode) {
-            case "screen" -> captureFromScreen();
-        }
+       captureFromScreen();
     }
 
-    public static void captureFromScreen() throws AWTException {
+    private static void captureFromScreen() throws AWTException {
         //setup screen capture
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         Robot robot = new Robot(screens[getScreenNumber()]);
@@ -217,7 +215,9 @@ public class Main {
 
             BufferedImage imageWithBrightness = PictureSender.applyFilter(image, brightness, offSet);
             byte[] rgbPixelData = PictureSender.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
-            rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation);
+            if (rotation != 0) {
+                rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation);
+            }
 
             //if mode = rgb565
             if (colorMode == 30) {
@@ -225,7 +225,7 @@ public class Main {
             }
 
             //send the rgb data
-            PictureSender.packageAndSendPixels(rgbPixelData, maxPackets,manageNetworkConnection);
+            PictureSender.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection);
 
             //sleep
             if (sleep > 0) {
@@ -295,10 +295,6 @@ public class Main {
 
     public static void setCourantFrame(byte courantFrame) {
         Main.courantFrame = courantFrame;
-    }
-
-    public static void setMode(String mode) {
-        Main.mode = mode;
     }
 
     public static void setOffSet(Float offSet) {

@@ -43,7 +43,7 @@ Java Parameter to force IPv4:
 
 ***
 
-## Known Issues
+## Features
 
 ### Rotation
 
@@ -59,16 +59,11 @@ If you use **rotation**:
 | 270             | ✅         | ✅         |
 
 ### RGB565
-
-* Normal ✅
-
 ### Brightness
-
-* Normal ✅
-
 ### FPS Display
-
-* Normal ✅
+if enabled displays the currant fps that are send out to your LED-Wall
+### Select form multiple network cards
+if multiple suitable network cards are found you can select wich one you want to use at startup
 
 ***
 

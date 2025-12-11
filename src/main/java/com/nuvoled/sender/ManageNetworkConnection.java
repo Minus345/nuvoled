@@ -4,12 +4,14 @@ import com.nuvoled.Main;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Scanner;
 
 public class ManageNetworkConnection {
     private DatagramSocket datagramSocket;
-    private int port;
-    private String broadcastIpaddr;
+    private final int port;
+    private final String broadcastIpaddr;
 
     public ManageNetworkConnection(int port, String broadcastIpaddr) {
         this.port = port;
@@ -61,19 +63,18 @@ public class ManageNetworkConnection {
      * @return
      */
     private InetAddress findNetworkInterface() {
+        ArrayList<NetworkInterface> suitableInterfaces = new ArrayList<>();
         try {
             System.out.println("Full list of Network Interfaces:");
             for (Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces(); networkInterfaceEnumeration.hasMoreElements(); ) {
                 NetworkInterface networkInterface = networkInterfaceEnumeration.nextElement();
                 System.out.println("    " + networkInterface.getName() + " " + networkInterface.getDisplayName());
-
                 for (Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses(); inetAddresses.hasMoreElements(); ) {//inetAddresses -> Ip4/Ip6
                     InetAddress currInetAddress = inetAddresses.nextElement();
                     String currInetAddressString = currInetAddress.toString();
                     System.out.println("        " + currInetAddressString);
                     if (currInetAddressString.startsWith("/169.254")) {
-                        System.out.println("==>> Binding to this adapter..." + currInetAddressString + "\n");
-                        return currInetAddress;
+                        suitableInterfaces.add(networkInterface);
                     }
                 }
             }
@@ -81,8 +82,52 @@ public class ManageNetworkConnection {
             System.out.println("Error retrieving network interface list");
             System.exit(-1);
         }
-        System.out.println("No suitable Network card found");
-        System.exit(-1);
+
+        if (suitableInterfaces.isEmpty()) {
+            System.out.println("No suitable Network Interfaces found");
+            System.exit(1);
+        }
+
+        if (suitableInterfaces.size() == 1) {
+            return loopOverInterface(suitableInterfaces.getFirst());
+        }
+
+        System.out.println("More suitable Network Interfaces found: ");
+
+        for (int i = 0; i < suitableInterfaces.size(); i++) {
+            System.out.println("[" + i + "] : " + suitableInterfaces.get(i).getName() + " " + suitableInterfaces.get(i).getDisplayName());
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter Number:");
+        String line = scanner.nextLine();
+        int interfaceNumber = 0;
+        try {
+            interfaceNumber = Integer.parseInt(line);
+        } catch (NumberFormatException e) {
+            System.out.println("Usage: this is not a number");
+            System.exit(1);
+        }
+
+        if (interfaceNumber < 0 || interfaceNumber > (suitableInterfaces.size() - 1)) {
+            System.out.println("Usage: number not in range");
+            System.exit(1);
+        }
+
+        return loopOverInterface(suitableInterfaces.get(interfaceNumber));
+    }
+
+    private InetAddress loopOverInterface(NetworkInterface networkInterface) {
+        for (Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses(); inetAddresses.hasMoreElements(); ) {
+            InetAddress currInetAddress = inetAddresses.nextElement();
+            String currInetAddressString = currInetAddress.toString();
+            if (currInetAddressString.startsWith("/169.254")) {
+                System.out.println("==>> Binding to this adapter..." + currInetAddressString + "\n");
+                return currInetAddress;
+            }
+        }
+        System.out.println("Could´nt find 169.254.xxx.xxx on your specified network interface");
+        System.exit(1);
         return null;
     }
 
@@ -96,6 +141,7 @@ public class ManageNetworkConnection {
     }
 
     //TODO: make Main.CurrantFram hier raus
+
     /**
      * sends the Syncro message after all pixels of the frame were send out
      */
