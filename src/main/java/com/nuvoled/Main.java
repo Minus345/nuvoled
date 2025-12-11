@@ -5,7 +5,6 @@ import com.nuvoled.panel.P4;
 import com.nuvoled.panel.P5;
 import com.nuvoled.panel.Panel;
 import com.nuvoled.util.Fps;
-import com.nuvoled.ndi.Ndi;
 import com.nuvoled.sender.PictureSender;
 import com.nuvoled.sender.ManageNetworkConnection;
 import com.nuvoled.util.Rgb565;
@@ -34,7 +33,6 @@ public class Main {
     private static int sleep = 0;
     private static int timeout = 0;
 
-    //ndi
     private static String mode = "screen";
 
     //panel settings
@@ -144,8 +142,7 @@ public class Main {
             System.out.println("""
                     If you use **rotation**:
                     * configure your panels resolution in _Nuvoled Home_ **AND** _Nuvoled Presenter_ as if they were not rotated in reality
-                    * then configure your rotation start parameter (_-r_)
-                    * if you use a NDI Source: Configure the resolution with the rotation -> like in reality""");
+                    * then configure your rotation start parameter (_-r_)""");
         }
         System.out.println();
 
@@ -166,7 +163,6 @@ public class Main {
 
         switch (mode) {
             case "screen" -> captureFromScreen();
-            case "ndi" -> Ndi.ndi();
         }
     }
 
@@ -313,24 +309,12 @@ public class Main {
         return globalPixelInX;
     }
 
-    public static void setGlobalPixelInX(int globalPixelInX) {
-        Main.globalPixelInX = globalPixelInX;
-    }
-
     public static int getGlobalPixelInY() {
         return globalPixelInY;
     }
 
-    public static void setGlobalPixelInY(int globalPixelInY) {
-        Main.globalPixelInY = globalPixelInY;
-    }
-
     public static int getPort() {
         return port;
-    }
-
-    public static int getRotation() {
-        return rotation;
     }
 
     public static void setRotation(int rotation) {
@@ -351,10 +335,6 @@ public class Main {
 
     public static void setShowFps(boolean showFps) {
         Main.showFps = showFps;
-    }
-
-    public static int getSleep() {
-        return sleep;
     }
 
     public static void setSleep(int sleep) {

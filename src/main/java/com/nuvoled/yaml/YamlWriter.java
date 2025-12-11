@@ -94,9 +94,6 @@ public class YamlWriter {
         data.put("showFps", false);
         data.put("timeout", 1000);
 
-        //ndi
-        data.put("mode", "screen");
-
         //panel specific
         data.put("screenNumber", 0);
         data.put("PositionX", 0);

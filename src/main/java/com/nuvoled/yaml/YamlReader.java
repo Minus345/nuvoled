@@ -49,8 +49,6 @@ public class YamlReader {
             Main.setShowFps((boolean) settings.get("showFps"));
             Main.setTimeout((int) settings.get("timeout"));
 
-            //ndi
-            Main.setMode((String) settings.get("mode"));
 
             //panel specific
             Main.setScreenNumber((int) settings.get("screenNumber"));
