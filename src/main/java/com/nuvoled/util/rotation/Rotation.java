@@ -1,6 +1,4 @@
-package com.nuvoled.util;
-
-import com.nuvoled.ndi.Point;
+package com.nuvoled.util.rotation;
 
 public class Rotation {
     public static byte[] rotate90(byte[] rgb, int ndiPixelX, int ndiPixelY) {

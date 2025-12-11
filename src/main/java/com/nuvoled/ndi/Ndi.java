@@ -3,7 +3,7 @@ package com.nuvoled.ndi;
 import com.nuvoled.Main;
 import com.nuvoled.util.Fps;
 import com.nuvoled.util.Rgb565;
-import com.nuvoled.util.Rotation;
+import com.nuvoled.util.rotation.Rotation;
 import com.nuvoled.sender.ManageNetworkConnection;
 import me.walkerknapp.devolay.*;
 

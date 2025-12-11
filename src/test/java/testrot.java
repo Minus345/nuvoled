@@ -1,5 +1,3 @@
-package com.nuvoled.ndi;
-
 class testrot {
 
     // Function to rotate the matrix by 90 degrees clockwise

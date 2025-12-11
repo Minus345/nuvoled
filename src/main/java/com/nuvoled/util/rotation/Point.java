@@ -1,4 +1,4 @@
-package com.nuvoled.ndi;
+package com.nuvoled.util.rotation;
 
 public class Point {
     private byte r;

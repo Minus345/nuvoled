@@ -1,5 +1,3 @@
-package com.nuvoled.ndi;
-
 /*
 
 00000 000000 00000

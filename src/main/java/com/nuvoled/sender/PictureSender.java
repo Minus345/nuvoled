@@ -1,7 +1,7 @@
 package com.nuvoled.sender;
 
 import com.nuvoled.Main;
-import com.nuvoled.util.Rotation;
+import com.nuvoled.util.rotation.Rotation;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
