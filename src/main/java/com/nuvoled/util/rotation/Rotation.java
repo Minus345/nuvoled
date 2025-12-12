@@ -1,7 +1,5 @@
 package com.nuvoled.util.rotation;
 
-import com.nuvoled.Main;
-
 public class Rotation {
 
     /**
@@ -11,12 +9,12 @@ public class Rotation {
      * @param rotation rotation degree (90, 180, 270)
      * @return rotated picture as rgb array
      */
-    public static byte[] rotateRgbData(byte[] rgb, int rotation) {
+    public static byte[] rotateRgbData(byte[] rgb, int rotation, int globalPixelInX, int globalPixelInY) {
         switch (rotation) {
-            case 90 -> rgb = rotate90(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
+            case 90 -> rgb = rotate90(rgb, globalPixelInX, globalPixelInY);
             case 180 -> //noinspection DataFlowIssue -> not imlemented
-                    rgb = rotate180(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
-            case 270 -> rgb = rotate270(rgb, Main.getGlobalPixelInX(), Main.getGlobalPixelInY());
+                    rgb = rotate180(rgb, globalPixelInX, globalPixelInY);
+            case 270 -> rgb = rotate270(rgb, globalPixelInX, globalPixelInY);
             default -> {
                 System.out.println("Error: " + rotation + " degrees of rotation is not supported");
                 System.exit(1);
@@ -25,7 +23,7 @@ public class Rotation {
         return rgb;
     }
 
-    public static byte[] rotate90(byte[] rgb, int ndiPixelX, int ndiPixelY) {
+    private static byte[] rotate90(byte[] rgb, int ndiPixelX, int ndiPixelY) {
         Point[][] notRotated = decodePointTo2DArray(decodeToPoints(rgb), ndiPixelX, ndiPixelY);
         Point[][] rotated = new Point[ndiPixelX][ndiPixelY];
         for (int i = 0; i < ndiPixelY; i++) {
@@ -36,12 +34,12 @@ public class Rotation {
         return encodePointToByteArray(encodPointTo1DArray(rotated, rgb.length), rgb.length);
     }
 
-    public static byte[] rotate180(byte[] rgb, int ndiPixelX, int ndiPixelY) {
+    private static byte[] rotate180(byte[] rgb, int ndiPixelX, int ndiPixelY) {
         System.out.println("not implemented");
         return rgb;
     }
 
-    public static byte[] rotate270(byte[] rgb, int ndiPixelX, int ndiPixelY) {
+    private static byte[] rotate270(byte[] rgb, int ndiPixelX, int ndiPixelY) {
         Point[][] notRotated = decodePointTo2DArray(decodeToPoints(rgb), ndiPixelX, ndiPixelY);
         Point[][] rotated = new Point[ndiPixelX][ndiPixelY];
         for (int i = 0; i < ndiPixelY; i++) {

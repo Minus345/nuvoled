@@ -15,23 +15,11 @@ public class Point {
         return b;
     }
 
-    public void setB(byte b) {
-        this.b = b;
-    }
-
     public byte getG() {
         return g;
     }
 
-    public void setG(byte g) {
-        this.g = g;
-    }
-
     public byte getR() {
         return r;
-    }
-
-    public void setR(byte r) {
-        this.r = r;
     }
 }

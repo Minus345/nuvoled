@@ -91,7 +91,7 @@ if multiple suitable network cards are found you can select wich one you want to
 ### TODO:
 
 1. [x] Add config file
-2. [x] Testing P4
+2. [x] TestingRotaion P4
 3. [x] Test ArtNet
 4. [x] add network interface configurations
 5. [x] rewrite network interface (refactoring old code - remove Mac support)
@@ -100,9 +100,9 @@ if multiple suitable network cards are found you can select wich one you want to
 8. [ ] Update to java 15
 9. [ ] fix raspberry wayland
 10. [x] command line arg phraser user error handling
-11. [ ] ME: Testing Switch VLan with config software -> enable broadcast?
+11. [ ] ME: TestingRotaion Switch VLan with config software -> enable broadcast?
 12. [x] remove and refactor unnecessary features
-13. [ ] add Testing
+13. [ ] add TestingRotaion
 14. [ ] add 180 degree rotation
 15. [ ] RGB565 fix array length (should be shorter)
 16. [ ] ~~replace ndi with~~ obs virtual cam -> https://www.baeldung.com/java-capture-image-from-webcam

@@ -161,7 +161,7 @@ public class Main {
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
         System.out.println("sleep time                          : " + sleep);
 
-       captureFromScreen();
+        captureFromScreen();
     }
 
     private static void captureFromScreen() throws AWTException {
@@ -216,7 +216,7 @@ public class Main {
             BufferedImage imageWithBrightness = PictureSender.applyFilter(image, brightness, offSet);
             byte[] rgbPixelData = PictureSender.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
             if (rotation != 0) {
-                rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation);
+                rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation, globalPixelInX, globalPixelInY);
             }
 
             //if mode = rgb565
