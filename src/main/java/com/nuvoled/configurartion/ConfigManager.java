@@ -2,7 +2,7 @@ package com.nuvoled.configurartion;
 
 import com.nuvoled.Main;
 import com.nuvoled.panel.Panel;
-import com.nuvoled.sender.ManageNetworkConnection;
+import com.nuvoled.ManageNetworkConnection;
 
 import java.util.ArrayList;
 import java.util.Arrays;

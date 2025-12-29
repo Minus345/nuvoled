@@ -1,13 +1,11 @@
-package com.nuvoled.debug;
+package com.nuvoled.util;
 
 import com.nuvoled.Main;
-import com.nuvoled.sender.ManageNetworkConnection;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Arrays;
 
 public class Sender {

@@ -5,8 +5,6 @@ import com.nuvoled.panel.P4;
 import com.nuvoled.panel.P5;
 import com.nuvoled.panel.Panel;
 import com.nuvoled.util.Fps;
-import com.nuvoled.sender.PictureSender;
-import com.nuvoled.sender.ManageNetworkConnection;
 import com.nuvoled.util.Rgb565;
 import com.nuvoled.util.rotation.Rotation;
 import com.nuvoled.yaml.YamlReader;
@@ -213,8 +211,8 @@ public class Main {
             //get picture form screen
             BufferedImage image = robot.createScreenCapture(rectangle);
 
-            BufferedImage imageWithBrightness = PictureSender.applyFilter(image, brightness, offSet);
-            byte[] rgbPixelData = PictureSender.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
+            BufferedImage imageWithBrightness = PackagePicture.applyFilter(image, brightness, offSet);
+            byte[] rgbPixelData = PackagePicture.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
             if (rotation != 0) {
                 rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation, globalPixelInX, globalPixelInY);
             }
@@ -225,7 +223,7 @@ public class Main {
             }
 
             //send the rgb data
-            PictureSender.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection);
+            PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection);
 
             //sleep
             if (sleep > 0) {

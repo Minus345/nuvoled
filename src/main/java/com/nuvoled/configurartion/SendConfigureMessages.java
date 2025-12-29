@@ -4,7 +4,7 @@ import com.nuvoled.Main;
 import com.nuvoled.panel.P4;
 import com.nuvoled.panel.P5;
 import com.nuvoled.panel.Panel;
-import com.nuvoled.sender.ManageNetworkConnection;
+import com.nuvoled.ManageNetworkConnection;
 
 import java.net.DatagramPacket;
 import java.net.SocketTimeoutException;

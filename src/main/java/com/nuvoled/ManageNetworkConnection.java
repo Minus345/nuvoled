@@ -1,6 +1,4 @@
-package com.nuvoled.sender;
-
-import com.nuvoled.Main;
+package com.nuvoled;
 
 import java.io.IOException;
 import java.net.*;
@@ -139,8 +137,6 @@ public class ManageNetworkConnection {
             e.printStackTrace();
         }
     }
-
-    //TODO: make Main.CurrantFram hier raus
 
     /**
      * sends the Syncro message after all pixels of the frame were send out

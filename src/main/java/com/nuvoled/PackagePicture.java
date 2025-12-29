@@ -1,11 +1,9 @@
-package com.nuvoled.sender;
-
-import com.nuvoled.Main;
+package com.nuvoled;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 
-public class PictureSender {
+public class PackagePicture {
 
     private static final int SINGLE_PACKET_LENGTH = 1450;
 
