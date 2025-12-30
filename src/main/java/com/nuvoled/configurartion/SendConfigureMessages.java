@@ -212,9 +212,7 @@ public class SendConfigureMessages {
                 mac[3] = receiveData[6];
 
                 Panel panel = null;
-
-                //TODO: an Main.getPanel type anpassen
-                switch (Main.getWichPanel()) {
+                switch (Main.getPanelType().getVersion()) {
                     case "P4" -> panel = new P4(mac);
                     case "P5" -> panel = new P5(mac);
                     default -> {

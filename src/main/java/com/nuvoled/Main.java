@@ -35,12 +35,8 @@ public class Main {
     private static String mode = "screen";
 
     //panel settings
-    /**
-     * "P4" / "P5"
-     */
-    //TODO: merge into one variable
-    private static String wichPanel;
     private static Panel panelType;
+
     /**
      * 10/rgb 20/jpg 30/rgb565
      */
@@ -95,7 +91,7 @@ public class Main {
                     exitSetup();
                 }
 
-                startSetupReadConfig(args[1]);
+                 new YamlReader(args[1]);
 
                 manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
                 ConfigManager.start(manageNetworkConnection);
@@ -112,7 +108,7 @@ public class Main {
                     exitSetup();
                 }
 
-                startSetupReadConfig(args[1]);
+                 new YamlReader(args[1]);
                 manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
                 SendConfigureMessages.reset(manageNetworkConnection);
 
@@ -130,7 +126,7 @@ public class Main {
                     exitSetup();
                 }
 
-                startSetupReadConfig(args[1]);
+                new YamlReader(args[1]);
 
                 manageNetworkConnection.setDatagramSocket();
             }
@@ -146,7 +142,7 @@ public class Main {
         System.out.println();
 
 
-        System.out.println("Panel                               : " + wichPanel);
+        System.out.println("Panel                               : " + panelType.getVersion());
         System.out.println("x/y Panel Count                     : " + xPanelCount + "/" + yPanelCount);
         System.out.println("x/y Panel Size                      : " + panelType.getSizeX() + "/" + panelType.getSizeY());
         System.out.println("x/y Pixels                          : " + globalPixelInX + "/" + globalPixelInY);
@@ -246,7 +242,6 @@ public class Main {
 
     private static void startSetupReadConfig(String pathToConfigFile) {
         new YamlReader(pathToConfigFile);
-        wichPanel();
     }
 
     private static void exitSetup() {
@@ -266,27 +261,19 @@ public class Main {
 
     }
 
-    private static void wichPanel() {
+    public static void setupConfiguration(Map<String, Object> settings) {
+        String wichPanel = getWithErrorString(settings, "PanelVersion");
         switch (wichPanel) {
             case "P4" -> panelType = new P4();
             case "P5" -> panelType = new P5();
             default -> {
-                System.out.println("No Panel defined");
-                System.exit(-1);
+                System.out.println("[CONFIG_FILE] Panel not supported: " + wichPanel);
+                throw new RuntimeException("Panel not supported");
             }
         }
 
         globalPixelInX = xPanelCount * panelType.getSizeX(); //Anzahl Panel X * 128 pixel
         globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
-    }
-
-    public static void setupConfiguration(Map<String, Object> settings) {
-        //global settings
-        wichPanel = getWithErrorString(settings, "PanelVersion");
-        if (!(wichPanel.equals("P4") || wichPanel.equals("P5"))) {
-            System.out.println("[CONFIG_FILE] Panel not supported: " + wichPanel);
-            throw new RuntimeException("Panel not supported");
-        }
 
         xPanelCount = getWithErrorInteger(settings, "PanelCountX");
         yPanelCount = getWithErrorInteger(settings, "PanelCountY");
@@ -311,8 +298,8 @@ public class Main {
         //panel specific
         //TODO: schauen welche werte überhaupt möglich sind
         screenNumber = getWithErrorInteger(settings, "screenNumber");
-        xPosition = getWithErrorInteger(settings, "PositionX");
-        yPosition = getWithErrorInteger(settings, "PositionY");
+        xPosition = getWithErrorInteger(settings, "PositionX"); //TODO: können negativ sein
+        yPosition = getWithErrorInteger(settings, "PositionY"); //TODO: können negativ sein
     }
 
     private static String getWithErrorString(Map<String, Object> map, String key) {
@@ -415,10 +402,6 @@ public class Main {
 
     public static int getGlobalPixelInY() {
         return globalPixelInY;
-    }
-
-    public static String getWichPanel() {
-        return wichPanel;
     }
 
     public static int getxPanelCount() {
