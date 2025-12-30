@@ -15,7 +15,7 @@ public class Sender {
         DatagramSocket datagramSocket = new DatagramSocket();
         datagramSocket.setBroadcast(true);
         for (int i = 0; i < Integer.parseInt(args[0]); i++) {
-            DatagramPacket packet = new DatagramPacket(getMessage(i), getMessage(i).length, address, Main.getPort());
+            DatagramPacket packet = new DatagramPacket(getMessage(i), getMessage(i).length, address, 2000);
             datagramSocket.send(packet);
             Thread.sleep(100);
         }

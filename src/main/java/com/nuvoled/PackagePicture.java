@@ -52,8 +52,8 @@ public class PackagePicture {
      * @param image
      * @return
      */
-    public static BufferedImage applyFilter(BufferedImage image, float brightness, float offset) {
-        RescaleOp rescaleOp = new RescaleOp(brightness, offset, null);
+    public static BufferedImage applyFilter(BufferedImage image, double brightness, double offset) {
+        RescaleOp rescaleOp = new RescaleOp((float) brightness, (float) offset, null);
         rescaleOp.filter(image, image);  // Source and destination are the same.
         return image;
     }

@@ -1,0 +1,14 @@
+PanelVersion: P4
+PanelCountX: 1
+PanelCountY: 1
+brightness: 1
+rgb565: false
+rotation: 0
+sleep: 0
+offSet: 0.0
+showFps: false
+timeout: 1000
+mode: screen
+screenNumber: 0
+PositionX: 0
+PositionY: 0

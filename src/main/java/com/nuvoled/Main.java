@@ -13,20 +13,21 @@ import com.nuvoled.yaml.YamlWriter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 
 public class Main {
 
     //not changed
     private static ManageNetworkConnection manageNetworkConnection;
-    private static final int port = 2000;
+    private static final int PORT = 2000;
     private static byte courantFrame = 2;
-    private static final String broadcastIpAddress = "169.254.255.255";
+    private static final String BROADCAST_IP_ADDRESS = "169.254.255.255";
     private static int globalPixelInX;
     private static int globalPixelInY;
 
     //global settings
-    private static float brightness = 0.6F;
-    private static float offSet = 0F;
+    private static double brightness = 0.6D;
+    private static double offSet = 0;
     private static int rotation = 0;
     private static int sleep = 0;
     private static int timeout = 0;
@@ -67,7 +68,7 @@ public class Main {
             exitSetup();
         }
 
-        manageNetworkConnection = new ManageNetworkConnection(port, broadcastIpAddress);
+        manageNetworkConnection = new ManageNetworkConnection(PORT, BROADCAST_IP_ADDRESS);
 
         //start parameters
         switch (args[0]) {
@@ -153,7 +154,7 @@ public class Main {
         System.out.println("mode                                : " + mode);
         System.out.println("Screen Number                       : " + screenNumber);
         System.out.println("x/y Start Position                  : " + xPosition + "/" + yPosition);
-        System.out.println("broadcastIpAddress                  : " + broadcastIpAddress);
+        System.out.println("broadcastIpAddress                  : " + BROADCAST_IP_ADDRESS);
         System.out.println("scaleFactor (Brightness)            : " + brightness);
         System.out.println("offset (Contrast)                   : " + offSet);
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
@@ -165,9 +166,9 @@ public class Main {
     private static void captureFromScreen() throws AWTException {
         //setup screen capture
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        Robot robot = new Robot(screens[getScreenNumber()]);
+        Robot robot = new Robot(screens[screenNumber]);
         Rectangle rectangle = new Rectangle();
-        Rectangle screenBounds = screens[getScreenNumber()].getDefaultConfiguration().getBounds();
+        Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
         int x = xPosition + screenBounds.x;
         int y = yPosition + screenBounds.y;
         rectangle.setLocation(x, y);
@@ -279,12 +280,125 @@ public class Main {
         globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
     }
 
-    public static int getColorMode() {
-        return colorMode;
+    public static void setupConfiguration(Map<String, Object> settings) {
+        //global settings
+        wichPanel = getWithErrorString(settings, "PanelVersion");
+        if (!(wichPanel.equals("P4") || wichPanel.equals("P5"))) {
+            System.out.println("[CONFIG_FILE] Panel not supported: " + wichPanel);
+            throw new RuntimeException("Panel not supported");
+        }
+
+        xPanelCount = getWithErrorInteger(settings, "PanelCountX");
+        yPanelCount = getWithErrorInteger(settings, "PanelCountY");
+        brightness = getWithErrorDouble(settings, "brightness");
+        if (getWithErrorBoolean(settings, "rgb565")) {
+            colorMode = 30;
+        } else {
+            colorMode = 10;
+        }
+
+        //panel settings
+        rotation = getWithErrorInteger(settings, "rotation");
+        if (!(rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270)) {
+            System.out.println("[CONFIG_FILE] Rotation not supported: " + rotation);
+            throw new RuntimeException("Wrong rotation degree");
+        }
+        sleep = getWithErrorInteger(settings, "sleep");
+        offSet = getWithErrorDouble(settings, "offSet");
+        showFps = getWithErrorBoolean(settings, "showFps");
+        timeout = getWithErrorInteger(settings, "timeout");
+
+        //panel specific
+        //TODO: schauen welche werte überhaupt möglich sind
+        screenNumber = getWithErrorInteger(settings, "screenNumber");
+        xPosition = getWithErrorInteger(settings, "PositionX");
+        yPosition = getWithErrorInteger(settings, "PositionY");
     }
 
-    public static void setColorMode(int colorMode) {
-        Main.colorMode = colorMode;
+    private static String getWithErrorString(Map<String, Object> map, String key) {
+        String returnValue = null;
+        try {
+            returnValue = (String) map.get(key);
+        } catch (ClassCastException e) {
+            castError(key, "String");
+        }
+        if (returnValue == null) {
+            nullError(key);
+        }
+        return returnValue;
+    }
+
+    private static int getWithErrorInteger(Map<String, Object> map, String key) {
+        Object returnValue;
+        returnValue = map.get(key);
+        if (returnValue == null) {
+            nullError(key);
+        }
+        int value = 0;
+        try {
+            value = (int) returnValue;
+        } catch (ClassCastException e) {
+            castError(key, "Integer");
+        }
+
+        if (value < 0) {
+            negativeError(key);
+        }
+
+        return value;
+    }
+
+    private static double getWithErrorDouble(Map<String, Object> map, String key) {
+        Object returnValue;
+        returnValue = map.get(key);
+        if (returnValue == null) {
+            nullError(key);
+        }
+        double value = 0;
+        try {
+            value = (double) returnValue;
+        } catch (ClassCastException e) {
+            castError(key, "Double");
+        }
+
+        if (value < 0) {
+            negativeError(key);
+        }
+
+        return value;
+    }
+
+    private static boolean getWithErrorBoolean(Map<String, Object> map, String key) {
+        Object returnValue;
+        returnValue = map.get(key);
+        if (returnValue == null) {
+            nullError(key);
+        }
+        try {
+            return (boolean) returnValue;
+        } catch (ClassCastException e) {
+            castError(key, "Boolean");
+        }
+        return false;
+    }
+
+    private static void castError(String object, String datatype) {
+        System.out.println("[CONFIG_FILE] Loading the config file went wrong. There is an error in your config file at: " + object + "\n" + object + " : is not a " + datatype);
+        throw new ClassCastException();
+    }
+
+    private static void nullError(String object) {
+        System.out.println("[CONFIG_FILE] The config file cannot be read correctly. The settings may have changed. Try making a new config file (java -jar nuvoled.jar create [<path where you want your default config file>]) \n" + "At: " + object);
+        throw new NullPointerException();
+    }
+
+    private static void negativeError(String key) {
+        System.out.println("[CONFIG_FILE] " + key + " : no negative value supported");
+        throw new RuntimeException("Negative Value");
+    }
+
+    public static int getColorMode() {
+        return colorMode;
     }
 
     public static byte getCourantFrame() {
@@ -295,10 +409,6 @@ public class Main {
         Main.courantFrame = courantFrame;
     }
 
-    public static void setOffSet(Float offSet) {
-        Main.offSet = offSet;
-    }
-
     public static int getGlobalPixelInX() {
         return globalPixelInX;
     }
@@ -307,68 +417,16 @@ public class Main {
         return globalPixelInY;
     }
 
-    public static int getPort() {
-        return port;
-    }
-
-    public static void setRotation(int rotation) {
-        Main.rotation = rotation;
-    }
-
-    public static void setBrightness(Float brightness) {
-        Main.brightness = brightness;
-    }
-
-    public static int getScreenNumber() {
-        return screenNumber;
-    }
-
-    public static void setScreenNumber(int screenNumber) {
-        Main.screenNumber = screenNumber;
-    }
-
-    public static void setShowFps(boolean showFps) {
-        Main.showFps = showFps;
-    }
-
-    public static void setSleep(int sleep) {
-        Main.sleep = sleep;
-    }
-
     public static String getWichPanel() {
         return wichPanel;
-    }
-
-    public static void setWichPanel(String wichPanel) {
-        Main.wichPanel = wichPanel;
     }
 
     public static int getxPanelCount() {
         return xPanelCount;
     }
 
-    public static void setxPanelCount(int xPanelCount) {
-        Main.xPanelCount = xPanelCount;
-    }
-
-    public static void setxPosition(int xPosition) {
-        Main.xPosition = xPosition;
-    }
-
     public static int getyPanelCount() {
         return yPanelCount;
-    }
-
-    public static void setyPanelCount(int yPanelCount) {
-        Main.yPanelCount = yPanelCount;
-    }
-
-    public static void setyPosition(int yPosition) {
-        Main.yPosition = yPosition;
-    }
-
-    public static void setTimeout(int timeout) {
-        Main.timeout = timeout;
     }
 
     public static Panel getPanelType() {

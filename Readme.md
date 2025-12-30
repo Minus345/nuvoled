@@ -78,7 +78,7 @@ if multiple suitable network cards are found you can select wich one you want to
 | rgb565       | boolean    | enables rgb565 mode: less colour accurate, more efficient -> you can have more panels with higher framerate connected   | false         |
 | rotation     | 0, 90, 270 | rotates the image 90 or 270 degree -> see _Rotation Chapter_                                                            | 0             |
 | sleep        | int        | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |         |
-| offSet       | float      | (currently not in use)                                                                                                  | 0.0           |
+| offSet       | double     | (currently not in use)                                                                                                  | 0.0           |
 | showFps      | boolean    | shows the fps that are send out, in the terminal                                                                        | false         |
 | timeout      | int        | how many milliseconds the programm should wait in the config CLI to listen for panels                                   | 1000          |         |
 | mode         | "screen"   |                                                                                                                         | screen        |             |
