@@ -91,7 +91,7 @@ public class Main {
                     exitSetup();
                 }
 
-                 new YamlReader(args[1]);
+                new YamlReader(args[1]);
 
                 manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
                 ConfigManager.start(manageNetworkConnection);
@@ -108,11 +108,12 @@ public class Main {
                     exitSetup();
                 }
 
-                 new YamlReader(args[1]);
+                new YamlReader(args[1]);
                 manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
-                SendConfigureMessages.reset(manageNetworkConnection);
+                SendConfigureMessages sendConfigureMessages = new SendConfigureMessages(manageNetworkConnection);
+                sendConfigureMessages.reset();
 
-                SendConfigureMessages.sendGlobalConfigMessage(manageNetworkConnection, PanelConfigFileManager.read(args[2]).getAlreadyConfiguredPanelMatrix());
+                sendConfigureMessages.sendGlobalConfigMessage(PanelConfigFileManager.read(args[2]).getAlreadyConfiguredPanelMatrix());
 
                 manageNetworkConnection.closeSocket();
                 System.exit(0);
@@ -220,7 +221,7 @@ public class Main {
             }
 
             //send the rgb data
-            PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection);
+            PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection, colorMode);
 
             //sleep
             if (sleep > 0) {
@@ -382,10 +383,6 @@ public class Main {
     private static void negativeError(String key) {
         System.out.println("[CONFIG_FILE] " + key + " : no negative value supported");
         throw new RuntimeException("Negative Value");
-    }
-
-    public static int getColorMode() {
-        return colorMode;
     }
 
     public static byte getCourantFrame() {

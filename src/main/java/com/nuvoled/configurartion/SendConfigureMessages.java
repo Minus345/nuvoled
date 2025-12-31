@@ -12,30 +12,34 @@ import java.util.HexFormat;
 
 public class SendConfigureMessages {
 
-    //TODO: das irgendwie schöner schreiben
+    private final ManageNetworkConnection manageNetworkConnection;
 
-    public static void reset(ManageNetworkConnection manageNetworkConnection) {
-        send160(manageNetworkConnection);
-        sendTrash(manageNetworkConnection);
-        sendRequestForData130(manageNetworkConnection);
-        sendRequestForData130(manageNetworkConnection);
-        sendDummyConfig120(manageNetworkConnection);
-        send160(manageNetworkConnection);
-        sendTrash(manageNetworkConnection);
-        sendRequestForData130(manageNetworkConnection);
-        sendRequestForData130(manageNetworkConnection);
+    public SendConfigureMessages(ManageNetworkConnection manageNetworkConnection) {
+        this.manageNetworkConnection = manageNetworkConnection;
     }
 
-    public static void refresh(ManageNetworkConnection manageNetworkConnection) {
-        send160(manageNetworkConnection);
-        sendTrash(manageNetworkConnection);
-        sendRequestForData130(manageNetworkConnection);
+    public void reset() {
+        send160();
+        sendTrash();
+        sendRequestForData130();
+        sendRequestForData130();
+        sendDummyConfig120();
+        send160();
+        sendTrash();
+        sendRequestForData130();
+        sendRequestForData130();
+    }
+
+    public void refresh( ) {
+        send160();
+        sendTrash();
+        sendRequestForData130();
     }
 
     /**
      * In Software angeklickt
      */
-    public static void sendRedCross(ManageNetworkConnection manageNetworkConnection, byte[] mac) {
+    public void sendRedCross(byte[] mac) {
         byte[] message = new byte[6];
         message[0] = 36;
         message[1] = 36;
@@ -45,10 +49,10 @@ public class SendConfigureMessages {
         message[5] = mac[1];  //mac[1] //93
         //                  mac[0]
         manageNetworkConnection.send_data(message);
-        sendTrash(manageNetworkConnection);
+        sendTrash();
     }
 
-    private static void send160(ManageNetworkConnection manageNetworkConnection) {
+    private void send160( ) {
         byte[] message = new byte[6];
         message[0] = 36;
         message[1] = 36;
@@ -60,7 +64,7 @@ public class SendConfigureMessages {
         manageNetworkConnection.send_data(message);
     }
 
-    private static void sendTrash(ManageNetworkConnection manageNetworkConnection) {
+    private void sendTrash( ) {
         byte[] message = new byte[1450];
         String data = "24 24 7f ff 00 00 00 00 00 00 00 00 00 00 00 00 " +
                 "00 01 01 01 01 01 01 02 02 02 02 02 03 03 03 03 " +
@@ -89,7 +93,7 @@ public class SendConfigureMessages {
         manageNetworkConnection.send_data(message);
     }
 
-    private static void sendRequestForData130(ManageNetworkConnection manageNetworkConnection) {
+    private void sendRequestForData130( ) {
         byte[] message = new byte[4];
         message[0] = 36;
         message[1] = 36;
@@ -99,7 +103,7 @@ public class SendConfigureMessages {
         manageNetworkConnection.send_data(message);
     }
 
-    private static void sendDummyConfig120(ManageNetworkConnection manageNetworkConnection) {
+    private void sendDummyConfig120( ) {
         byte[] message = new byte[8];
         message[0] = 36;
         message[1] = 36;
@@ -112,14 +116,14 @@ public class SendConfigureMessages {
         manageNetworkConnection.send_data(message);
     }
 
-    public static void makeConfigAndSendGreenCross(ManageNetworkConnection manageNetworkConnection, Panel panel) {
-        sendConfigSinglePanel(manageNetworkConnection, panel);
-        send160(manageNetworkConnection);
-        sendTrash(manageNetworkConnection);
-        sendConfigSinglePanel(manageNetworkConnection, panel);
+    public void makeConfigAndSendGreenCross(Panel panel) {
+        sendConfigSinglePanel(panel);
+        send160();
+        sendTrash();
+        sendConfigSinglePanel(panel);
     }
 
-    private static void sendConfigSinglePanel(ManageNetworkConnection manageNetworkConnection, Panel panel) {
+    private void sendConfigSinglePanel(Panel panel) {
         byte[] message = new byte[15];
         byte[] mac = panel.getMac();
         message[0] = 36;
@@ -140,14 +144,14 @@ public class SendConfigureMessages {
         manageNetworkConnection.send_data(message);
     }
 
-    public static void sendGlobalConfigMessage(ManageNetworkConnection manageNetworkConnection, Panel[][] panels) {
-        sendConfigMessageToAll(manageNetworkConnection, panels);
-        send160(manageNetworkConnection);
-        sendTrash(manageNetworkConnection);
-        sendConfigMessageToAll(manageNetworkConnection, panels);
+    public void sendGlobalConfigMessage(Panel[][] panels) {
+        sendConfigMessageToAll(panels);
+        send160();
+        sendTrash();
+        sendConfigMessageToAll(panels);
     }
 
-    private static void sendConfigMessageToAll(ManageNetworkConnection manageNetworkConnection, Panel[][] panels) {
+    private void sendConfigMessageToAll(Panel[][] panels) {
         byte[] message = new byte[8 + (Main.getxPanelCount() * Main.getyPanelCount()) * 7];
         message[0] = 36;
         message[1] = 36;
@@ -189,7 +193,7 @@ public class SendConfigureMessages {
      *
      * @param time im ms
      */
-    public static void getPanelConnected(ManageNetworkConnection manageNetworkConnection, int time) {
+    public void getPanelConnected(int time) {
         long timeStart = System.currentTimeMillis();
         System.out.print("Searching");
         while (System.currentTimeMillis() <= timeStart + time) {

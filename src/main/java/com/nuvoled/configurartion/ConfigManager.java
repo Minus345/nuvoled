@@ -14,17 +14,17 @@ public class ConfigManager {
     private static Storage storage;
     @SuppressWarnings("FieldMayBeFinal")
     private static ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
-    private static ManageNetworkConnection manageNetworkConnection;
+    private static SendConfigureMessages sendConfigureMessages;
 
     public static void start(ManageNetworkConnection manageNetworkConnection) {
-        ConfigManager.manageNetworkConnection = manageNetworkConnection;
+        sendConfigureMessages = new SendConfigureMessages(manageNetworkConnection);
         System.out.println();
         System.out.println("Nuvoled Panel Configurator");
 
         waitingList = new ArrayList<>();
 
-        SendConfigureMessages.reset(manageNetworkConnection);
-        SendConfigureMessages.getPanelConnected(manageNetworkConnection, 1000);
+        sendConfigureMessages.reset();
+        sendConfigureMessages.getPanelConnected(1000);
 
         storage = new Storage();
 
@@ -103,7 +103,7 @@ public class ConfigManager {
     private static void configureOnePanel(Scanner scanner) {
         Panel currant = waitingList.getFirst();
         System.out.println("Selected Mac: " + Arrays.toString(currant.getMac()));
-        SendConfigureMessages.sendRedCross(manageNetworkConnection, currant.getMac());
+        sendConfigureMessages.sendRedCross(currant.getMac());
 
         System.out.println("Input position number:");
         String line = scanner.nextLine();
@@ -136,7 +136,7 @@ public class ConfigManager {
         currant.setOffsetX(panelOffsetX * Main.getPanelType().getSizeX());
         currant.setOffsetY(panelOffsetY * Main.getPanelType().getSizeY());
         // send config Message
-        SendConfigureMessages.makeConfigAndSendGreenCross(manageNetworkConnection, currant);
+        sendConfigureMessages.makeConfigAndSendGreenCross(currant);
 
         //cli
         alreadyConfiguredPanelsForCLI.add(currant.getPosition());
@@ -159,12 +159,12 @@ public class ConfigManager {
         switch (line) {
             case "r" -> {
                 System.out.println("Refresh");
-                SendConfigureMessages.refresh(manageNetworkConnection);
-                SendConfigureMessages.getPanelConnected(manageNetworkConnection, 1000);
+                sendConfigureMessages.refresh();
+                sendConfigureMessages.getPanelConnected(1000);
             }
             case "a" -> {
                 System.out.println("Apply Configurations");
-                SendConfigureMessages.sendGlobalConfigMessage(manageNetworkConnection, storage.getAlreadyConfiguredPanelMatrix());
+                sendConfigureMessages.sendGlobalConfigMessage(storage.getAlreadyConfiguredPanelMatrix());
             }
             case "e" -> {
                 System.out.println("Exit");

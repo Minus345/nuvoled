@@ -7,7 +7,7 @@ public class PackagePicture {
 
     private static final int SINGLE_PACKET_LENGTH = 1450;
 
-    public static void packageAndSendPixels(byte[] rgb, int maxPackets, ManageNetworkConnection manageNetworkConnection) {
+    public static void packageAndSendPixels(byte[] rgb, int maxPackets, ManageNetworkConnection manageNetworkConnection, int colorMode) {
         int pixel = 0;
         //splits up the array int SINGLE_PACKET_LENGTH byte long messages
         for (int counter = 0; counter <= maxPackets; counter++) {
@@ -17,7 +17,7 @@ public class PackagePicture {
             message[1] = 36;
             message[2] = 20;
             message[3] = Main.getCourantFrame();
-            message[4] = (byte) (Main.getColorMode()); //RGB -> 10 JPG -> 20 RGB565 -> 30
+            message[4] = (byte) (colorMode); //RGB -> 10 JPG -> 20 RGB565 -> 30
             message[5] = (byte) (counter >> 8);
             message[6] = (byte) (counter & 255);
             message[7] = (byte) (maxPackets >> 8);
