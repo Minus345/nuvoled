@@ -12,7 +12,6 @@ import com.nuvoled.yaml.YamlWriter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Map;
 
 public class Main {
@@ -50,7 +49,7 @@ public class Main {
     private static int xPosition = 0;
     private static int yPosition = 0;
 
-    public static void main(String[] args) throws IOException, AWTException, InterruptedException {
+    public static void main(String[] args) throws AWTException {
         System.out.println("""
                   _  _              _        _\s
                  | \\| |_  ___ _____| |___ __| |
@@ -241,10 +240,6 @@ public class Main {
 
     }
 
-    private static void startSetupReadConfig(String pathToConfigFile) {
-        new YamlReader(pathToConfigFile);
-    }
-
     private static void exitSetup() {
         String defaultMessage = """
                 Usage
@@ -296,11 +291,15 @@ public class Main {
         showFps = getWithErrorBoolean(settings, "showFps");
         timeout = getWithErrorInteger(settings, "timeout");
 
-        //panel specific
-        //TODO: schauen welche werte überhaupt möglich sind
+        // screen capture stuff
+        GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         screenNumber = getWithErrorInteger(settings, "screenNumber");
-        xPosition = getWithErrorInteger(settings, "PositionX"); //TODO: können negativ sein
-        yPosition = getWithErrorInteger(settings, "PositionY"); //TODO: können negativ sein
+        if (screenNumber > screens.length) {
+            System.out.println("[CONFIG_FILE] screen number out of bounce");
+            throw new ArrayIndexOutOfBoundsException("screen number to big");
+        }
+        xPosition = getWithErrorInteger(settings, "PositionX");
+        yPosition = getWithErrorInteger(settings, "PositionY");
     }
 
     private static String getWithErrorString(Map<String, Object> map, String key) {
