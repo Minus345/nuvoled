@@ -220,6 +220,8 @@ public class Main {
             }
 
             //send the rgb data
+
+            //TODO: own rgb565 sender methode
             PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection, colorMode);
 
             //sleep

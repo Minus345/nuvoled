@@ -9,7 +9,7 @@ public class Rgb565 {
      */
     public static byte[] getLedRgb565Data(byte[] input) {
         int rgbCounterNumber = 0;
-        byte[] output = new byte[input.length]; //TODO: sollte noch kürzer sein
+        byte[] output = new byte[input.length * 2/3]; // pixelX * pixelY * 2 -> only 2 byte instead of 3
 
         for (int i = 0; i < input.length; i = i + 3) { //input bgr
             byte blue = input[i];
