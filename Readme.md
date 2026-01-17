@@ -104,7 +104,7 @@ if multiple suitable network cards are found you can select wich one you want to
 12. [x] remove and refactor unnecessary features
 13. [ ] add Testing
 14. [ ] add 180 degree rotation
-15. [ ] RGB565 fix array length (should be shorter)
+15. [x] RGB565 fix array length (should be shorter)
 16. [ ] ~~replace ndi with~~ obs virtual cam -> https://www.baeldung.com/java-capture-image-from-webcam
     Display the resolution to set up in obs at startup (with rotation)
 17. [x] make ethernet interface configurable thought config file

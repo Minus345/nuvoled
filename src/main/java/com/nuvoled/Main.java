@@ -206,6 +206,7 @@ public class Main {
             Fps.fpsStart(showFps);
 
             //get picture form screen
+            //TODO: die ganze image bekommen sache auslagern mit Interface
             BufferedImage image = robot.createScreenCapture(rectangle);
 
             BufferedImage imageWithBrightness = PackagePicture.applyFilter(image, brightness, offSet);
