@@ -1,5 +1,7 @@
 package com.nuvoled;
 
+import com.nuvoled.ImagGetter.ImageGetter;
+import com.nuvoled.ImagGetter.getImageFromScreen;
 import com.nuvoled.configurartion.*;
 import com.nuvoled.panel.P4;
 import com.nuvoled.panel.P5;
@@ -156,19 +158,6 @@ public class Main {
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
         System.out.println("sleep time                          : " + sleep);
 
-        captureFromScreen();
-    }
-
-    private static void captureFromScreen() throws AWTException {
-        //setup screen capture
-        GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        Robot robot = new Robot(screens[screenNumber]);
-        Rectangle rectangle = new Rectangle();
-        Rectangle screenBounds = screens[screenNumber].getDefaultConfiguration().getBounds();
-        int x = xPosition + screenBounds.x;
-        int y = yPosition + screenBounds.y;
-        rectangle.setLocation(x, y);
-
         // setup colour mode
         int maxPackets = 0;
         switch (colorMode) {
@@ -197,7 +186,8 @@ public class Main {
                 System.exit(-1);
             }
         }
-        rectangle.setSize(globalPixelInX, globalPixelInY);
+
+        ImageGetter imageGetter = new getImageFromScreen(globalPixelInX, globalPixelInY, xPosition, yPosition, screenNumber);
 
         int rgbLength = globalPixelInX * globalPixelInY * 3;
 
@@ -205,9 +195,7 @@ public class Main {
         while (true) {
             Fps.fpsStart(showFps);
 
-            //get picture form screen
-            //TODO: die ganze image bekommen sache auslagern mit Interface
-            BufferedImage image = robot.createScreenCapture(rectangle);
+            BufferedImage image = imageGetter.getImage();
 
             BufferedImage imageWithBrightness = PackagePicture.applyFilter(image, brightness, offSet);
             byte[] rgbPixelData = PackagePicture.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
@@ -240,7 +228,6 @@ public class Main {
 
             Fps.fpsEnd(showFps);
         }
-
     }
 
     private static void exitSetup() {
