@@ -86,6 +86,8 @@ public class YamlWriter {
         data.put("PanelCountY", 1);
         data.put("brightness", 0.6);
         data.put("rgb565", false);
+        data.put("mode", "screen");
+        data.put("camera", 0);
 
         //panel settings
         data.put("rotation", 0);

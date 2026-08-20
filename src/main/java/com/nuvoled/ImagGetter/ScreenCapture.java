@@ -3,12 +3,12 @@ package com.nuvoled.ImagGetter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class getImageFromScreen implements ImageGetter {
+public class ScreenCapture implements ImageGetter {
 
     private final Robot robot;
     private final Rectangle rectangle;
 
-    public getImageFromScreen(int globalPixelInX, int globalPixelInY, int xPosition, int yPosition, int screenNumber) {
+    public ScreenCapture(int globalPixelInX, int globalPixelInY, int xPosition, int yPosition, int screenNumber) {
         GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         try {
             robot = new Robot(screens[screenNumber]);

@@ -1,7 +1,8 @@
 package com.nuvoled;
 
 import com.nuvoled.ImagGetter.ImageGetter;
-import com.nuvoled.ImagGetter.getImageFromScreen;
+import com.nuvoled.ImagGetter.ScreenCapture;
+import com.nuvoled.ImagGetter.WebcamCapture;
 import com.nuvoled.configurartion.*;
 import com.nuvoled.panel.P4;
 import com.nuvoled.panel.P5;
@@ -34,6 +35,7 @@ public class Main {
     private static int timeout = 0;
 
     private static String mode = "screen";
+    private static int cameraIndex = 0;
 
     //panel settings
     private static Panel panelType;
@@ -150,6 +152,7 @@ public class Main {
         System.out.println("x/y Pixels                          : " + globalPixelInX + "/" + globalPixelInY);
         System.out.println("rotation Degree                     : " + rotation);
         System.out.println("mode                                : " + mode);
+        System.out.println("camera                              : " + cameraIndex);
         System.out.println("Screen Number                       : " + screenNumber);
         System.out.println("x/y Start Position                  : " + xPosition + "/" + yPosition);
         System.out.println("broadcastIpAddress                  : " + BROADCAST_IP_ADDRESS);
@@ -183,11 +186,38 @@ public class Main {
             }
             case 180 -> {
                 System.out.println("not Supported");
-                System.exit(-1);
+                System.exit(1);
             }
         }
 
-        ImageGetter imageGetter = new getImageFromScreen(globalPixelInX, globalPixelInY, xPosition, yPosition, screenNumber);
+        // setup mode
+        ImageGetter imageGetter = null;
+        switch (mode) {
+            case "screen" -> {
+                imageGetter = new ScreenCapture(globalPixelInX, globalPixelInY, xPosition, yPosition, screenNumber);
+            }
+            case "camera" -> {
+                try {
+                    imageGetter = new WebcamCapture(cameraIndex);
+                }catch (IllegalArgumentException e){
+                    System.err.println("Invalid Camera " + e.getMessage());
+                    System.exit(1);
+                }catch (IllegalStateException e){
+                    System.err.println("No camera found");
+                    System.exit(1);
+                }catch (IndexOutOfBoundsException e){
+                    System.err.println("Camera index out of bounce " + e.getMessage());
+                    System.exit(1);
+                }catch (RuntimeException e){
+                    System.err.println("Error while opening the camera: " + e.getMessage());
+                    System.exit(1);
+                }
+            }
+            default -> {
+                System.err.println("\" " + mode + "\" is not a valid mode.");
+                System.exit(1);
+            }
+        }
 
         int rgbLength = globalPixelInX * globalPixelInY * 3;
 
@@ -210,7 +240,7 @@ public class Main {
 
             //send the rgb data
 
-            //TODO: own rgb565 sender methode
+            //TODO: own rgb565 sender methode, fix rgb565
             PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection, colorMode);
 
             //sleep
@@ -269,6 +299,8 @@ public class Main {
         } else {
             colorMode = 10;
         }
+        mode = getWithErrorString(settings, "mode");
+        cameraIndex = getWithErrorInteger(settings, "camera");
 
         //panel settings
         rotation = getWithErrorInteger(settings, "rotation");

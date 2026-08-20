@@ -7,14 +7,12 @@ P4/P5 [LED panels / Video Wall](https://www.nuvoled.de/).
 This is a command line application in java. This exists, because the first
 party [configuration software](https://www.nuvoled.de/download/) only works on windows.
 
-- **[Java 24.0.2 required](https://www.oracle.com/de/java/technologies/downloads/)**
-    - updated java version, because of incompatibility with wayland on ubuntu
-- Tested on:
-    - Windows
-    - Raspberry PI
-        - currantly not working with wayland -> you have to change to x11 via the `raaspi-config`
-    - Ubuntu   
-      See `OS specific settings` further below
+- Java 21 required
+
+## Known Issus:
+
+- Wayland screencapture (robot) should work with java 21 https://bugs.openjdk.org/browse/JDK-8280982
+- Wayland screencapture (robot) not working with Nvidia gpu
 
 ***
 
@@ -45,6 +43,10 @@ Java Parameter to force IPv4:
 
 ## Features
 
+### Select Input Source
+
+TODO
+
 ### Rotation
 
 If you use **rotation**:
@@ -59,55 +61,49 @@ If you use **rotation**:
 | 270             | ✅         | ✅         |
 
 ### RGB565
+
+Currently broken
+
 ### Brightness
+
 ### FPS Display
+
 if enabled displays the currant fps that are send out to your LED-Wall
+
 ### Select form multiple network cards
+
 if multiple suitable network cards are found you can select wich one you want to use at startup
+
 
 ***
 
 ## Settings Documentation
 
-| Name         | Datatype   | Description                                                                                                             | Default value |
-|--------------|------------|-------------------------------------------------------------------------------------------------------------------------|---------------|
-| PanelVersion | "P4"/"P5"  | wich panel do you use [P4 or P5](https://www.nuvoled.de/kaufen/)                                                        | -             |
-| PanelCountX  | int        | number of panels in horizontal direction                                                                                | 1             |
-| PanelCountY  | int        | number of panels in vertical direction                                                                                  | 1             |
-| brightness   | [0 - ...]  | brightness multiplier. 1 is normal                                                                                      | 0.6           |
-| rgb565       | boolean    | enables rgb565 mode: less colour accurate, more efficient -> you can have more panels with higher framerate connected   | false         |
-| rotation     | 0, 90, 270 | rotates the image 90 or 270 degree -> see _Rotation Chapter_                                                            | 0             |
-| sleep        | int        | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems | 0             |         |
-| offSet       | double     | (currently not in use)                                                                                                  | 0.0           |
-| showFps      | boolean    | shows the fps that are send out, in the terminal                                                                        | false         |
-| timeout      | int        | how many milliseconds the programm should wait in the config CLI to listen for panels                                   | 1000          |         |
-| mode         | "screen"   |                                                                                                                         | screen        |             |
-| screenNumber | int        | when your machine has more than one screen, you can specify your screen, you want to share                              | 0             |
-| PositionX    | int        | coordinates where to start the screen capture                                                                           | 0             |
-| PositionY    | int        | coordinates where to start the screen capture                                                                           | 0             |
+| Name         | Datatype          | Description                                                                                                                                                                 | Default value |
+|--------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| PanelVersion | "P4"/"P5"         | wich panel do you use [P4 or P5](https://www.nuvoled.de/kaufen/)                                                                                                            | -             |
+| PanelCountX  | [1 - ...]         | number of panels in horizontal direction                                                                                                                                    | 1             |
+| PanelCountY  | [1 - ...]         | number of panels in vertical direction                                                                                                                                      | 1             |
+| brightness   | [0 - ...]         | brightness multiplier. 1 is normal                                                                                                                                          | 0.6           |
+| rgb565       | boolean           | enables rgb565 mode: less colour accurate, more efficient -> you can have more panels with higher framerate connected                                                       | false         |
+| mode         | "screen"/"camera" | switches content source:<br/> **screen**: screencapture (Parameters: screenNumber, PositionX, PositionY)<br/> **camera**: use a camera input as source  (Parameter: camera) | "screen"      |
+| camera       | [0 - ...]         | select which camera to use                                                                                                                                                  | 0             |
+| rotation     | 0, 90, 270        | rotates the image 90 or 270 degree -> see _Rotation Chapter_                                                                                                                | 0             |
+| sleep        | [0 - ...]         | how many milliseconds the programm should wait before a new frame is sent. Can improve picture quality on linux systems                                                     | 0             |         |
+| offSet       | double            | (currently not in use)                                                                                                                                                      | 0.0           |
+| showFps      | boolean           | shows the fps that are send out, in the terminal                                                                                                                            | false         |
+| timeout      | [0 - ...]         | how many milliseconds the programm should wait in the config CLI to listen for panels                                                                                       | 1000          |         |
+| screenNumber | [0 - ...]         | when your machine has more than one screen, you can specify your screen, you want to share                                                                                  | 0             |
+| PositionX    | [0 - ...]         | coordinates where to start the screen capture                                                                                                                               | 0             |
+| PositionY    | [0 - ...]         | coordinates where to start the screen capture                                                                                                                               | 0             |
 
 ***
 
 ### TODO:
 
-1. [x] Add config file
-2. [x] Testing P4
-3. [x] Test ArtNet
-4. [x] add network interface configurations
-5. [x] rewrite network interface (refactoring old code - remove Mac support)
-6. [x] add initial configuration for panels
-7. [x] save currant configured panels to file, so you can load the config for your panels
-8. [ ] Update to java 15
-9. [ ] fix raspberry wayland
-10. [x] command line arg phraser user error handling
-11. [ ] ME: Testing Switch VLan with config software -> enable broadcast?
-12. [x] remove and refactor unnecessary features
-13. [ ] add Testing
-14. [ ] add 180 degree rotation
-15. [x] RGB565 fix array length (should be shorter)
-16. [ ] ~~replace ndi with~~ obs virtual cam -> https://www.baeldung.com/java-capture-image-from-webcam
-    Display the resolution to set up in obs at startup (with rotation)
-17. [x] make ethernet interface configurable thought config file
+1. [ ] add Testing
+2. [ ] add 180 degree rotation
+3. [ ] RGB565 fix array length (should be shorter)
 
 ***
 
@@ -123,5 +119,9 @@ you need to set the sleep
 ### Windows
 
 should work out of the box
+
+## Used Libs:
+
+https://github.com/sarxos/webcam-capture
 ***
     
