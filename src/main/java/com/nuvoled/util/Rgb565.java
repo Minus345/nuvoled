@@ -4,48 +4,36 @@ public class Rgb565 {
     /**
      * returns the rgb565 data;
      *
-     * @param input input array of rgb values
-     * @return output translated to rgb565 values
+     * @param input input array of bgr values / little-endian
+     * @return output translated to bgr565 values / little-endian
      */
-    public static byte[] getLedRgb565Data(byte[] input) {
+    public static byte[] convertBGR888ToBGR565(byte[] input) {
         int rgbCounterNumber = 0;
-        byte[] output = new byte[input.length * 2/3]; // pixelX * pixelY * 2 -> only 2 byte instead of 3
+        byte[] output = new byte[input.length * 2 / 3]; // pixelX * pixelY * 2 -> only 2 byte instead of 3
 
-        for (int i = 0; i < input.length; i = i + 3) { //input bgr
-            byte blue = input[i];
-            byte green = input[i + 1];
-            byte red = input[i + 2];
+        for (int i = 0; i < input.length; i = i + 3) {
+            /*
+            https://docs.oracle.com/javase/specs/jls/se10/html/jls-5.html#jls-5.6.2
+            all byte operations are performed as integer operations
 
-            // Convert byte to int to be within [0 , 255]
-            int red5 = red & 0xff;
-            int green6 = green & 0xff;
-            int blue5 = blue & 0xff;
+            convert to int: [0-255] unsigned read
+            because if not:
+            -> input [(byte) 255,0,0]
+            blue = (byte 255) = -1 | byte is singed in java
+            blue >> 3 = -1
+             */
+            int blue = input[i] & 0xff;
+            int green = input[i + 1] & 0xff;
+            int red = input[i + 2] & 0xff;
 
-            //Source: https://barth-dev.de/about-rgb565-and-how-to-convert-into-it/
-            int red5Shifted = (red5 & 0b11111000) << 8;
-            int green6Shifted = (green6 & 0b11111100) << 3;
-            int blue5Shifted = blue5 >> 3;
+            short RGB565 = (short) (((red & 0xf8) << 8) + ((green & 0xfc) << 3) + (blue >> 3));
 
-            int rgb565 = red5Shifted | green6Shifted | blue5Shifted; //output r g b
-
-            short rgb565short = (short) rgb565;
-
-            byte[] bytes = new byte[2];
-            bytes[0] = (byte) (rgb565short);  //second 8 Bits
-            bytes[1] = (byte) ((rgb565short >> 8)); //first 8 Bits
-
-            //little fix for the "terminal Black" -> sets the green last green bit to 0; if its the only thing active
-            if (bytes[0] == 32 && bytes[1] == 0) {
-                bytes[0] = 0;
-            }
-
-            output[rgbCounterNumber] = bytes[0];
+            // Little-endian:
+            output[rgbCounterNumber] = (byte) (RGB565 & 0xff);
             rgbCounterNumber++;
-            output[rgbCounterNumber] = bytes[1];
+            output[rgbCounterNumber] = (byte) ((RGB565 >> 8) & 0xff);
             rgbCounterNumber++;
-
         }
-
         return output;
     }
 }

@@ -65,7 +65,7 @@ public class PackagePicture {
      * @param length output byte array length -> must be calculated before (x * y * 3)
      * @return byte array with rgb data
      */
-    public static byte[] getLedRgbDataFormImage(BufferedImage image, int length) {
+    public static byte[] getLedBGRDataFormImage(BufferedImage image, int length) {
         byte[] rgb = new byte[length];
         int rgbCounterNumber = 0;
         for (int y = 0; y < Main.getGlobalPixelInY(); y++) {
@@ -74,6 +74,8 @@ public class PackagePicture {
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
+
+                // send rgb data in little-endian to panels
                 rgb[rgbCounterNumber] = (byte) blue;
                 rgbCounterNumber++;
                 rgb[rgbCounterNumber] = (byte) green;

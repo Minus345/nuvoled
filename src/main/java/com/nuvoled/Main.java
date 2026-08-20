@@ -228,19 +228,19 @@ public class Main {
             BufferedImage image = imageGetter.getImage();
 
             BufferedImage imageWithBrightness = PackagePicture.applyFilter(image, brightness, offSet);
-            byte[] rgbPixelData = PackagePicture.getLedRgbDataFormImage(imageWithBrightness, rgbLength);
+            byte[] rgbPixelData = PackagePicture.getLedBGRDataFormImage(imageWithBrightness, rgbLength); // returns Blue, Green, Red
             if (rotation != 0) {
                 rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation, globalPixelInX, globalPixelInY);
             }
 
             //if mode = rgb565
             if (colorMode == 30) {
-                rgbPixelData = Rgb565.getLedRgb565Data(rgbPixelData);
+                rgbPixelData = Rgb565.convertBGR888ToBGR565(rgbPixelData);
             }
 
             //send the rgb data
 
-            //TODO: own rgb565 sender methode, fix rgb565
+            //TODO: own rgb565 sender methode
             PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection, colorMode);
 
             //sleep

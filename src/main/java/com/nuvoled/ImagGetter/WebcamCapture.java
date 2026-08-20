@@ -9,6 +9,7 @@ public class WebcamCapture implements ImageGetter {
     private final Webcam webcam;
 
     public WebcamCapture(int webcamIndex) {
+        //TODO set size or shrink image
         if (webcamIndex < 0) {
             throw new IllegalArgumentException("webcamindex should be >= 0");
         }
