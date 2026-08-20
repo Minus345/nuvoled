@@ -10,7 +10,7 @@ public class Panel {
     private int offsetY;
     private boolean configured;
 
-    public Panel(byte[] mac, int sizeY, int sizeX, String version) {
+    public Panel(byte[] mac, int sizeX, int sizeY, String version) {
         this.mac = mac;
         this.sizeY = sizeY;
         this.sizeX = sizeX;
