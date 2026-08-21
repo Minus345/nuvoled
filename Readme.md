@@ -103,7 +103,6 @@ if multiple suitable network cards are found you can select wich one you want to
 
 1. [ ] add Testing
 2. [ ] add 180 degree rotation
-3. [ ] RGB565 fix array length (should be shorter)
 
 ***
 

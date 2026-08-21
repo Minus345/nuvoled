@@ -5,39 +5,33 @@ import java.awt.image.RescaleOp;
 
 public class PackagePicture {
 
-    private static final int SINGLE_PACKET_LENGTH = 1450;
+    private static final int PICTURE_DATA_LENGTH = 1440;
+    private static final int SINGLE_PACKET_LENGTH = PICTURE_DATA_LENGTH + 10; //10 bytes header + 1440 bytes pixel data
 
-    public static void packageAndSendPixels(byte[] rgb, int maxPackets, ManageNetworkConnection manageNetworkConnection, int colorMode) {
+    public static void packageAndSendPixels(byte[] pixelData, ManageNetworkConnection manageNetworkConnection, int colorMode) {
         int pixel = 0;
+        int packetsCount = Math.ceilDiv(pixelData.length, PICTURE_DATA_LENGTH);
         //splits up the array int SINGLE_PACKET_LENGTH byte long messages
-        for (int counter = 0; counter <= maxPackets; counter++) {
-            //prep message
+        for (int j = 0; j <= packetsCount; j++) {
+            //message header
             byte[] message = new byte[SINGLE_PACKET_LENGTH];
             message[0] = 36;
             message[1] = 36;
             message[2] = 20;
-            message[3] = Main.getCourantFrame();
+            message[3] = Main.getCourantFrame(); //cur frame
             message[4] = (byte) (colorMode); //RGB -> 10 JPG -> 20 RGB565 -> 30
-            message[5] = (byte) (counter >> 8);
-            message[6] = (byte) (counter & 255);
-            message[7] = (byte) (maxPackets >> 8);
-            message[8] = (byte) (maxPackets & 255);
-            message[9] = 45;
+            message[5] = (byte) (j >> 8); //cur packH
+            message[6] = (byte) (j & 0xff); //cur PackL
+            message[7] = (byte) (packetsCount >> 8); // #PackH
+            message[8] = (byte) (packetsCount & 0xff); // #PackL
+            message[9] = 45; //cur package size or fix?
 
-            for (int i = 1; i < SINGLE_PACKET_LENGTH - 10; i = i + 3) {
-                if (pixel >= rgb.length) {
-                    //setzt die letzten bytes des Packets auf 0
-                    message[9 + i] = 0;
-                    pixel++;
-                    message[9 + 1 + i] = 0;
-                    pixel++;
-                    message[9 + 2 + i] = 0;
+            for (int i = 0; i < PICTURE_DATA_LENGTH; i++) {
+                if (pixel >= pixelData.length) {
+                    //sets the last bytes of the last package to 0
+                    message[10 + i] = 0;
                 } else {
-                    message[9 + i] = rgb[pixel];
-                    pixel++;
-                    message[9 + 1 + i] = rgb[pixel];
-                    pixel++;
-                    message[9 + 2 + i] = rgb[pixel];
+                    message[10 + i] = pixelData[pixel];
                 }
                 pixel++;
             }

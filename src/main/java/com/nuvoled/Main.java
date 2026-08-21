@@ -161,20 +161,6 @@ public class Main {
         System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
         System.out.println("sleep time                          : " + sleep);
 
-        // setup colour mode
-        int maxPackets = 0;
-        switch (colorMode) {
-            case 10: //rgb:
-                maxPackets = ((globalPixelInX * globalPixelInY * 3) / 1440) + 1; //rgb -> 3 rgb565 -> 2
-                break;
-            case 30: //rgb565:
-                maxPackets = ((globalPixelInX * globalPixelInY * 2) / 1440) + 1; //rgb -> 3 rgb565 -> 2
-                break;
-            default:
-                System.out.println("Error: Colour mode " + colorMode + " not supported");
-                System.exit(1);
-        }
-
         // setup rotation
         switch (rotation) {
             case 90, 270 -> {
@@ -193,9 +179,7 @@ public class Main {
         // setup mode
         ImageGetter imageGetter = null;
         switch (mode) {
-            case "screen" -> {
-                imageGetter = new ScreenCapture(globalPixelInX, globalPixelInY, xPosition, yPosition, screenNumber);
-            }
+            case "screen" -> imageGetter = new ScreenCapture(globalPixelInX, globalPixelInY, xPosition, yPosition, screenNumber);
             case "camera" -> {
                 try {
                     imageGetter = new WebcamCapture(cameraIndex);
@@ -238,10 +222,7 @@ public class Main {
                 rgbPixelData = Rgb565.convertBGR888ToBGR565(rgbPixelData);
             }
 
-            //send the rgb data
-
-            //TODO: own rgb565 sender methode
-            PackagePicture.packageAndSendPixels(rgbPixelData, maxPackets, manageNetworkConnection, colorMode);
+            PackagePicture.packageAndSendPixels(rgbPixelData, manageNetworkConnection, colorMode);
 
             //sleep
             if (sleep > 0) {
@@ -288,11 +269,11 @@ public class Main {
             }
         }
 
-        globalPixelInX = xPanelCount * panelType.getSizeX(); //Anzahl Panel X * 128 pixel
-        globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
-
         xPanelCount = getWithErrorInteger(settings, "PanelCountX");
         yPanelCount = getWithErrorInteger(settings, "PanelCountY");
+
+        globalPixelInX = xPanelCount * panelType.getSizeX(); //Anzahl Panel X * 128 pixel
+        globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
         brightness = getWithErrorDouble(settings, "brightness");
         if (getWithErrorBoolean(settings, "rgb565")) {
             colorMode = 30;
