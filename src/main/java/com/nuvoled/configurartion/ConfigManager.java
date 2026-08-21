@@ -12,8 +12,7 @@ public class ConfigManager {
 
     private static ArrayList<Panel> waitingList;
     private static Storage storage;
-    @SuppressWarnings("FieldMayBeFinal")
-    private static ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
+    private static final ArrayList<Integer> alreadyConfiguredPanelsForCLI = new ArrayList<>();
     private static SendConfigureMessages sendConfigureMessages;
 
     public static void start(ManageNetworkConnection manageNetworkConnection) {

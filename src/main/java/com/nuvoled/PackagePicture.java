@@ -59,11 +59,11 @@ public class PackagePicture {
      * @param length output byte array length -> must be calculated before (x * y * 3)
      * @return byte array with rgb data
      */
-    public static byte[] getLedBGRDataFormImage(BufferedImage image, int length) {
+    public static byte[] getLedBGRDataFormImage(BufferedImage image, int length, int globalPixelInX, int globalPixelInY) {
         byte[] rgb = new byte[length];
         int rgbCounterNumber = 0;
-        for (int y = 0; y < Main.getGlobalPixelInY(); y++) {
-            for (int x = 0; x < Main.getGlobalPixelInX(); x++) {
+        for (int y = 0; y < globalPixelInY; y++) {
+            for (int x = 0; x < globalPixelInX; x++) {
                 int pixel = image.getRGB(x, y);
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;

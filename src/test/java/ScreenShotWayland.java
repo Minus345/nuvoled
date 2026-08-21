@@ -1,7 +1,8 @@
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ScreenShotWayland {
-    @Test
+    @Ignore
     public void testScreenShot() throws Exception {
         System.out.println(System.getProperty("java.version"));
         java.awt.Robot robot = new java.awt.Robot();

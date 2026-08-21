@@ -1,22 +1,19 @@
-package com.nuvoled.yaml;
+package com.nuvoled.settings;
 
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class YamlWriter {
+public class Yaml {
     /**
      * Creates a default yaml file in the path. The filename is "config.yaml"
      *
      * @param path path where the config file should be created
      */
-    public YamlWriter(String path) {
+    public void createYamlFile(String path) {
 
         //create empty file in path
         String os = System.getProperty("os.name");
@@ -63,7 +60,7 @@ public class YamlWriter {
         options.setPrettyFlow(true);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-        Yaml yaml = new Yaml(options);
+        org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(options);
         yaml.dump(createYamlData(), writer);
 
         try {
@@ -102,5 +99,12 @@ public class YamlWriter {
         data.put("PositionY", 0);
 
         return data;
+    }
+
+    public Map<String, Object> readYamlFormFile(String path) throws FileNotFoundException {
+        //try to load config from path
+        InputStream input = new FileInputStream(path);
+        org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml();
+        return yaml.load(input);
     }
 }

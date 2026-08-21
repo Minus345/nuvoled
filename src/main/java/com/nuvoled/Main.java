@@ -4,54 +4,27 @@ import com.nuvoled.ImagGetter.ImageGetter;
 import com.nuvoled.ImagGetter.ScreenCapture;
 import com.nuvoled.ImagGetter.WebcamCapture;
 import com.nuvoled.configurartion.*;
-import com.nuvoled.panel.P4;
-import com.nuvoled.panel.P5;
 import com.nuvoled.panel.Panel;
+import com.nuvoled.settings.Settings;
+import com.nuvoled.settings.SettingsException;
 import com.nuvoled.util.Fps;
 import com.nuvoled.util.Rgb565;
 import com.nuvoled.util.rotation.Rotation;
-import com.nuvoled.yaml.YamlReader;
-import com.nuvoled.yaml.YamlWriter;
+import com.nuvoled.settings.Yaml;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.util.Map;
 
 public class Main {
 
-    //not changed
-    private static ManageNetworkConnection manageNetworkConnection;
+    private static Settings settings;
+
     private static final int PORT = 2000;
-    private static byte courantFrame = 2;
     private static final String BROADCAST_IP_ADDRESS = "169.254.255.255";
-    private static int globalPixelInX;
-    private static int globalPixelInY;
 
-    //global settings
-    private static double brightness = 0.6D;
-    private static double offSet = 0;
-    private static int rotation = 0;
-    private static int sleep = 0;
-    private static int timeout = 0;
-
-    private static String mode = "screen";
-    private static int cameraIndex = 0;
-
-    //panel settings
-    private static Panel panelType;
-
-    /**
-     * 10/rgb 20/jpg 30/rgb565
-     */
-    private static int colorMode = 10;
-    private static boolean showFps = false;
-
-    //panel specific
-    private static int xPanelCount = 1;
-    private static int yPanelCount = 1;
-    private static int screenNumber = 0;
-    private static int xPosition = 0;
-    private static int yPosition = 0;
+    private static byte courantFrame = 2;
 
     public static void main(String[] args) throws AWTException {
         System.out.println("""
@@ -67,7 +40,7 @@ public class Main {
             exitSetup();
         }
 
-        manageNetworkConnection = new ManageNetworkConnection(PORT, BROADCAST_IP_ADDRESS);
+        ManageNetworkConnection manageNetworkConnection = new ManageNetworkConnection(PORT, BROADCAST_IP_ADDRESS);
 
         //start parameters
         switch (args[0]) {
@@ -81,7 +54,7 @@ public class Main {
                 }
                 //creates yaml file then terminates
                 //create file where user wants
-                new YamlWriter(args[1]);
+                new Yaml().createYamlFile(args[1]);
                 System.exit(0);
             }
             case "config" -> {
@@ -94,9 +67,9 @@ public class Main {
                     exitSetup();
                 }
 
-                new YamlReader(args[1]);
+                parseSetting(args[1]);
 
-                manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
+                manageNetworkConnection.setDatagramSocketForListeningAndSending(settings.getTimeout());
                 ConfigManager.start(manageNetworkConnection);
 
                 manageNetworkConnection.closeSocket();
@@ -111,8 +84,8 @@ public class Main {
                     exitSetup();
                 }
 
-                new YamlReader(args[1]);
-                manageNetworkConnection.setDatagramSocketForListeningAndSending(timeout);
+                parseSetting(args[1]);
+                manageNetworkConnection.setDatagramSocketForListeningAndSending(settings.getTimeout());
                 SendConfigureMessages sendConfigureMessages = new SendConfigureMessages(manageNetworkConnection);
                 sendConfigureMessages.reset();
 
@@ -130,14 +103,13 @@ public class Main {
                     exitSetup();
                 }
 
-                new YamlReader(args[1]);
-
+                parseSetting(args[1]);
                 manageNetworkConnection.setDatagramSocket();
             }
             case null, default -> exitSetup();
         }
 
-        if (rotation != 0) {
+        if (settings.getRotation() != 0) {
             System.out.println("""
                     If you use **rotation**:
                     * configure your panels resolution in _Nuvoled Home_ **AND** _Nuvoled Presenter_ as if they were not rotated in reality
@@ -146,29 +118,28 @@ public class Main {
         System.out.println();
 
 
-        System.out.println("Panel                               : " + panelType.getVersion());
-        System.out.println("x/y Panel Count                     : " + xPanelCount + "/" + yPanelCount);
-        System.out.println("x/y Panel Size                      : " + panelType.getSizeX() + "/" + panelType.getSizeY());
-        System.out.println("x/y Pixels                          : " + globalPixelInX + "/" + globalPixelInY);
-        System.out.println("rotation Degree                     : " + rotation);
-        System.out.println("mode                                : " + mode);
-        System.out.println("camera                              : " + cameraIndex);
-        System.out.println("Screen Number                       : " + screenNumber);
-        System.out.println("x/y Start Position                  : " + xPosition + "/" + yPosition);
+        System.out.println("Panel                               : " + settings.getPanelType().getVersion());
+        System.out.println("x/y Panel Count                     : " + settings.getxPanelCount() + "/" + settings.getyPanelCount());
+        System.out.println("x/y Panel Size                      : " + settings.getPanelType().getSizeX() + "/" + settings.getPanelType().getSizeY());
+        System.out.println("x/y Pixels                          : " + settings.getGlobalPixelInX() + "/" + settings.getGlobalPixelInY());
+        System.out.println("rotation Degree                     : " + settings.getRotation());
+        System.out.println("mode                                : " + settings.getMode());
+        System.out.println("camera                              : " + settings.getCameraIndex());
+        System.out.println("Screen Number                       : " + settings.getScreenNumber());
+        System.out.println("x/y Start Position                  : " + settings.getxPosition() + "/" + settings.getyPosition());
         System.out.println("broadcastIpAddress                  : " + BROADCAST_IP_ADDRESS);
-        System.out.println("scaleFactor (Brightness)            : " + brightness);
-        System.out.println("offset (Contrast)                   : " + offSet);
-        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + colorMode);
-        System.out.println("sleep time                          : " + sleep);
+        System.out.println("scaleFactor (Brightness)            : " + settings.getBrightness());
+        System.out.println("offset (Contrast)                   : " + settings.getOffSet());
+        System.out.println("color (10/rgb 20/jpg 30/rgb 565)    : " + settings.getColorMode());
+        System.out.println("sleep time                          : " + settings.getSleep());
 
         // setup rotation
-        switch (rotation) {
+        switch (settings.getRotation()) {
             case 90, 270 -> {
                 //switch x and y
-                int buf = globalPixelInX;
-                //noinspection SuspiciousNameCombination
-                globalPixelInX = globalPixelInY;
-                globalPixelInY = buf;
+                int buf = settings.getGlobalPixelInX();
+                settings.setGlobalPixelInX(settings.getGlobalPixelInY());
+                settings.setGlobalPixelInY(buf);
             }
             case 180 -> {
                 System.out.println("not Supported");
@@ -178,57 +149,58 @@ public class Main {
 
         // setup mode
         ImageGetter imageGetter = null;
-        switch (mode) {
-            case "screen" -> imageGetter = new ScreenCapture(globalPixelInX, globalPixelInY, xPosition, yPosition, screenNumber);
+        switch (settings.getMode()) {
+            case "screen" ->
+                    imageGetter = new ScreenCapture(settings.getGlobalPixelInX(), settings.getGlobalPixelInY(), settings.getxPosition(), settings.getyPosition(), settings.getScreenNumber());
             case "camera" -> {
                 try {
-                    imageGetter = new WebcamCapture(cameraIndex);
-                }catch (IllegalArgumentException e){
+                    imageGetter = new WebcamCapture(settings.getCameraIndex());
+                } catch (IllegalArgumentException e) {
                     System.err.println("Invalid Camera " + e.getMessage());
                     System.exit(1);
-                }catch (IllegalStateException e){
+                } catch (IllegalStateException e) {
                     System.err.println("No camera found");
                     System.exit(1);
-                }catch (IndexOutOfBoundsException e){
+                } catch (IndexOutOfBoundsException e) {
                     System.err.println("Camera index out of bounce " + e.getMessage());
                     System.exit(1);
-                }catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     System.err.println("Error while opening the camera: " + e.getMessage());
                     System.exit(1);
                 }
             }
             default -> {
-                System.err.println("\" " + mode + "\" is not a valid mode.");
+                System.err.println("\" " + settings.getMode() + "\" is not a valid mode.");
                 System.exit(1);
             }
         }
 
-        int rgbLength = globalPixelInX * globalPixelInY * 3;
+        int rgbLength = settings.getGlobalPixelInX() * settings.getGlobalPixelInY() * 3;
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            Fps.fpsStart(showFps);
+            Fps.fpsStart(settings.isShowFps());
 
             BufferedImage image = imageGetter.getImage();
 
-            BufferedImage imageWithBrightness = PackagePicture.applyFilter(image, brightness, offSet);
-            byte[] rgbPixelData = PackagePicture.getLedBGRDataFormImage(imageWithBrightness, rgbLength); // returns Blue, Green, Red
-            if (rotation != 0) {
-                rgbPixelData = Rotation.rotateRgbData(rgbPixelData, rotation, globalPixelInX, globalPixelInY);
+            BufferedImage imageWithBrightness = PackagePicture.applyFilter(image, settings.getBrightness(), settings.getOffSet());
+            byte[] rgbPixelData = PackagePicture.getLedBGRDataFormImage(imageWithBrightness, rgbLength, settings.getGlobalPixelInX(), settings.getGlobalPixelInY()); // returns Blue, Green, Red
+            if (settings.getRotation() != 0) {
+                rgbPixelData = Rotation.rotateRgbData(rgbPixelData, settings.getRotation(), settings.getGlobalPixelInX(), settings.getGlobalPixelInY());
             }
 
             //if mode = rgb565
-            if (colorMode == 30) {
+            if (settings.getColorMode() == 30) {
                 rgbPixelData = Rgb565.convertBGR888ToBGR565(rgbPixelData);
             }
 
-            PackagePicture.packageAndSendPixels(rgbPixelData, manageNetworkConnection, colorMode);
+            PackagePicture.packageAndSendPixels(rgbPixelData, manageNetworkConnection, settings.getColorMode());
 
             //sleep
-            if (sleep > 0) {
+            if (settings.getSleep() > 0) {
                 try {
                     //noinspection BusyWait
-                    Thread.sleep(sleep);
+                    Thread.sleep(settings.getSleep());
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -237,7 +209,23 @@ public class Main {
             //send sendSynchronized Message
             manageNetworkConnection.sendSyncro();
 
-            Fps.fpsEnd(showFps);
+            Fps.fpsEnd(settings.isShowFps());
+        }
+    }
+
+    private static void parseSetting(String path) {
+        Map<String, Object> map = null;
+        try {
+            map = new Yaml().readYamlFormFile(path);
+        } catch (FileNotFoundException e) {
+            System.err.println("[CONFIG_FILE] could not load config file");
+            System.exit(1);
+        }
+
+        try {
+            settings = new Settings(map);
+        } catch (SettingsException e) {
+            System.exit(1);
         }
     }
 
@@ -258,135 +246,6 @@ public class Main {
 
     }
 
-    public static void setupConfiguration(Map<String, Object> settings) {
-        String wichPanel = getWithErrorString(settings, "PanelVersion");
-        switch (wichPanel) {
-            case "P4" -> panelType = new P4();
-            case "P5" -> panelType = new P5();
-            default -> {
-                System.out.println("[CONFIG_FILE] Panel not supported: " + wichPanel);
-                throw new RuntimeException("Panel not supported");
-            }
-        }
-
-        xPanelCount = getWithErrorInteger(settings, "PanelCountX");
-        yPanelCount = getWithErrorInteger(settings, "PanelCountY");
-
-        globalPixelInX = xPanelCount * panelType.getSizeX(); //Anzahl Panel X * 128 pixel
-        globalPixelInY = yPanelCount * panelType.getSizeY(); //Anzahl Panel Y * 128 pixel
-        brightness = getWithErrorDouble(settings, "brightness");
-        if (getWithErrorBoolean(settings, "rgb565")) {
-            colorMode = 30;
-        } else {
-            colorMode = 10;
-        }
-        mode = getWithErrorString(settings, "mode");
-        cameraIndex = getWithErrorInteger(settings, "camera");
-
-        //panel settings
-        rotation = getWithErrorInteger(settings, "rotation");
-        if (!(rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270)) {
-            System.out.println("[CONFIG_FILE] Rotation not supported: " + rotation);
-            throw new RuntimeException("Wrong rotation degree");
-        }
-        sleep = getWithErrorInteger(settings, "sleep");
-        offSet = getWithErrorDouble(settings, "offSet");
-        showFps = getWithErrorBoolean(settings, "showFps");
-        timeout = getWithErrorInteger(settings, "timeout");
-
-        // screen capture stuff
-        GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        screenNumber = getWithErrorInteger(settings, "screenNumber");
-        if (screenNumber > screens.length) {
-            System.out.println("[CONFIG_FILE] screen number out of bounce");
-            throw new ArrayIndexOutOfBoundsException("screen number to big");
-        }
-        xPosition = getWithErrorInteger(settings, "PositionX");
-        yPosition = getWithErrorInteger(settings, "PositionY");
-    }
-
-    private static String getWithErrorString(Map<String, Object> map, String key) {
-        String returnValue = null;
-        try {
-            returnValue = (String) map.get(key);
-        } catch (ClassCastException e) {
-            castError(key, "String");
-        }
-        if (returnValue == null) {
-            nullError(key);
-        }
-        return returnValue;
-    }
-
-    private static int getWithErrorInteger(Map<String, Object> map, String key) {
-        Object returnValue;
-        returnValue = map.get(key);
-        if (returnValue == null) {
-            nullError(key);
-        }
-        int value = 0;
-        try {
-            value = (int) returnValue;
-        } catch (ClassCastException e) {
-            castError(key, "Integer");
-        }
-
-        if (value < 0) {
-            negativeError(key);
-        }
-
-        return value;
-    }
-
-    private static double getWithErrorDouble(Map<String, Object> map, String key) {
-        Object returnValue;
-        returnValue = map.get(key);
-        if (returnValue == null) {
-            nullError(key);
-        }
-        double value = 0;
-        try {
-            value = (double) returnValue;
-        } catch (ClassCastException e) {
-            castError(key, "Double");
-        }
-
-        if (value < 0) {
-            negativeError(key);
-        }
-
-        return value;
-    }
-
-    private static boolean getWithErrorBoolean(Map<String, Object> map, String key) {
-        Object returnValue;
-        returnValue = map.get(key);
-        if (returnValue == null) {
-            nullError(key);
-        }
-        try {
-            return (boolean) returnValue;
-        } catch (ClassCastException e) {
-            castError(key, "Boolean");
-        }
-        return false;
-    }
-
-    private static void castError(String object, String datatype) {
-        System.out.println("[CONFIG_FILE] Loading the config file went wrong. There is an error in your config file at: " + object + "\n" + object + " : is not a " + datatype);
-        throw new ClassCastException();
-    }
-
-    private static void nullError(String object) {
-        System.out.println("[CONFIG_FILE] The config file cannot be read correctly. The settings may have changed. Try making a new config file (java -jar nuvoled.jar create [<path where you want your default config file>]) \n" + "At: " + object);
-        throw new NullPointerException();
-    }
-
-    private static void negativeError(String key) {
-        System.out.println("[CONFIG_FILE] " + key + " : no negative value supported");
-        throw new RuntimeException("Negative Value");
-    }
-
     public static byte getCourantFrame() {
         return courantFrame;
     }
@@ -396,22 +255,22 @@ public class Main {
     }
 
     public static int getGlobalPixelInX() {
-        return globalPixelInX;
+        return settings.getGlobalPixelInX();
     }
 
     public static int getGlobalPixelInY() {
-        return globalPixelInY;
+        return settings.getGlobalPixelInY();
     }
 
     public static int getxPanelCount() {
-        return xPanelCount;
+        return settings.getxPanelCount();
     }
 
     public static int getyPanelCount() {
-        return yPanelCount;
+        return settings.getyPanelCount();
     }
 
     public static Panel getPanelType() {
-        return panelType;
+        return settings.getPanelType();
     }
 }
